@@ -45,3 +45,14 @@ With OpenFOAM properly installed on your machine according to the tutorial above
    ```
    If `libmyPorousMediumBCs.so` is listed, the compilation was successful.
 
+### 3. Running an Example
+
+   To verify that everything is set up correctly, go to any case within the *Examples* directory and run it using the following commands:
+   ```bash
+   blockMesh
+   impesFoam3ph_v1
+   ```
+   `blockMesh` is the OpenFOAM meshing tool, and `impesFoam3ph_v1` will initialize and run the solver.
+
+   To view the results, open ParaView and load the `field.foam` file located in the case directory.
+
