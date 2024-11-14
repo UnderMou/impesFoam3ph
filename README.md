@@ -9,12 +9,6 @@ To use the *impesFoam3ph* solver, you need to install OpenFOAM.org v9 on your ma
 For Ubuntu systems, installation can be done by following this tutorial: [Ubuntu Installation Guide](https://openfoam.org/download/9-ubuntu/).
 
 With OpenFOAM properly installed on your machine according to the tutorial above, you can proceed to compile the *impesFoam3ph* solver.
-# impesFoam3ph
-Implementation of the IMPES method on the 3 phase flow in porous media with foam.
-
-
-Here’s the content formatted directly as a `README.md` file:
-
 
 # impesFoam3ph
 Implementation of the IMPES method on the 3 phase flow in porous media with foam.
