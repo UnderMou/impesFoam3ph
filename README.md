@@ -10,16 +10,18 @@ For Ubuntu systems, installation can be done by following this tutorial: [Ubuntu
 
 With OpenFOAM properly installed on your machine according to the tutorial above, you can proceed to compile the *impesFoam3ph* solver.
 
-2. **Compiling the Files**
+### 2. Compiling the Files
 
    2.1 **Compiling the `impesFoam3ph` Solver**  
-   Navigate to your `$FOAM_RUN` directory, and clone this repository there by running:
+   Navigate to your `$FOAM_RUN` directory, and clone this repository there by:
    ```bash
+   cd $FOAM_RUN
    git clone <repository-link>
    ```
 
-   Once the repository is cloned, compile the `impesFoam3ph` solver by executing:
+   Once the repository is cloned, go to the repository directory and compile the `impesFoam3ph` solver by executing:
    ```bash
+   cd <the-directory-of-the-cloned-repository>'
    wmake
    ```
 
@@ -30,7 +32,7 @@ With OpenFOAM properly installed on your machine according to the tutorial above
    If `impesFoam3ph` appears in the listing, the compilation was successful.
 
    2.2 **Compiling the `myPorousMediumBCs` Library**  
-   The `myPorousMediumBCs` directory contains custom boundary conditions for porous media applications (currently including `gradPressureDarcy`). This library must also be compiled.
+   The `myPorousMediumBCs` directory contains custom boundary conditions for porous media applications (for now there is just `gradPressureDarcy`). This library must also be compiled.
 
    Navigate to the `myPorousMediumBCs` directory, and compile it by running:
    ```bash
