@@ -1,0 +1,6 @@
+# dynamicCode:
+# SHA1 = 4d18e215335a88a92567a544bee3526e1935bd16
+
+codedFvModelTemplate.C
+
+LIB = $(PWD)/../platforms/$(WM_OPTIONS)/lib/libSwSource_4d18e215335a88a92567a544bee3526e1935bd16

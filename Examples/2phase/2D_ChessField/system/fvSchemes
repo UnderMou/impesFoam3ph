@@ -1,0 +1,91 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  9
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      fvSchemes;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+ddtSchemes
+{
+    default         Euler;
+}
+
+gradSchemes
+{
+    // default         cellMDLimited Gauss linear 0.333;
+    // grad(p)         Gauss linear;
+    // grad(fw)         Gauss linear;
+
+    default         Gauss linear;
+
+}
+
+divSchemes
+{
+    default              none;
+    // div(grad(p))        Gauss linear;
+
+    // div(phi,fw)            Gauss limitedLinear 0.333;  
+    // div(phi,fw)         Gauss upwind;
+    // div(phi,fw)         Gauss linear;
+    // div(phi,fw)         Gauss limitedLinear 0.1;
+
+}
+
+laplacianSchemes
+{
+    // default         Gauss linear orthogonal;
+
+    // default         Gauss linear corrected;
+
+    // default            Gauss linear limited 0.333;
+
+    default         	Gauss linear corrected;
+
+}
+
+interpolationSchemes
+{
+    default         none;
+    K               harmonic;
+    // kra	            upwind phia;
+    // krb         	upwind phib;
+    // kra             limitedLinear phia 1.0;
+    // krb             limitedLinear phib 1.0;
+    // kra             CUBICK phia;
+    // krb             CUBICK phib;
+    // kra             SuperBee phia;
+    // krb             SuperBee phib;
+    kra             TOPUS phia;
+    krb             TOPUS phib;
+    flux(Ub)        linear;
+    flux(Ua)        linear;
+    flux(U)         linear;
+}
+
+snGradSchemes
+{
+    // default         orthogonal;
+
+    // default            limited 0.333;
+
+    default         corrected;
+}
+
+fluxRequired
+{
+    default         no;
+    p           ;
+}
+
+
+// ************************************************************************* //

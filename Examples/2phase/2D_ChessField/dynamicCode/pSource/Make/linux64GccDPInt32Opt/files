@@ -1,0 +1,6 @@
+# dynamicCode:
+# SHA1 = b99d7f5650b30e620eeb7d27b28dce3f3d573103
+
+SOURCE += codedFvModelTemplate.C
+
+LIB = $(PWD)/../platforms/$(WM_OPTIONS)/lib/libpSource_b99d7f5650b30e620eeb7d27b28dce3f3d573103
