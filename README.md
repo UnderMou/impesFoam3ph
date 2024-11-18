@@ -15,8 +15,8 @@ With OpenFOAM properly installed on your machine according to the tutorial above
    2.1 **Compiling the `impesFoam3ph` Solver**  
 
    For now there are two solvers implemented:
-   . impesFoam3ph for the 3 phases cases
-   . impesFoam2ph for the 2 phases cases
+   - impesFoam3ph for the 3 phases cases
+   - impesFoam2ph for the 2 phases cases
 
    Navigate to your `$FOAM_RUN` directory, and clone this repository there by:
    ```bash
