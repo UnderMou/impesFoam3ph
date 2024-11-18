@@ -29,4 +29,6 @@ for dir in solvers/*/; do
     fi
 done
 
-echo "All directories processed successfully."
+echo
+echo "All solvers were compiled successfully."
+echo
