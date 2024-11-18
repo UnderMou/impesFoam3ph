@@ -27,7 +27,7 @@ FoamFile
 
 mu_a              mu_a [0 0 0 0 0 0 0] 1.0e-3;   // Pa.s
 
-mu_b              mu_b [0 0 0 0 0 0 0] 1.0e-3;     // Pa.s
+mu_b              mu_b [0 0 0 0 0 0 0] 1.0e-1;     // Pa.s
 
 rho_a              rho_a [0 0 0 0 0 0 0] 800.0;    // kg/m3
 
@@ -40,14 +40,14 @@ prst            prst [0 0 0 0 0 0 0] 0.25;        // []
 // a: water
 // b: oil
 Sa_min       Sa_min [0 0 0 0 0 0 0] 0.1;  // 0.293;
-Sb_min       Sb_min [0 0 0 0 0 0 0] 0.05; // 0.4;
-a_exp        a_exp [0 0 0 0 0 0 0] 1.5;   // 0.96;
-b_exp        b_exp [0 0 0 0 0 0 0] 4.0;   // 2.98;
-kra_max      kra_max [0 0 0 0 0 0 0] 0.95; // 0.04;
+Sb_min       Sb_min [0 0 0 0 0 0 0] 0.15; // 0.4;
+a_exp        a_exp [0 0 0 0 0 0 0] 8.0;   // 0.96;
+b_exp        b_exp [0 0 0 0 0 0 0] 3.0;   // 2.98;
+kra_max      kra_max [0 0 0 0 0 0 0] 0.5; // 0.04;
 krb_max      krb_max [0 0 0 0 0 0 0] 1.0; // 0.302;
 
 // STARS Foam parameters
-fmmob        fmmob [0 0 0 0 0 0 0] 0.0; // 10.0; // 170.113;
+fmmob        fmmob [0 0 0 0 0 0 0] 0.0;     // NO FOAM
 SF           SF [0 0 0 0 0 0 0] 0.45656;
 sfbet        sfbet [0 0 0 0 0 0 0] 504.143;
 fmcap        fmcap [0 0 0 0 0 0 0] 8.4e-8;

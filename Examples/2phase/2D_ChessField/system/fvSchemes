@@ -57,16 +57,19 @@ interpolationSchemes
 {
     default         none;
     K               harmonic;
-    // kra	            upwind phia;
-    // krb         	upwind phib;
+
     // kra             limitedLinear phia 1.0;
     // krb             limitedLinear phib 1.0;
-    // kra             CUBICK phia;
-    // krb             CUBICK phib;
+
+    // kra             PUBICK phia;
+    // krb             PUBICK phib;
+
     // kra             SuperBee phia;
     // krb             SuperBee phib;
-    kra             TOPUS phia;
-    krb             TOPUS phib;
+
+    kra             vanLeer phia;
+    krb             vanLeer phib;
+
     flux(Ub)        linear;
     flux(Ua)        linear;
     flux(U)         linear;

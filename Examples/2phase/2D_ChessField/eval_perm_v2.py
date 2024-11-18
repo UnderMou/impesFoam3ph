@@ -15,6 +15,8 @@ image_path = "perm_quad.png"  # Replace with the path to your image
 image = cv2.imread(image_path)
 gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 gray_matrix = np.array(gray_image)
+inverted_matrix = gray_matrix[::-1, :]
+gray_matrix = inverted_matrix
 print(gray_matrix.shape)
 normalized_gray = gray_matrix / 255.0  # Values from 0 (black) to 1 (white)
 real_value_matrix = normalized_gray * (max_val - min_val) + min_val
