@@ -13,23 +13,29 @@ With OpenFOAM properly installed on your machine according to the tutorial above
 ### 2. Compiling the Files
 
    2.1 **Compiling the `impesFoam3ph` Solver**  
+
+   For now there are two solvers implemented:
+   . impesFoam3ph for the 3 phases cases
+   . impesFoam2ph for the 2 phases cases
+
    Navigate to your `$FOAM_RUN` directory, and clone this repository there by:
    ```bash
    cd $FOAM_RUN
    git clone <repository-link>
    ```
 
-   Once the repository is cloned, go to the repository directory and compile the `impesFoam3ph` solver by executing:
+   Once the repository is cloned, go to the repository directory and compile the solvers by executing:
    ```bash
    cd <the-directory-of-the-cloned-repository>'
-   wmake
+   chmod +x build_solvers.sh
+   ./build_solvers.sh
    ```
 
    Verify that the solver compiled successfully by listing the contents of the `$FOAM_USER_APPBIN` directory:
    ```bash
    ls $FOAM_USER_APPBIN
    ```
-   If `impesFoam3ph` appears in the listing, the compilation was successful.
+   If `impesFoam3ph` and `impesFoam2ph` appears in the listing, the compilation was successful.
 
    2.2 **Compiling the `myPorousMediumBCs` Library**  
    The `myPorousMediumBCs` directory contains custom boundary conditions for porous media applications (for now there is just `gradPressureDarcy`). This library must also be compiled.
@@ -48,11 +54,17 @@ With OpenFOAM properly installed on your machine according to the tutorial above
 ### 3. Running an Example
 
    To verify that everything is set up correctly, go to any case within the *Examples* directory and run it using the following commands:
+
+   . for 3 phases cases
    ```bash
    blockMesh
-   impesFoam3ph_v1
+   impesFoam3ph
    ```
-   `blockMesh` is the OpenFOAM meshing tool, and `impesFoam3ph_v1` will initialize and run the solver.
+   . for 2 phases cases
+   ```bash
+   blockMesh
+   impesFoam2ph
+   ```
 
    To view the results, open ParaView and load the `field.foam` file located in the case directory.
 
