@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "impesFoam3ph_v1.C": "cpp",
+        "cmath": "cpp"
+    }
+}

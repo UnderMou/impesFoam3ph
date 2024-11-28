@@ -1,58 +1,37 @@
-# impesFoam3ph
-Implementation of the IMPES method on the 3 phase flow in porous media with foam.
+# OpenUQFOAM
 
-## Instructions
+## Overview
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam nec purus nec nunc.
 
-### 1. Installing OpenFOAM on Your Machine
-To use the *impesFoam3ph* solver, you need to install OpenFOAM.org v9 on your machine (Linux).
+## Project Structure
+```
+OpenUQFOAM
+├── data
+│   ├── traces       # Sample traces from inverse UQ
+│   ├── plots        # Plots generated from analysis (should be improved)
+│   └── <other-data-files>
+├── notebooks
+│   ├── 01_sampling.ipynb     # Sampling step, where the simulator is called to generate samples and outputs stored
+│   ├── 02_propagation.ipynb  # Propagation step, where the saved samples are used to propagate the uncertainty
+├── src
+│   ├── utils.py           # Utility functions
+│   └── <source-files>
+├── simulator              # Simulator (submodule), where the openFOAM simulation runs
+│   └── <simulator-files>
+├── requirements.txt       # Project dependencies
+```
 
-For Ubuntu systems, installation can be done by following this tutorial: [Ubuntu Installation Guide](https://openfoam.org/download/9-ubuntu/).
-
-With OpenFOAM properly installed on your machine according to the tutorial above, you can proceed to compile the *impesFoam3ph* solver.
-
-### 2. Compiling the Files
-
-   2.1 **Compiling the `impesFoam3ph` Solver**  
-   Navigate to your `$FOAM_RUN` directory, and clone this repository there by:
-   ```bash
-   cd $FOAM_RUN
-   git clone <repository-link>
+## Setup Instructions
+1. Clone the repository:
    ```
-
-   Once the repository is cloned, go to the repository directory and compile the `impesFoam3ph` solver by executing:
-   ```bash
-   cd <the-directory-of-the-cloned-repository>'
-   wmake
+   git clone <repository-url>
    ```
-
-   Verify that the solver compiled successfully by listing the contents of the `$FOAM_USER_APPBIN` directory:
-   ```bash
-   ls $FOAM_USER_APPBIN
+2. Navigate to the project directory:
    ```
-   If `impesFoam3ph` appears in the listing, the compilation was successful.
-
-   2.2 **Compiling the `myPorousMediumBCs` Library**  
-   The `myPorousMediumBCs` directory contains custom boundary conditions for porous media applications (for now there is just `gradPressureDarcy`). This library must also be compiled.
-
-   Navigate to the `myPorousMediumBCs` directory, and compile it by running:
-   ```bash
-   wmake libso .
+   cd OpenUQFOAM
    ```
-
-   Check if the library was successfully compiled by listing the contents of the `$FOAM_USER_LIBBIN` directory:
-   ```bash
-   ls $FOAM_USER_LIBBIN
+3. Install the required packages:
    ```
-   If `libmyPorousMediumBCs.so` is listed, the compilation was successful.
-
-### 3. Running an Example
-
-   To verify that everything is set up correctly, go to any case within the *Examples* directory and run it using the following commands:
-   ```bash
-   blockMesh
-   impesFoam3ph_v1
+   pip install -r requirements.txt
    ```
-   `blockMesh` is the OpenFOAM meshing tool, and `impesFoam3ph_v1` will initialize and run the solver.
-
-   To view the results, open ParaView and load the `field.foam` file located in the case directory.
 
