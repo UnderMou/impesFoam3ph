@@ -41,3 +41,5 @@ ipython_config.py
 # Data
 **/experiments/
 **/data/
+
+.vscode/
