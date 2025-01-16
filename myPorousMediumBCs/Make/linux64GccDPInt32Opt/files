@@ -1,0 +1,4 @@
+SOURCE += darcyGradPressure/darcyGradPressure.C
+SOURCE += darcyGradPressure_G/darcyGradPressure_G.C
+
+LIB = $(FOAM_USER_LIBBIN)/libmyPorousMediumBCs
