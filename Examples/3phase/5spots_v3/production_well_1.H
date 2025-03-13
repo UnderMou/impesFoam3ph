@@ -1,0 +1,167 @@
+SbSource2
+{
+    type            coded;
+
+    // selectionMode   all;
+
+    selectionMode   cellSet;
+    cellSet         box2;
+
+    field           Sb;
+
+    codeInclude
+    #{
+        #include "OFstream.H"
+    #};
+
+    codeAddSup
+    #{
+        // Pout<< "**codeAddSup**" << endl;
+        // const Time& time = mesh().time();
+        // const scalarField& V = mesh().V();
+        // scalarField& heSource = eqn.source();
+        // heSource -= 0.1*V; //*sqr(time.value())*V;
+
+        const Time& time = mesh().time();
+        const scalar currentTime = time.value();
+
+        const scalarField& V = mesh().V();
+        scalarField& SbSource = eqn.source();
+
+        // Access Fb (assuming it is a volScalarField)
+        const volScalarField& Fb = mesh().lookupObject<volScalarField>("Fb");
+        const volScalarField& Fc = mesh().lookupObject<volScalarField>("Fc");
+
+        
+        // // =========== BOX1 SELECTION ========================
+        // // ===================================================
+        // Retrieve the cell set named "box1"
+        cellSet selectedCells(mesh(), "box2");
+        // Iterate over the cell set and apply the source term
+        forAllConstIter(labelHashSet, selectedCells, iter)
+        {
+            label cellI = iter.key();
+            // SwSource[cellI] -= (0.1) * V[cellI];
+            
+            // const scalar x = mesh().C()[cellI].component(0);
+            // const scalar y = 0.5;
+
+            // SwSource[cellI] -= ((x-pow(x,2))) * V[cellI];
+            
+            
+            
+            // SbSource[cellI] += 0.5*1.0e-2 * V[cellI]; // 100m3/dia -> m3/10s
+
+
+            
+
+            scalar FbValue = Fb[cellI];
+            scalar FcValue = Fc[cellI];
+            SbSource[cellI] -= FbValue * 1.0e-2 * V[cellI];
+
+            // Write the time step, cell ID, and Fb value to the file
+            // Info << "TimeStep\tCellID\tFbValue\n";  // Write header with time step
+            // Info << currentTime << "\t" << cellI << "\t" << FbValue << "\n";
+
+            Info << "TimeStep\tCellID\tFb*qt\tFc*qt\n";  // Write header with time step
+            Info << currentTime << "\t" << cellI << "\t" << FbValue*1.0e-2 << "\t" << FcValue*1.0e-2 << "\n";
+
+            
+        }
+
+
+
+
+        // =========== ALL SELECTION ========================
+        // ===================================================
+        // forAll(SwSource, i)
+        // {
+        //     const scalar x = mesh().C()[i].component(0);
+        //     const scalar y = 0.5;
+
+        //     // SwSource[i] -= ((x-pow(x,2))*(y-pow(y,2)) + 
+        //     //                 2.0*currentTime*(x-pow(x,2)+y-pow(y,2))) * V[i];
+
+        //     SwSource[i] -= (x/4.0 - pow(x,2)/4.0 + 0.5*currentTime) * V[i];
+        // };
+ 
+
+    #};
+
+    codeAddRhoSup
+    #{
+        Pout<< "**codeAddRhoSup**" << endl;
+    #};
+
+    codeAddAlphaRhoSup
+    #{
+        Pout<< "**codeAddAlphaRhoSup**" << endl;
+    #};
+}
+
+
+pSource2
+{
+    type            coded;
+
+    // selectionMode   all;
+
+    selectionMode   cellSet;
+    cellSet         box2;
+
+    field           p;
+
+    codeInclude
+    #{
+    #};
+
+    codeAddSup
+    #{
+        const Time& time = mesh().time();
+        const scalar currentTime = time.value();
+
+        const scalarField& V = mesh().V();
+        scalarField& pSource = eqn.source();
+        
+        // =========== BOX1 SELECTION ========================
+        // ===================================================
+        // Retrieve the cell set named "box1"
+        cellSet selectedCells(mesh(), "box2");
+        // Iterate over the cell set and apply the source term
+        forAllConstIter(labelHashSet, selectedCells, iter)
+        {
+            label cellI = iter.key();
+            // SwSource[cellI] -= (0.1) * V[cellI];
+            
+            // const scalar x = mesh().C()[cellI].component(0);
+            // const scalar y = 0.5;
+
+            // SwSource[cellI] -= ((x-pow(x,2))) * V[cellI];
+            pSource[cellI] += 1.0e-2 * V[cellI]; // 100m3/dia -> m3/10s
+        }
+
+
+
+        // =========== ALL SELECTION ========================
+        // ===================================================
+        // forAll(pSource, i)
+        // {
+        //     const scalar x = mesh().C()[i].component(0);
+        //     const scalar y = 0.5;
+
+        //     pSource[i] -= currentTime * V[i]; // 4.0*currentTime*(x-pow(x,2)+y-pow(y,2)) * V[i];
+        // };
+ 
+
+    #};
+
+    codeAddRhoSup
+    #{
+        Pout<< "**codeAddRhoSup**" << endl;
+    #};
+
+    codeAddAlphaRhoSup
+    #{
+        Pout<< "**codeAddAlphaRhoSup**" << endl;
+    #};
+}

@@ -1,0 +1,109 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2012                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+mergeType points;   // Merge points instead of topology
+
+scale   1;
+
+//- Half angle of wedge in degrees
+halfAngle 0.5;
+
+//- Radius of pipe [m]
+rc  0.01;
+
+h 0.1;
+
+x               #calc"$rc*sin(degToRad($halfAngle))";
+y               #calc"$rc*cos(degToRad($halfAngle))";
+ym            #calc"-1*$y";
+xm            #calc"-1*$x";
+
+vertices
+(
+    (0 0 0)        //0
+    (0 0 $h)        //1
+    (0 0 $h)        //2
+    (0 0 0)        //3
+
+    ($xm  $y 0)   //4
+    ($xm $y $h)   //5
+    ($x $y $h)      //6
+    ($x  $y 0)      //7
+
+);
+
+blocks
+(
+    hex (0 1 2 3 4 5 6 7) (500 1 75) simpleGrading (1 1 1)//(z theta radial)
+);
+
+edges
+(
+    arc 4 7 (0 0 0)
+    arc 5 6 (0 0 $h)
+);
+
+boundary
+(
+    bottom
+    {
+        type wall;
+        faces
+        (
+            (0 4 7 3)
+        );
+    }
+
+    outlet
+    {
+        type patch;
+        faces
+        (
+            (1 2 6 5)
+        );
+    }
+
+    side1
+    {
+        type wedge;
+        faces
+        (
+            (0 1 5 4)
+        );
+    }
+
+    side2
+    {
+        type wedge;
+        faces
+        (
+            (7 6 2 3)
+        );
+    }
+
+    walls
+    {
+        type wall;
+        faces
+        (
+            (4 5 6 7)
+            (3 2 1 0)
+        );
+    }
+);
+
+
+// ************************************************************************* //

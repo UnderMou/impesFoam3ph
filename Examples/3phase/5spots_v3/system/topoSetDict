@@ -1,0 +1,132 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  9
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    object      topoSetDict;
+}
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+actions
+(
+    // box1 - injection well 1
+    {
+        name    box1CellSet;
+        type    cellSet;
+        action  new;
+        source  boxToCell;
+        sourceInfo
+        {
+            box (0 0 -21) (5 5 21);
+        }
+    }
+    {
+        name    box1;
+        type    cellZoneSet;
+        action  new;
+        source  setToCellZone;
+        sourceInfo
+        {
+            set box1CellSet;
+        }
+    }
+
+    // box2 - injection well 2
+    {
+        name    box2CellSet;
+        type    cellSet;
+        action  new;
+        source  boxToCell;
+        sourceInfo
+        {
+            box (195 0 -21) (200 5 21);
+        }
+    }
+    {
+        name    box2;
+        type    cellZoneSet;
+        action  new;
+        source  setToCellZone;
+        sourceInfo
+        {
+            set box2CellSet;
+        }
+    }
+
+    // box3 - injection well 3
+    {
+        name    box3CellSet;
+        type    cellSet;
+        action  new;
+        source  boxToCell;
+        sourceInfo
+        {
+            box (195 195 -21) (200 200 21);
+        }
+    }
+    {
+        name    box3;
+        type    cellZoneSet;
+        action  new;
+        source  setToCellZone;
+        sourceInfo
+        {
+            set box3CellSet;
+        }
+    }
+
+    // box4 - injection well 4
+    {
+        name    box4CellSet;
+        type    cellSet;
+        action  new;
+        source  boxToCell;
+        sourceInfo
+        {
+            box (0 195 -21) (5 200 21);
+        }
+    }
+    {
+        name    box4;
+        type    cellZoneSet;
+        action  new;
+        source  setToCellZone;
+        sourceInfo
+        {
+            set box4CellSet;
+        }
+    }
+
+    // box5 - production well 1
+    {
+        name    box5CellSet;
+        type    cellSet;
+        action  new;
+        source  boxToCell;
+        sourceInfo
+        {
+            box (95 95 -21) (100 100 21);
+        }
+    }
+    {
+        name    box5;
+        type    cellZoneSet;
+        action  new;
+        source  setToCellZone;
+        sourceInfo
+        {
+            set box5CellSet;
+        }
+    }
+
+
+);
+
+// ************************************************************************* //
