@@ -1,45 +1,35 @@
-# Prerequisites
-*.d
+# Ignorar:
+backup/
+simulator/experiments/*
+notebooks/40tena/
 
-# Compiled Object files
-*.slo
-*.lo
+# Ignorar caches e arquivos temporários
+__pycache__/
+*.pyc
+*.pyo
+*.swp
+
+# Ignorar arquivos comprimidos e binários comuns
+*.zip
+*.tar.gz
+*.tar.bz2
+*.tar.xz
+
+# Ignorar arquivos de log e temporários
+*.log
+*.tmp
+
+# Ignorar arquivos específicos do Jupyter Notebook
+.ipynb_checkpoints/
+
+# Ignorar arquivos de build do OpenFOAM (caso aplicável)
 *.o
-*.obj
-
-# Precompiled Headers
-*.gch
-*.pch
-
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
-
-# Fortran module files
-*.mod
-*.smod
-
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
-
-# Executables
+*.dep
 *.exe
 *.out
-*.app
+*.so
 
-# Jupyter Notebook
-.ipynb_checkpoints
-
-# IPython
-profile_default/
-ipython_config.py
-
-# Data
-**/experiments/
-**/data/
-
-.vscode/
+# Ignorar arquivos de configuração locais
+.env
+.DS_Store
+Thumbs.db
