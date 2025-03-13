@@ -281,7 +281,21 @@ volVectorField U
 //     mesh
 // );
 
-#include "createPhi.H"
+// #include "createPhi.H"
+
+surfaceScalarField phi
+(
+    IOobject
+    (
+        "phi",
+        runTime.timeName(),
+        mesh,
+        IOobject::NO_READ,
+        IOobject::AUTO_WRITE
+    ),
+    fvc::flux(U)
+);
+
 surfaceScalarField phiP = phi;
 
 volScalarField kra
@@ -297,7 +311,7 @@ volScalarField kra
     mesh,
     0.0
 );
-kra = correct_kra(Sa,Sb,Sa_minValue,Sb_minValue,Sc_minValue,kra_maxValue,a_expValue,fmmobValue,SFValue,sfbetValue,U,fmcapValue,epcapValue,mu_b,sigma_baValue,fmoilValue,floilValue,epoilValue);
+kra = correct_kra(Sa,Sb,p,K,Sa_minValue,Sb_minValue,Sc_minValue,kra_maxValue,a_expValue,fmmobValue,SFValue,sfbetValue,U,fmcapValue,epcapValue,mu_b,sigma_baValue,fmoilValue,floilValue,epoilValue);
 surfaceScalarField kraf ("kraf",fvc::interpolate(kra,"kra"));
 
 volScalarField krb
@@ -369,6 +383,57 @@ volScalarField Fb
     0.0
 );
 Fb = (krb/mu_b) / ( (kra/mu_a) + (krb/mu_b) + (krc/mu_c) );
+
+
+
+////////////////////////////////////////////////////////
+
+volScalarField Nca
+(
+    IOobject
+    (
+        "Nca",
+        runTime.timeName(),
+        mesh,
+        IOobject::NO_READ,
+        IOobject::AUTO_WRITE
+    ),
+    mesh,
+    0.0
+);
+Nca = correct_Nca(p, K, sigma_baValue);
+
+volScalarField Fshear
+(
+    IOobject
+    (
+        "Fshear",
+        runTime.timeName(),
+        mesh,
+        IOobject::NO_READ,
+        IOobject::AUTO_WRITE
+    ),
+    mesh,
+    0.0
+);
+Fshear = correct_Fshear(p, K, fmcapValue, epcapValue, sigma_baValue);
+
+volScalarField Foil
+(
+    IOobject
+    (
+        "Foil",
+        runTime.timeName(),
+        mesh,
+        IOobject::NO_READ,
+        IOobject::AUTO_WRITE
+    ),
+    mesh,
+    0.0
+);
+Foil = correct_Foil(Sa, Sb, Sa_minValue, Sb_minValue, fmoilValue, floilValue, epoilValue);
+
+////////////////////////////////////////////////////////
 
 
 #include "createFvModels.H"

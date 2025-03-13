@@ -79,7 +79,10 @@ int main(int argc, char *argv[])
         while (simple.correctNonOrthogonal())
         {   
             //- mobility computation 
-            kra = correct_kra(Sa,Sb,Sa_minValue,Sb_minValue,Sc_minValue,kra_maxValue,a_expValue,fmmobValue,SFValue,sfbetValue,U,fmcapValue,epcapValue,mu_b,sigma_baValue,fmoilValue,floilValue,epoilValue);
+            Nca = correct_Nca(p, K, sigma_baValue);
+            Fshear = correct_Fshear(p, K, fmcapValue, epcapValue, sigma_baValue);
+            Foil = correct_Foil(Sa, Sb, Sa_minValue, Sb_minValue, fmoilValue, floilValue, epoilValue);
+            kra = correct_kra(Sa,Sb,p,K,Sa_minValue,Sb_minValue,Sc_minValue,kra_maxValue,a_expValue,fmmobValue,SFValue,sfbetValue,U,fmcapValue,epcapValue,mu_b,sigma_baValue,fmoilValue,floilValue,epoilValue);
             krb = correct_krb(Sb,Sa_minValue,Sb_minValue,Sc_minValue,krb_maxValue,b_expValue);
             krc = correct_krc(Sa,Sb,Sa_minValue,Sb_minValue,Sc_minValue,krc_maxValue,c_expValue);
             kraf = fvc::interpolate(kra,"kra");

@@ -9,6 +9,8 @@ void printField(volScalarField field){
 
 volScalarField correct_kra(const volScalarField Sa, 
                            const volScalarField Sb,
+                           const volScalarField p,
+                           const volScalarField K,
                            scalar Sa_min,
                            scalar Sb_min,
                            scalar Sc_min,
@@ -48,14 +50,33 @@ volScalarField correct_kra(const volScalarField Sa,
     //     }
     // } 
 
+    // Fshear
+    volScalarField Fshear = Fdry;  
+    volVectorField gradP = fvc::grad(p);
+    volScalarField Nca = (K * mag(gradP)) / sigma_ba;
+    forAll(Nca,i){
+        if (Nca[i] > fmcap){
+            Fshear[i] = Foam::pow(fmcap/Nca[i], epcap);
+        }
+        else{
+            Fshear[i] = 1.0;
+        }
+    }
+
+    // // Fshear
+    // volScalarField Fshear = Fdry;   // Just for initialization! 
+    // forAll(Fshear,i){
+    //     Fshear[i] = 1.0;
+    // }
+
     // Foil
     volScalarField Foil = Fdry;   // Just for initialization!
     volScalarField Sc = 1.0 - Sa - Sb;
     forAll(Sc,i){
-        if(fmoil <= Sc[i] && Sc[i] <= 1.0 - Sa_min - Sb_min){
+        if(fmoil < Sc[i] && Sc[i] <= 1.0 - Sa_min - Sb_min){
             Foil[i] = 0.0;
         }
-        else if(floil <= Sc[i] && Sc[i] < fmoil){
+        else if(floil <= Sc[i] && Sc[i] <= fmoil){
             Foil[i] = Foam::pow((fmoil-Sc[i])/(fmoil-floil),epoil);
         }
         else{
@@ -64,8 +85,8 @@ volScalarField correct_kra(const volScalarField Sa,
     }
 
     // MRF
-    // volScalarField MRF = 1.0 / (1.0 + fmmob*Fdry*Fshear);
-    volScalarField MRF = 1.0 / (1.0 + fmmob*Fdry*Foil);
+    volScalarField MRF = 1.0 / (1.0 + fmmob*Fdry*Fshear*Foil);
+    // volScalarField MRF = 1.0 / (1.0 + fmmob*Fdry*Foil);
     kra *= MRF;
 
     return kra;
@@ -97,8 +118,67 @@ volScalarField correct_krc(const volScalarField Sa,
 
     volScalarField Se_a = (Sa-Sa_min)/(1.0-Sa_min-Sb_min-Sc_min);
     volScalarField Se_b = (Sb-Sb_min)/(1.0-Sa_min-Sb_min-Sc_min);
-
     volScalarField krc = krc_max * Foam::pow(scalar(1.0)-Se_a-Se_b, c); 
 
+    // volScalarField Sc = 1.0 - Sa - Sb;
+    // volScalarField Se_c = (Sc-Sc_min)/(1.0-Sa_min-Sb_min-Sc_min);
+    // volScalarField krc = krc_max * Foam::pow(Se_c, c); 
+
     return krc;
+}
+
+volScalarField correct_Nca(const volScalarField p,
+                           const volScalarField K,
+                           scalar sigma_ba)
+{
+    volVectorField gradP = fvc::grad(p);
+    volScalarField Nca = (K * mag(gradP)) / sigma_ba;
+    return Nca;
+}
+
+volScalarField correct_Fshear(const volScalarField p,
+                              const volScalarField K,
+                              scalar fmcap,
+                              scalar epcap,
+                              scalar sigma_ba)
+{
+    // Fshear
+    volScalarField Fshear = K;   // Just for initialization!
+    volVectorField gradP = fvc::grad(p);
+    volScalarField Nca = (K * mag(gradP)) / sigma_ba;
+    forAll(Nca,i){
+        if (Nca[i] > fmcap){
+            Fshear[i] = Foam::pow(fmcap/Nca[i], epcap);
+        }
+        else{
+            Fshear[i] = 1.0;
+        }
+    }
+
+    return Fshear;
+}
+
+volScalarField correct_Foil(const volScalarField Sa, 
+                            const volScalarField Sb,
+                            scalar Sa_min,
+                            scalar Sb_min,
+                            scalar fmoil,
+                            scalar floil,
+                            scalar epoil)
+{
+    // Foil
+    volScalarField Foil = Sa;   // Just for initialization!
+    volScalarField Sc = 1.0 - Sa - Sb;
+    forAll(Sc,i){
+        if(fmoil < Sc[i] && Sc[i] <= 1.0 - Sa_min - Sb_min){
+            Foil[i] = 0.0;
+        }
+        else if(floil <= Sc[i] && Sc[i] <= fmoil){
+            Foil[i] = Foam::pow((fmoil-Sc[i])/(fmoil-floil),epoil);
+        }
+        else{
+            Foil[i] = 1.0;
+        }
+    }
+    return Foil;
 }
