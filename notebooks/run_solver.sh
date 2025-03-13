@@ -24,4 +24,5 @@ fi
 
 # Move to the new case directory and run the solver
 cd "$1"
-impesFoam3ph_v1 > log
+# impesFoam3ph_v1 > log
+impresFoam3ph > /dev/null 2>&1
