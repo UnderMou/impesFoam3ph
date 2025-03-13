@@ -3,6 +3,12 @@ backup/
 simulator/experiments/*
 notebooks/40tena/
 
+simulator/base_cases/Fg_protocol/
+simulator/base_cases/Lyu_CT_baseCase/
+simulator/base_cases/Lyu_CT_exp_All/
+simulator/base_cases/SA_CTscan_Fdry/
+simulator/base_cases/Scenario_4_C1_Lyu/
+
 # Ignorar caches e arquivos temporários
 __pycache__/
 *.pyc
