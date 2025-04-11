@@ -16,8 +16,8 @@ from aux_funcs import *
 if __name__ == '__main__':
 
     # Inputs
-    experiment_name = 'SA_CTscan_FdryFoilFshear_pdr0.2_steady_moreSamples'
-    nSamples = 736
+    experiment_name = 'SA_CTscan_FdryFoilFshear_pdr0.2_steady_moreSamples_fixedfmcap'
+    nSamples = 311
     ti = 0
     tf = 40000
     write_interval = 200
@@ -176,6 +176,30 @@ if __name__ == '__main__':
         QoI_1_SA_CumProd_o.append(uq.createAnalysis(PCESobol))
         print(QoI_1_SA_CumProd_o)
         print(f'Sum of all {PCESobol['Sobol']['Order']} order Sobol indexes = {SumSobolIndex(QoI_1_SA_CumProd_o, PCESobol, idx = -1)}')
+
+        # # QoI 1 - Cumulative oil production
+        # print('QoI 1 - Cumulative oil production')
+        # myPCE, scaler_X, scaler_Y = eval_PCE(uq, 
+        #                                      X = X_ED, 
+        #                                      Y = QoI_1_SIM_CumProd_o,
+        #                                      training_idx = index, 
+        #                                      QoI_col = i
+        #                                     )
+        # QoI_1_PCE_CumProd_o.append(myPCE)
+        # uq.print(QoI_1_PCE_CumProd_o[-1])
+        # check_pceAcc(uq,
+        #              pce_model = QoI_1_PCE_CumProd_o[-1],
+        #              X_SIM = X_ED.iloc[index:, :].to_numpy().tolist(),
+        #              Y_SIM = QoI_1_SIM_CumProd_o.iloc[index:,i],
+        #              saveDir=experiment_dir + '/PCEsGraphs',
+        #              fileName = 'QoI_1_CumProd_o.png',
+        #              scaler_X = scaler_X,
+        #              scaler_Y = scaler_Y
+        # )
+        # QoI_1_SA_CumProd_o.append(uq.createAnalysis(PCESobol))
+        # print(QoI_1_SA_CumProd_o)
+        # print(f'Sum of all {PCESobol['Sobol']['Order']} order Sobol indexes = {SumSobolIndex(QoI_1_SA_CumProd_o, PCESobol, idx = -1)}')
+        # exit()
 
         # QoI 1 - Cumulative water production
         print('QoI 1 - Cumulative water production')

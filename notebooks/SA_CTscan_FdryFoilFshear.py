@@ -195,7 +195,7 @@ if __name__ == '__main__':
 
     # INPUT DIRECTORIES
     experiment_name = 'SA_CTscan_FdryFoilFshear_pdr0.2_steady_moreSamples'
-    BaseCase_dir = '/home/andersonmoura/OpenFOAM/andersonmoura-9/run/impesFoam3ph/simulator/base_cases/Lyu_CT_exp/'
+    BaseCase_dir = '/home/anderson/OpenFOAM/anderson-9/run/uqsa/impesFoam3ph/simulator/base_cases/Lyu_CT_exp/'
     new_dir = "../simulator/experiments/" + experiment_name
 
     ############ UQ[py]Lab - INPUT #############
@@ -339,7 +339,7 @@ if __name__ == '__main__':
     params = list(enumerate(X_ED))
 
     # Continuing simulation
-    run_from = 969
+    run_from = 1175
     params = params[run_from:]
     print(params)
 

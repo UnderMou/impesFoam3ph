@@ -11,6 +11,10 @@ import itertools
 import csv
 import seaborn as sns
 from scipy.stats import qmc
+from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import r2_score
+import scipy.integrate as integrate
+import matplotlib.patches as patches
 
 def read_openfoam_field(file_path):
     """
@@ -425,8 +429,9 @@ def eval_PCE(uq, X, Y, training_idx, QoI_col):
     MetaOpts = {
             'Type': 'Metamodel',
             'MetaType': 'PCE',
-            'Method': 'OMP', #'LARS',
-            'Degree': np.arange(1,4,1).tolist(),
+            'Method': 'OMP', # 'OMP', # 'LARS'
+            'Degree': np.arange(0,4,1).tolist(),
+            # 'SparseDegree': True,
             'ExpDesign': {
                 'X': X.iloc[0:training_idx,:].to_numpy().tolist(),
                 'Y': Y.iloc[0:training_idx,QoI_col].to_numpy().tolist()
@@ -450,6 +455,7 @@ def check_pceAcc(uq, pce_model, X_SIM, Y_SIM, saveDir, fileName):
     plt.scatter(Y_PCE,Y_SIM)
     ypces = [np.min(Y_PCE), np.max(Y_PCE)]
     ysims = [np.min(Y_SIM), np.max(Y_SIM)]
+    print("R^2: ", r2_score(Y_SIM, Y_PCE))
     plt.plot(ysims,ysims)
     # plt.grid()
     plt.title(fileName)
@@ -525,7 +531,7 @@ def plot_SobolIndex(nOrder, QoI_SA, saveDir):
 
     os.makedirs(saveDir, exist_ok=True)
 
-    version = 2
+    version = 3
 
     if version == 1:
         for i in range(nOrder):
@@ -549,9 +555,15 @@ def plot_SobolIndex(nOrder, QoI_SA, saveDir):
 
     if version == 2:
 
-        nOrder = 3
-
-        fig, axes = plt.subplots(nOrder, 1, figsize=(15, 10))
+        plt.rcParams.update({'font.size': 22})
+        fig, axes = plt.subplots(nOrder+1, 1, figsize=(15, 10))
+        
+        axes[-1].bar(QoI_SA[-1]['Results']['VariableNames'],
+                QoI_SA[-1]['Results']['Total'])
+        axes[-1].set_xticklabels(QoI_SA[-1]['Results']['VariableNames'], rotation=0)
+        axes[-1].set_ylabel(r'$S_T$')
+        axes[-1].set_title('Total Sobol index')
+        axes[-1].set_ylim([0,1])
 
         for i in range(nOrder):
 
@@ -565,9 +577,199 @@ def plot_SobolIndex(nOrder, QoI_SA, saveDir):
             axes[i].bar(formatted_labels,
                     QoI_SA[-1]['Results']['AllOrders'][i])
             axes[i].set_xticklabels(formatted_labels, rotation=90)
-            axes[i].set_ylabel(f'{i+1}-order Sobol index')
+            axes[i].set_ylabel(f'{i+1}-order')
             axes[i].set_title(title)
+
+            axes[i].set_ylim([0,1])
         
         plt.tight_layout()
-        plt.savefig(saveDir + f'/Grouped_SobolIndex.png', dpi=500)
+        plt.savefig(saveDir + f'_SobolIndexes.png', dpi=500)
         plt.close()
+
+    if version == 3:
+
+        plt.rcParams.update({'font.size': 22})
+        # fig, axes = plt.subplots(1, 1, figsize=(10, 5))
+        plt.figure(figsize=(7,7))
+        plt.bar(QoI_SA[-1]['Results']['VariableNames'],
+                QoI_SA[-1]['Results']['Total'])
+        plt.xticklabels(QoI_SA[-1]['Results']['VariableNames'], rotation=0)
+        plt.ylabel(r'$S_T$')
+        plt.title('Total Sobol index')
+        plt.ylim([0,1])
+
+def remove_indexes(lst, indexes):
+    return [value for i, value in enumerate(lst) if i not in set(indexes)]
+
+def eval_oilBank_PulseDuration_fromOilCut(Oil_cut, t):
+    t = t[1:]
+    OilBank_PulseDur = np.zeros(Oil_cut.shape[0])
+    for i in range(Oil_cut.shape[0]):
+        OilCut_grad = np.gradient(Oil_cut.iloc[i,:].to_numpy())
+        OilCut_grad = np.nan_to_num(OilCut_grad, nan=0.0)
+        init_idt = np.argmax(OilCut_grad)
+        # print(init_idt, t[init_idt])
+        end_idt = np.argmin(OilCut_grad)
+        # print(end_idt, t[end_idt])
+        OilBank_PulseDur[i] = t[end_idt] - t[init_idt]
+        # print(OilBank_PulseDur[i])
+    
+    return OilBank_PulseDur
+
+def eval_oilBank_PulseHeight_fromOilCut(Oil_cut, t):
+    t = t[1:]
+    OilBank_PulseHei = np.zeros(Oil_cut.shape[0])
+    for i in range(Oil_cut.shape[0]):
+        OilBank_PulseHei[i] = np.max(Oil_cut.iloc[i,:])
+
+    return OilBank_PulseHei
+
+def eval_oilBank_AreaBelow_fromOilCut(Oil_cut, t, write_interval):
+    t = t[1:-1]
+    OilBank_Area = np.zeros(Oil_cut.shape[0])
+    for i in range(Oil_cut.shape[0]):
+        OilBank_Area[i] = integrate.trapz(Oil_cut.iloc[i,1:].to_numpy() / write_interval, t)
+    
+    return OilBank_Area
+
+def plot_oilBank(OilBank_PulseDur, OilBank_PulseHei, OilBank_Area):
+    fig, axs = plt.subplots(1,3, figsize=(10,5))
+
+    axs[0].hist(OilBank_PulseDur, bins=7)
+    axs[0].set_xlabel('Oil bank duration [s]')
+    axs[0].set_ylabel('Frequency')
+    axs[0].grid()
+
+    axs[1].hist(OilBank_PulseHei, bins=7)
+    axs[1].set_xlabel('Oil bank Height [PV/s]')
+    axs[1].set_ylabel('Frequency')
+    axs[1].grid()
+
+    axs[2].hist(OilBank_Area, bins=10)
+    axs[2].set_xlabel('Oil bank Area [PV]')
+    axs[2].set_ylabel('Frequency')
+    axs[2].grid()
+
+    plt.tight_layout()
+    plt.show()
+
+# def eval_oilBank_length_fromOilSat(Scs, x):
+
+#     OilBank_length = np.zeros(Scs.shape[0])
+#     for i in range(Scs.shape[0]):
+#         OilSat_grad = np.gradient(Scs.iloc[i,:].to_numpy())
+#         OilSat_grad = np.nan_to_num(OilSat_grad, nan=0.0)
+#         init_idx = np.argmax(OilSat_grad)
+#         # print(init_idt, t[init_idt])
+#         end_idx = np.argmin(OilSat_grad)
+#         # print(end_idt, t[end_idt])
+#         OilBank_length[i] = x[end_idx] - x[init_idx]
+    
+#     return OilBank_length
+
+def eval_oilBank_length_fromOilSat(Scs, x, Soi=0.46, nAvoid=None):
+
+    OilBank_length = np.zeros(Scs.shape[0])
+    init_idxs = np.zeros(Scs.shape[0])
+    end_idxs = np.zeros(Scs.shape[0])
+    for i in range(Scs.shape[0]):
+        OilSat_grad = np.gradient(Scs.iloc[i,:].to_numpy())
+        OilSat_grad = np.nan_to_num(OilSat_grad, nan=0.0)
+        init_idx = 0
+        for j in range(len(Scs.iloc[i,:])):
+            if Scs.iloc[i,j] >= Soi: 
+                init_idx = j
+                break
+
+        end_idx = init_idx + 1
+        tol = 1e-3
+        find = False
+        for j in np.arange(end_idx, len(Scs.iloc[i,:]),1):
+            if abs(Scs.iloc[i,j] - Soi) <= tol: 
+                end_idx = j
+                find = True
+                break
+        if find == False: end_idx = len(Scs.iloc[i,:]) + nAvoid
+        
+        # Interpolation
+        xSubSet = np.linspace(x[init_idx-1],x[init_idx],100)
+        SoSubSet = np.linspace(Scs.iloc[i,init_idx-1],Scs.iloc[i,init_idx],100)
+        xExact_idx = np.argmin(np.abs(SoSubSet - Soi))
+        xExact = xSubSet[xExact_idx]
+
+        # print(xExact, x[init_idx])
+        # plt.figure(figsize=(7,7))
+        # plt.scatter(xExact,Soi, c='b')
+        # plt.scatter(x,Scs.iloc[i,:],s=2)
+        # plt.scatter(x[init_idx], Scs.iloc[i,init_idx], c='k')  
+        # plt.scatter(x[end_idx], Scs.iloc[i,end_idx], c='k')       
+
+        # plt.scatter(xSubSet, SoSubSet, s=0.1,c='k')
+        # plt.plot([xExact,x[end_idx]], [Soi, Soi], 'k--') 
+        # plt.show()
+
+        # OilBank_length[i] = x[end_idx] - x[init_idx]
+        OilBank_length[i] = x[end_idx] - xExact
+        init_idxs[i] = init_idx
+        end_idxs[i] = end_idx
+    
+    return OilBank_length, init_idxs.astype(int), end_idxs.astype(int)
+
+def eval_oilBank_height_fromOilSat(Scs, x, init_idxs, end_idxs, Soi = 0.46):
+
+    OilBank_height = np.zeros(Scs.shape[0])
+    for i in range(Scs.shape[0]):
+
+        So_Bank = Scs.iloc[i, init_idxs[i]:end_idxs[i]]
+
+        OilBankSat_mean = np.median(So_Bank)
+        OilBank_height[i] = OilBankSat_mean - Soi
+    
+    return OilBank_height
+
+def eval_oilBank_AreaBelow_fromOilCut(Scs, x, init_idxs, end_idxs, Soi = 0.46):
+
+    OilBank_Area = np.zeros(Scs.shape[0])
+
+    for i in range(Scs.shape[0]):
+
+        x_Bank = x[init_idxs[i]:end_idxs[i]] 
+        So_Bank = Scs.iloc[i, init_idxs[i]:end_idxs[i]]
+        So_init = Soi * np.ones_like(So_Bank)
+
+        area_up = integrate.trapz(So_Bank, x_Bank)
+        area_down = integrate.trapz(So_init, x_Bank)
+        OilBank_Area[i] = area_up - area_down
+        # print(area_down, area_up, OilBank_Area[i])
+    
+    return OilBank_Area
+
+def plot_fromOilSat(Scs, x, init_idxs, end_idxs, Soi = 0.46):
+
+    for i in range(Scs.shape[0]):
+
+        x_Bank = x[init_idxs[i]:end_idxs[i]] 
+        So_Bank = Scs.iloc[i, init_idxs[i]:end_idxs[i]]
+        So_init = Soi * np.ones_like(So_Bank)
+
+        OilBankSat_mean = np.median(So_Bank)
+
+        print(Scs.iloc[i,init_idxs[i]], Scs.iloc[i,end_idxs[i]],OilBankSat_mean, OilBankSat_mean-Soi)
+        fig, ax = plt.subplots(figsize=(7,7))
+        plt.scatter(x,Scs.iloc[i,:],s=2)
+        plt.plot(x,Scs.iloc[i,:],'.-')
+        plt.plot(x_Bank,So_Bank,c='k')
+        plt.plot(x_Bank,So_init,c='k')
+
+        plt.xlabel(r'$x/L$ [-]')
+        plt.ylabel(r'$S_o$ [-]')
+        plt.grid()
+
+        # plt.plot([x_Bank[0], x_Bank[-1]],[OilBankSat_mean, OilBankSat_mean],'r--', label='Oil bank height')
+
+        plt.scatter(x[init_idxs[i]], Scs.iloc[i,init_idxs[i]], c='k', label=r'Oil-bank initial/end point')
+        plt.scatter(x[end_idxs[i]], Scs.iloc[i,end_idxs[i]], c='k')
+        plt.fill_between(x_Bank, So_init, So_Bank, color='b', alpha=0.3, label ='Oil-bank area')
+        plt.ylim([0,1])
+        plt.legend()
+        plt.show()

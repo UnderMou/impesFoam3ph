@@ -17,25 +17,47 @@ def tFind(tD):
         isCTscan = True
         isDARTS = True
     elif tD in [.82, 1.0]:  
-        t_find = 1700
+        t_find = 2000
         isCTscan = True
         isDARTS = True
+    elif tD in [.6]:
+        t_find = 1400 
+        isCTscan = False
+        isDARTS = False
     elif tD == 10.40: 
         raise KeyError("The 'tD' provided is not expected")
         t_find = 1
         isCTscan = True
         isDARTS = False
     else: #raise KeyError("The 'tD' provided is not expected")
-        t_find = 10000#39800
+        raise KeyError("The 'tD' provided is not expected")
+        t_find = 10000 # 39800
         isCTscan = False
         isDARTS = False
     return t_find, isCTscan, isDARTS
 
+def checkOscilations(S):
+    tol = 1e-4
+    # print(S[1:])
+    # print(S[:-1])
+    boo1 = S[1:] < S[:-1]
+    # boo2 = np.abs(S[1:] - S[:-1]) < tol
+    # print(boo1,'\n',boo2)
+    boo2 = boo1
+    count = 0
+    last = boo2[0]
+    for i in range(len(boo2[1:])):
+        if boo2[i] != last:
+            count += 1
+            last = boo2[i]
+        
+    
+    return count
 
 if __name__ == '__main__':
 
-    tD = 30
-    experiment_name = 'SA_CTscan_FdryFoilFshear_pdr0.2_steady_moreSamples'
+    tD = 0.36
+    experiment_name = 'SA_CTscan_FdryFoilFshear_pdr0.2_steady_moreSamples_fixedfmcap_fitted'
 
     # Residual saturations:
     residuals = {
@@ -51,6 +73,7 @@ if __name__ == '__main__':
     t = np.linspace(ti,tf,int(tf/write_interval + 1))
     t_find, isCTscan, isDARTS = tFind(tD)
     idx = np.argmin(np.abs(t-t_find))
+    
 
     # CT scan experimental files:
     if isCTscan:
@@ -69,13 +92,33 @@ if __name__ == '__main__':
     # Sampling results:
     experiment_dir = set_experimentDir(experiment_name)
     folders = get_folders(experiment_dir)
-    folders = folders[:736]
+    print(folders)
+    folders = folders[:274]
+    # indexes_to_remove = [49,476,733,953,914,1443,1451]    # original
+    # folders = remove_indexes(folders, indexes_to_remove) 
     Sas, Sbs, Scs = get_Saturations(folders, experiment_dir, idx, residuals)
     X_ED = get_samples(experiment_dir)
     nCells = len(Sas[0])
     x = np.linspace(0,1,nCells)
     L = x[-1]
     x = x/L
+
+    # Check oscilations
+    nAvoid = -1
+    indexes_to_remove = []
+    for i,sample in enumerate(folders):
+        count = checkOscilations(Scs[i][:nAvoid])
+        if count >= 5:
+            indexes_to_remove.append(i)
+        print(i, count)
+
+    # print(indexes_to_remove)
+    # folders = remove_indexes(folders, indexes_to_remove) 
+    # Sas = remove_indexes(Sas, indexes_to_remove) 
+    # Sbs = remove_indexes(Sbs, indexes_to_remove) 
+    # Scs = remove_indexes(Scs, indexes_to_remove) 
+
+    np.savetxt(experiment_dir + '/Scs_' + str(tD) + '.csv', Scs)
 
     # Plotting:
     nAvoid = -1
@@ -116,5 +159,5 @@ if __name__ == '__main__':
     axes[2].grid()
     axes[2].legend()
     plt.tight_layout()
-    plt.savefig(experiment_dir + '/profiles_PVI_'+str(tD)+'.png',dpi=500)
+    plt.savefig(experiment_dir + '/profiles_PVI_'+str(tD)+'.png',dpi=200)
     plt.show()

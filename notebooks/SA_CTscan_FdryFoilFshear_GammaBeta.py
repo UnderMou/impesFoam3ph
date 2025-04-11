@@ -1,0 +1,349 @@
+import numpy as np
+import os
+import pandas as pd
+import matplotlib.pyplot as plt
+import subprocess
+from jinja2 import Environment, FileSystemLoader
+from functools import partial
+from tqdm import tqdm
+from multiprocessing import Pool
+import itertools
+import csv
+import seaborn as sns
+from scipy.stats import qmc
+from uqpylab import sessions, display_util
+import scienceplots
+
+def read_openfoam_field(file_path):
+    """
+    Reads an OpenFOAM field file and returns the data as a NumPy array.
+
+    Parameters:
+        file_path (str): Path to the OpenFOAM field file.
+
+    Returns:
+        np.ndarray: NumPy array with the field data.
+    """
+    try:
+        with open(file_path, 'r') as f:
+            content = f.readlines()
+        
+        # Find the 'internalField' line, and following line is the number of elements
+        start_index = next(i for i, line in enumerate(content) if line.startswith('internalField'))
+        num_elements = int(content[start_index + 1])
+        
+        # Extract the data block
+        data = content[start_index + 3:start_index + 3 + num_elements]
+        
+        # Parse data into NumPy array
+        values = []
+        for line in data:
+            line = line.strip().strip('()')
+            if ' ' in line:  # Vector or multiple values
+                try:
+                    values.append(np.array([float(x) for x in line.split()]))
+                except ValueError:
+                    print(f"Warning: Skipping malformed vector line: {line}")
+            else:  # Single value
+                try:
+                    values.append(float(line))
+                except ValueError:
+                    print(f"Warning: Skipping malformed scalar line: {line}")
+
+        return np.array(values)
+
+    except Exception as e:
+        print(f"Error reading file {file_path}: {e}")
+        return None
+
+def parse_openfoam_case(case_dir, variables=['p', 'Sa', 'Sb', 'U', 'Ua', 'Ub', 'Uc', 'Fa', 'Fb'], time_dirs=None):
+    """
+    Parses the OpenFOAM case directory structure and reads all field data.
+        XXX Note: The default list of variables is too expensive for large samples.
+
+    Parameters:
+        case_dir (str): Path to the root directory of the OpenFOAM case.
+        variables (list): List of field names to read. 
+            Default is pressure ('p'), Saturations ('Sa', 'Sb'), 
+            total and velocities ('U', 'Ua', 'Ub', 'Uc') and phase fluxes ('Fa', 'Fb').
+        
+    Returns:
+        pd.DataFrame: Pandas DataFrame with the field data, where each column is a variable 
+            and each row is a time step. Each cell contains an array with the field data.
+    """
+    data = {}
+
+    # Iterate over time directories, e.g. '50', '100', '200', ...
+    if time_dirs is None:
+        time_dirs = sorted([d for d in os.listdir(case_dir) if d.isdigit() and int(d) > 0], key=lambda x: int(x))
+    else:
+        if type(time_dirs) == str:
+            time_dirs = [time_dirs]
+        time_dirs = [str(t) for t in time_dirs]
+
+    for time_dir in time_dirs:
+        
+        time_path = os.path.join(case_dir, time_dir)
+
+        data[time_dir] = {}
+
+        # Iterate over field/var files in the time directory, e.g. 'U', 'p', 'S', ...
+        for field_file in variables:
+            field_path = os.path.join(time_path, field_file)
+            try:
+                data[time_dir][field_file] = read_openfoam_field(field_path)
+                # print(f"Read {field_file} from {time_dir}")
+            except Exception as e:
+                print(f"Error reading {field_file} in {time_dir}: {e}")
+
+    # Convert to DataFrame
+    data = pd.DataFrame(data)
+    data = data.transpose()
+    data.index = data.index.astype(int)
+
+    return data
+
+def run_simulation(base_dir, experiment_name, 
+                   fmmob=None,
+                   sfdry=None,
+                   sfbet=None,
+                   epcap=None,
+                   fmoil=None,
+                   floil=None,
+                   epoil=None,
+                   verbose=True):
+    """
+    Runs an OpenFOAM simulation with the given parameters.
+
+    Parameters:
+        base_dir (str): Path to the base OpenFOAM case directory.
+        experiment_name (str): Name of the experiment to create.
+    """
+
+    new_dir = "../simulator/experiments/" + experiment_name
+
+    try:
+        if not os.path.exists(new_dir):
+            os.makedirs(new_dir)
+        else:
+            if verbose:
+                print(" -- The directory already exists. Files will be overwritten. --")
+            
+        result = subprocess.run(
+            ["cp", "-a", f'{base_dir}/.', new_dir],
+            check=True,
+            capture_output=True,
+            text=True
+        )
+        print(result.stdout)
+    except subprocess.CalledProcessError as e:
+        print("Error copying the files:", e.stderr)
+
+    env = Environment(
+        loader=FileSystemLoader(new_dir),
+        trim_blocks=True,
+        lstrip_blocks=True
+    )
+
+    template = env.get_template('constant/transportProperties') # Location of the template file with foam parameters
+
+    output = template.render(fmmob=fmmob,
+                             sfdry=sfdry,
+                             sfbet=sfbet,
+                             epcap=epcap,
+                             fmoil=fmoil,
+                             floil=floil,
+                             epoil=epoil
+                            )
+
+    # Overwrite the template transportProperties file with the new values
+    with open(os.path.join(new_dir, 'constant', 'transportProperties'), 'w') as f:
+        f.write(output)
+
+    try:
+        result = subprocess.run(
+            ["bash", "run_solver.sh", new_dir],  
+            check=True,
+            capture_output=True,
+            text=True
+        )
+        print(result.stdout)
+    except subprocess.CalledProcessError as e:
+        print("Error running the script:", e.stderr)
+
+def process_simulation(params, base_case_directory, experiment_name):
+    i, (fmmob, sfdry, sfbet, epcap, fmoil, floil, epoil) = params
+    experiment_name = experiment_name + f"/sample_{i:03d}"
+    run_simulation(base_case_directory, experiment_name, 
+                    fmmob=fmmob,
+                    sfdry=sfdry,
+                    sfbet=sfbet,
+                    epcap=epcap,
+                    fmoil=fmoil,
+                    floil=floil,
+                    epoil=epoil, 
+                    verbose=False)
+
+if __name__ == '__main__':
+
+    Swc = 0.197
+    Sgr = 0.013
+    Sro = 0.103
+
+    # INPUT DIRECTORIES
+    experiment_name = 'SA_CTscan_FdryFoilFshear_pdr0.2_steady_moreSamples_fixedfmcap_GammaBeta'
+    BaseCase_dir = '/home/anderson/OpenFOAM/anderson-9/run/uqsa/impesFoam3ph/simulator/base_cases/Lyu_CT_exp_fixedfmcap/'
+    new_dir = "../simulator/experiments/" + experiment_name
+
+    ############ UQ[py]Lab - INPUT #############
+
+    # Initialize common plotting parameters
+    display_util.load_plt_defaults()
+    uq_colors = display_util.get_uq_color_order()
+
+    # Start the session
+    myToken = '270fe799b4e4e4f004da79cec3dffb07cf9da78a' # The user's token to access the UQCloud API
+    UQCloud_instance = 'https://uqcloud.ethz.ch' # The UQCloud instance to use
+    mySession = sessions.cloud(host=UQCloud_instance, token=myToken)
+    # (Optional) Get a convenient handle to the command line interface
+    uq = mySession.cli
+    # Reset the session
+    mySession.reset()
+
+    # Set random seed for reproducibility
+    uq.rng(0,'twister')
+
+    # Reference values
+    names = ['fmmob', 'sfdry', 'sfbet', 'epcap', 'fmoil', 'floil', 'epoil']
+    mu_fmmob  = 50000.0
+    mu_sfdry  = 0.215
+    mu_sfbet  = 19950.0
+    mu_epcap  = 1.321
+    mu_fmoil  = 0.823
+    mu_floil  = 0.295
+    mu_epoil  = 3.827
+    mu = np.array([mu_fmmob, mu_sfdry, mu_sfbet, mu_epcap, mu_fmoil, mu_floil, mu_epoil])
+
+    # Coefficient of variation: delta = sigma / mu
+    delta_constraint = 1 / np.sqrt(2) 
+
+    delta = []
+    for i in range(len(mu)):
+        sigma_base = mu[i]*(1.2 - 0.8)/(2*np.sqrt(3))   # base sigma from uniform pdf and +-20%
+        delta_base = sigma_base / mu[i]
+        delta.append(delta_base)
+    print('is delta_base < delta_constraint:', delta < delta_constraint)
+    
+    sigma = mu * delta_base
+
+    print(mu,'\n',sigma,'\n',delta)
+
+    # Set marginals
+    InputOpts = {
+        "Marginals": [
+            {"Name": 'fmmob',
+            "Type": "Gamma",
+            "Moments": [mu[0], sigma[0]]
+            },
+            {"Name": 'sfdry',
+            "Type": "Beta",
+            "Moments": [mu[1], sigma[1], 0, 1]
+            },
+            {"Name": 'sfbet',
+            "Type": "Gamma",
+            "Moments": [mu[2], sigma[2]]
+            },
+            {"Name": 'epcap',
+            "Type": "Gamma",
+            "Moments": [mu[3], sigma[3]]
+            },
+            {"Name": 'fmoil',
+            "Type": "Beta",
+            "Moments": [mu[4], sigma[4], 0, 1]
+            },
+            {"Name": 'floil',
+            "Type": "Beta",
+            "Moments": [mu[5], sigma[5], 0, 1]
+            },
+            {"Name": 'epoil',
+            "Type": "Gamma",
+            "Moments": [mu[6], sigma[6]]
+            }
+        ]
+    }
+
+    myInput = uq.createInput(InputOpts)
+
+    uq.print(myInput)
+    # uq.display(myInput)
+
+    nSamples = 1500
+    X_ED = uq.getSample(myInput,nSamples)
+    print(type(X_ED), "\n", X_ED)
+
+    fmmob_samples = np.array([sample[0] for sample in X_ED])
+    sfdry_samples = np.array([sample[1] for sample in X_ED])
+    sfbet_samples = np.array([sample[2] for sample in X_ED]) 
+    epcap_samples = np.array([sample[3] for sample in X_ED])
+    fmoil_samples = np.array([sample[4] for sample in X_ED])
+    # delta_samples = np.array([sample[5] for sample in X_ED])
+    floil_samples = np.array([sample[5] for sample in X_ED])
+    epoil_samples = np.array([sample[6] for sample in X_ED]) 
+
+    # # DEFINE floil as fmoil > floil
+    # floil_samples = fmoil_samples * (1.0 - delta_samples)
+    check = floil_samples > fmoil_samples
+    print(check)
+    print("is any floil > fmoil: ", any(check))
+    # # for i in range(len(delta_samples)):
+    # #     print(fmoil_samples[i], delta_samples[i], floil_samples[i])
+    # X_ED[:,5] = floil_samples
+
+    if not os.path.exists(new_dir):
+        os.makedirs(new_dir)
+    else:
+        print(" -- The directory already exists. Files will be overwritten. --")
+
+    np.savetxt(new_dir + '/X_ED.csv',X_ED,delimiter=',')
+
+    data = pd.DataFrame({
+        'fmmob': fmmob_samples,
+        'sfdry': sfdry_samples,
+        'sfbet': sfbet_samples,
+        'epcap': epcap_samples,
+        'fmoil': fmoil_samples,
+        'floil': floil_samples,
+        'epoil': epoil_samples
+    })
+
+    plt.rcParams.update({'font.size': 22})
+    g = sns.pairplot(data, corner=True, kind="hist")
+    g.fig.set_size_inches(17, 17)  
+    for ax in g.axes[-1, :]:
+        ax.set_xticklabels(ax.get_xticklabels(), rotation=90, ha='right')
+    plt.tight_layout()
+    plt.savefig(new_dir + '/pairplot.pdf', dpi=200)
+    
+    process_func = partial(
+    process_simulation, 
+    base_case_directory=BaseCase_dir,
+    experiment_name=experiment_name
+    )
+
+    params = list(enumerate(X_ED))
+
+    # Continuing simulation
+    run_from = 1123
+    params = params[run_from:]
+    print(params)
+
+    nthreads = 6
+
+    with Pool(nthreads) as pool:
+        for _ in tqdm(
+            pool.imap_unordered(process_func, params),
+            total=len(params), 
+            desc='Running simulations',
+            mininterval=1.0     # Updates at most once per second
+        ):
+            pass
