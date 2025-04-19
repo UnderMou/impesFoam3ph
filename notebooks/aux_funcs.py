@@ -16,6 +16,48 @@ from sklearn.metrics import r2_score
 import scipy.integrate as integrate
 import matplotlib.patches as patches
 
+# def read_openfoam_field(file_path):
+#     """
+#     Reads an OpenFOAM field file and returns the data as a NumPy array.
+
+#     Parameters:
+#         file_path (str): Path to the OpenFOAM field file.
+
+#     Returns:
+#         np.ndarray: NumPy array with the field data.
+#     """
+#     try:
+#         with open(file_path, 'r') as f:
+#             content = f.readlines()
+        
+#         # Find the 'internalField' line, and following line is the number of elements
+#         start_index = next(i for i, line in enumerate(content) if line.startswith('internalField'))
+#         num_elements = int(content[start_index + 1])
+        
+#         # Extract the data block
+#         data = content[start_index + 3:start_index + 3 + num_elements]
+        
+#         # Parse data into NumPy array
+#         values = []
+#         for line in data:
+#             line = line.strip().strip('()')
+#             if ' ' in line:  # Vector or multiple values
+#                 try:
+#                     values.append(np.array([float(x) for x in line.split()]))
+#                 except ValueError:
+#                     print(f"Warning: Skipping malformed vector line: {line}")
+#             else:  # Single value
+#                 try:
+#                     values.append(float(line))
+#                 except ValueError:
+#                     print(f"Warning: Skipping malformed scalar line: {line}")
+
+#         return np.array(values)
+
+#     except Exception as e:
+#         print(f"Error reading file {file_path}: {e}")
+#         return None
+
 def read_openfoam_field(file_path):
     """
     Reads an OpenFOAM field file and returns the data as a NumPy array.
@@ -29,10 +71,22 @@ def read_openfoam_field(file_path):
     try:
         with open(file_path, 'r') as f:
             content = f.readlines()
-        
+
         # Find the 'internalField' line, and following line is the number of elements
         start_index = next(i for i, line in enumerate(content) if line.startswith('internalField'))
-        num_elements = int(content[start_index + 1])
+        typeOf = content[start_index].split()[1]    
+
+        # Check if the field was written as uniform - special handling
+        if typeOf == 'uniform':
+            num_elements = 100 # TODO: Generalizar para outras malhas 
+            value = float(content[start_index].split()[2][0])
+            values = value * np.ones(num_elements)
+            return values
+        elif typeOf == 'nonuniform':
+            num_elements = int(content[start_index + 1]) 
+        else:
+            raise ValueError("Check further")
+        
         
         # Extract the data block
         data = content[start_index + 3:start_index + 3 + num_elements]
@@ -56,9 +110,10 @@ def read_openfoam_field(file_path):
 
     except Exception as e:
         print(f"Error reading file {file_path}: {e}")
+        exit()
         return None
 
-def parse_openfoam_case(case_dir, variables=['p', 'Sa', 'Sb', 'U', 'Ua', 'Ub', 'Uc', 'Fa', 'Fb'], time_dirs=None):
+def parse_openfoam_case(case_dir, variables=['p', 'Sa', 'Sb', 'U', 'Ua', 'Ub', 'Uc', 'Fa', 'Fb','Fshear','Foil'], time_dirs=None):
     """
     Parses the OpenFOAM case directory structure and reads all field data.
         XXX Note: The default list of variables is too expensive for large samples.
@@ -225,6 +280,22 @@ def get_Saturations(folders, experiment_dir, time_idx, residuals):
         Scs.append(S_norm(Sc,Sor,Swc,Sgr,Sor))
     return Sas, Sbs, Scs
 
+def get_FsSTARS(folders, experiment_dir, time_idx, residuals):
+    Swc, Sgr, Sor = unfold_residuals(residuals)
+    Foils = []
+    Fshears = []
+    for i,sample in tqdm(enumerate(folders), desc='Reading simulation data'):
+        sample_dir = experiment_dir + '/' + sample
+        data_dict = parse_openfoam_case(sample_dir, variables=['Fshear','Foil'])
+
+        Foil = data_dict['Foil'].iloc[time_idx]
+        Fshear = data_dict['Fshear'].iloc[time_idx]
+
+        Foils.append(Foil)
+        Fshears.append(Fshear)
+
+    return Fshears,Foils
+
 def get_samples(experiment_dir):
     X_ED = pd.read_csv(experiment_dir + '/X_ED.csv',header=None)
     return X_ED.to_numpy()
@@ -384,13 +455,20 @@ def plot_pressDrop(nsamples, pressDrop, t, experiment_dir):
     # plt.show() 
 
 def plot_OilRecFactor(nsamples, ORF, t, experiment_dir):
+    evidence = [2,9,23]
+    samples = ['A', 'B', 'C']
     fig, axes = plt.subplots(1, 1, figsize=(5, 5))
+    axes.plot(t[:-1],ORF[0,:],c='gray',alpha=0.3,label='Samples')
     for i in range(nsamples):
-        axes.plot(t[:-1],ORF[i,:],c='k')
+        axes.plot(t[:-1],ORF[i,:],c='gray',alpha=0.3)
+
+    for i in range(len(evidence)):
+           axes.plot(t[:-1],ORF[evidence[i],:],linewidth=1.5,label=f'Sample {samples[i]}') 
     axes.grid()
     axes.set_xlabel('Time [s]')
-    axes.set_ylabel('Oil Recovery Factor [%]')
+    axes.set_ylabel(r'Oil Recovery Factor [\%]')
     plt.tight_layout()
+    plt.legend()
     plt.savefig(experiment_dir + '/QoI_3_OilRecFac.png', dpi=500)
     # plt.show() 
 
@@ -400,7 +478,7 @@ def plot_OilCut(nsamples, Oil_cut, t, experiment_dir):
         axes.plot(t[:-1],Oil_cut[i,:],c='k')
     axes.grid()
     axes.set_xlabel('Time [s]')
-    axes.set_ylabel('Oil cut [%]')
+    axes.set_ylabel(r'Oil cut [\%]')
     plt.tight_layout()
     plt.savefig(experiment_dir + '/QoI_4_OilCut.png', dpi=500)
     # plt.show() 
@@ -417,10 +495,10 @@ def plot_PD_ORF_OC(nsamples, t, experiment_dir, pressDrop, ORF, Oil_cut):
     axes[0].set_ylabel('Pressure drop [Pa]')
     axes[1].grid()
     axes[1].set_xlabel('Time [s]')
-    axes[1].set_ylabel('Oil Recovery Factor [%]')
+    axes[1].set_ylabel(r'Oil Recovery Factor [\%]')
     axes[2].grid()
     axes[2].set_xlabel('Time [s]')
-    axes[2].set_ylabel('Oil cut [%]')
+    axes[2].set_ylabel(r'Oil cut [\%]')
     plt.tight_layout()
     plt.savefig(experiment_dir + '/QoI_2_3_4.png', dpi=500)
 
@@ -711,7 +789,7 @@ def eval_oilBank_length_fromOilSat(Scs, x, Soi=0.46, nAvoid=None):
         # OilBank_length[i] = x[end_idx] - x[init_idx]
         OilBank_length[i] = x[end_idx] - xExact
         init_idxs[i] = init_idx
-        end_idxs[i] = end_idx
+        end_idxs[i] = end_idx - 1
     
     return OilBank_length, init_idxs.astype(int), end_idxs.astype(int)
 
@@ -748,13 +826,13 @@ def plot_fromOilSat(Scs, x, init_idxs, end_idxs, Soi = 0.46):
 
     for i in range(Scs.shape[0]):
 
-        x_Bank = x[init_idxs[i]:end_idxs[i]] 
-        So_Bank = Scs.iloc[i, init_idxs[i]:end_idxs[i]]
+        x_Bank = x[init_idxs[i]:end_idxs[i]+1] 
+        So_Bank = Scs.iloc[i, init_idxs[i]:end_idxs[i]+1]
         So_init = Soi * np.ones_like(So_Bank)
 
         OilBankSat_mean = np.median(So_Bank)
 
-        print(Scs.iloc[i,init_idxs[i]], Scs.iloc[i,end_idxs[i]],OilBankSat_mean, OilBankSat_mean-Soi)
+        print(i,'\t',Scs.iloc[i,init_idxs[i]], Scs.iloc[i,end_idxs[i]],OilBankSat_mean, OilBankSat_mean-Soi)
         fig, ax = plt.subplots(figsize=(7,7))
         plt.scatter(x,Scs.iloc[i,:],s=2)
         plt.plot(x,Scs.iloc[i,:],'.-')
@@ -767,8 +845,10 @@ def plot_fromOilSat(Scs, x, init_idxs, end_idxs, Soi = 0.46):
 
         # plt.plot([x_Bank[0], x_Bank[-1]],[OilBankSat_mean, OilBankSat_mean],'r--', label='Oil bank height')
 
-        plt.scatter(x[init_idxs[i]], Scs.iloc[i,init_idxs[i]], c='k', label=r'Oil-bank initial/end point')
-        plt.scatter(x[end_idxs[i]], Scs.iloc[i,end_idxs[i]], c='k')
+        # plt.scatter(x[init_idxs[i]], Scs.iloc[i,init_idxs[i]], c='k', label=r'Oil-bank initial/end point')
+        # plt.scatter(x[end_idxs[i]], Scs.iloc[i,end_idxs[i]], c='k')
+        plt.plot([x[init_idxs[i]],x[init_idxs[i]]],[0,1],'r--',label='Oil-bank delimiter')
+        plt.plot([x[end_idxs[i]],x[end_idxs[i]]],[0,1],'r--')
         plt.fill_between(x_Bank, So_init, So_Bank, color='b', alpha=0.3, label ='Oil-bank area')
         plt.ylim([0,1])
         plt.legend()

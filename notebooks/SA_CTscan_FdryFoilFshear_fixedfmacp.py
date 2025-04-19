@@ -190,7 +190,7 @@ if __name__ == '__main__':
     Sro = 0.103
 
     # INPUT DIRECTORIES
-    experiment_name = 'SA_CTscan_FdryFoilFshear_pdr0.2_steady_moreSamples_fixedfmcap_fitted'
+    experiment_name = 'SA_CTscan_FdryFoilFshear_pdr0.2_steady_moreSamples_fixedfmcap_fitted_fixedSF'
     BaseCase_dir = '/home/anderson/OpenFOAM/anderson-9/run/uqsa/impesFoam3ph/simulator/base_cases/Lyu_CT_exp_fixedfmcap/'
     new_dir = "../simulator/experiments/" + experiment_name
 
@@ -214,20 +214,21 @@ if __name__ == '__main__':
 
     # Reference values
     fmmobR = 50000.0
-    sfdryR = 0.215
+    sfdryR = 0.2 # 0.215
     sfbetR = 19950.0
     epcapR = 1.321
     fmoilR = 0.823
     delta = 0.528
     epoilR = 3.827
 
+    # dpr = 0.05
     dpr = 0.2
 
     dists = {
     'num_vars': 7,
     'names': ['fmmob', 'sfdry', 'sfbet', 'epcap', 'fmoil', 'delta', 'epoil'],
     'bounds': [[fmmobR*(1-dpr), fmmobR*(1+dpr)],
-               [sfdryR*(1-dpr), sfdryR*(1+dpr)],
+               [sfdryR*(1-1e-6), sfdryR*(1+1e-6)],
                [sfbetR*(1-dpr), sfbetR*(1+dpr)],
                [epcapR*(1-dpr), epcapR*(1+dpr)],
                [fmoilR*(1-dpr), fmoilR*(1+dpr)],
@@ -339,7 +340,7 @@ if __name__ == '__main__':
     params = list(enumerate(X_ED))
 
     # Continuing simulation
-    run_from = 15
+    run_from = 0
     params = params[run_from:]
     print(params)
 

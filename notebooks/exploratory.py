@@ -11,6 +11,9 @@ import itertools
 import seaborn as sns
 import scienceplots
 import plotly.express as px
+from matplotlib.colors import Normalize
+# from matplotlib.cm import get_cmap
+import matplotlib.cm as cm
 
 from uqpylab import sessions, display_util
 
@@ -22,19 +25,25 @@ if __name__ == '__main__':
     plt.rcParams.update({'font.size': 16})
 
     # Inputs
-    experiment_name = 'SA_CTscan_FdryFoilFshear_pdr0.2_steady_moreSamples_fixedfmcap'
-    nSamples = 1493
+    # experiment_name = 'SA_CTscan_FdryFoilFshear_pdr0.2_steady_moreSamples_fixedfmcap_fitted_v2'
+    experiment_name = 'SA_CTscan_FdryFoilFshear_pdr0.2_steady_moreSamples_fixedfmcap_fitted_fixedSF'
+
+    # nSamples = 470
+    nSamples = 500
+
     ti = 0
-    tf = 40000
+    tf = 10000
     write_interval = 200
-    times2PCE = [39800] 
+    times2PCE = [9800] 
     tD = 0.36
 
     # Get samples from OpenFOAM simulations parameters
     experiment_dir = set_experimentDir(experiment_name)
     X_ED = pd.read_csv(experiment_dir + '/X_ED.csv',header=None)
-    indexes_to_remove = [49,476,733,953,914,1443,1451]
+    # indexes_to_remove = [55, 63, 65, 66, 136, 137, 175, 184, 205, 226, 232, 247, 311, 381, 384, 433] # original
+    indexes_to_remove = [18, 19, 21, 36, 49, 57, 66, 182, 222, 236, 245, 284, 305, 310, 340, 388, 402, 412, 416, 456, 482, 493, 494] # fixedSF
     X_ED = X_ED.drop(indexes_to_remove).reset_index(drop=True)
+    nSamples -= len(indexes_to_remove)
     X_ED = X_ED[:nSamples]
     # print(X_ED.shape)
 
@@ -49,6 +58,65 @@ if __name__ == '__main__':
     QoI_5_SIM_OilBank_height = pd.read_csv(experiment_dir + '/OilBank_height_OilSat_'+str(tD)+'.csv', header=None).iloc[:nSamples,:]
     QoI_5_SIM_OilBank_area = pd.read_csv(experiment_dir + '/OilBank_area_OilSat_'+str(tD)+'.csv', header=None).iloc[:nSamples,:]
 
+    # ORF collored
+    SF_values = X_ED.iloc[:,4].to_numpy()
+    norm = Normalize(vmin=np.min(SF_values), vmax=np.max(SF_values))
+    cmap = cm.get_cmap('viridis')
+    # ORF = pd.read_csv(experiment_dir + '/QoI_2_pressDrop.csv', header=None).iloc[:nSamples,:]
+    ORF = pd.read_csv(experiment_dir + '/QoI_3_OilRecFac.csv', header=None).iloc[:nSamples,:]
+    fig, ax = plt.subplots(figsize=(5,5))
+    for i in range(len(ORF)):
+        color = cmap(norm(SF_values[i]))
+        ax.plot(t[:-1],ORF.iloc[i,:],color=color)
+    sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
+    sm.set_array([])
+    cbar = plt.colorbar(sm, ax=ax)
+    cbar.set_label(r"$fmoil$")
+    ax.set_xlabel(r"$t$ [s]")
+    ax.set_ylabel(r"Oil recovery factor [\%]")
+    ax.grid()
+    plt.show()
+    plt.close()
+
+    # OilCut collored
+    # SF_values = X_ED.iloc[:,1].to_numpy()
+    norm = Normalize(vmin=np.min(SF_values), vmax=np.max(SF_values))
+    cmap = cm.get_cmap('viridis')
+    # ORF = pd.read_csv(experiment_dir + '/QoI_2_pressDrop.csv', header=None).iloc[:nSamples,:]
+    ORF = pd.read_csv(experiment_dir + '/QoI_4_OilCut.csv', header=None).iloc[:nSamples,:]
+    fig, ax = plt.subplots(figsize=(5,5))
+    for i in range(len(ORF)):
+        color = cmap(norm(SF_values[i]))
+        ax.plot(t[:-1],ORF.iloc[i,:],color=color)
+    sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
+    sm.set_array([])
+    cbar = plt.colorbar(sm, ax=ax)
+    cbar.set_label(r"$SF$")
+    ax.set_xlabel(r"$t$ [s]")
+    ax.set_ylabel(r"Oil cut [\%]")
+    ax.grid()
+    plt.show()
+    plt.close()
+
+    # PressDrop collored
+    # SF_values = X_ED.iloc[:,1].to_numpy()
+    norm = Normalize(vmin=np.min(SF_values), vmax=np.max(SF_values))
+    cmap = cm.get_cmap('viridis')
+    ORF = pd.read_csv(experiment_dir + '/QoI_2_pressDrop.csv', header=None).iloc[:nSamples,:]
+    # ORF = pd.read_csv(experiment_dir + '/QoI_3_OilRecFac.csv', header=None).iloc[:nSamples,:]
+    fig, ax = plt.subplots()
+    for i in range(len(ORF)):
+        color = cmap(norm(SF_values[i]))
+        ax.plot(t[:-1],ORF.iloc[i,:],color=color)
+    sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
+    sm.set_array([])
+    cbar = plt.colorbar(sm, ax=ax)
+    cbar.set_label(r"$SF$")
+    ax.set_xlabel(r"$t$ [s]")
+    ax.set_ylabel(r"Pressure drop [Pa]")
+    ax.grid()
+    plt.show()
+    # exit()
 
     # Reshape the dataframe
     X_ED['delta'] = 1 - X_ED.iloc[:,5]/X_ED.iloc[:,4]

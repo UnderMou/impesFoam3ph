@@ -20,7 +20,7 @@ def tFind(tD):
         isCTscan = True
         isDARTS = True
     elif tD in [.82]:  
-        t_find = 1700
+        t_find = 2200
         isCTscan = True
         isDARTS = True
     elif tD in [.6]:
@@ -54,17 +54,19 @@ if __name__ == '__main__':
     plt.rcParams.update({'font.size': 16})
 
     # Inputs
-    experiment_name = 'SA_CTscan_FdryFoilFshear_pdr0.2_steady_moreSamples_fixedfmcap'
-    nSamples = 1493
+    # experiment_name = 'SA_CTscan_FdryFoilFshear_pdr0.2_steady_moreSamples_fixedfmcap_fitted_v2'
+    experiment_name = 'SA_CTscan_FdryFoilFshear_pdr0.2_steady_moreSamples_fixedfmcap_fitted_fixedSF'
+    nSamples = 500
     ti = 0
-    tf = 40000
+    tf = 10000
     write_interval = 200
     t = np.linspace(ti,tf,int(tf/write_interval + 1))
 
     # Get samples from OpenFOAM simulations parameters
     experiment_dir = set_experimentDir(experiment_name)
     X_ED = pd.read_csv(experiment_dir + '/X_ED.csv',header=None)
-    indexes_to_remove = [49,476,733,953,914,1443,1451]    # original
+    # indexes_to_remove = [55, 63, 65, 66]    # original
+    indexes_to_remove = [18, 19, 21, 36, 49, 57, 66, 182, 222, 236, 245, 284, 305, 310, 340, 388, 402, 412, 416, 456, 482, 493, 494] # fixedSF
     X_ED = X_ED.drop(indexes_to_remove).reset_index(drop=True)
     X_ED = X_ED[:nSamples]
     print(X_ED.shape)
@@ -94,19 +96,24 @@ if __name__ == '__main__':
     # ##############################################
     # EVAL OIL BANK QoI FROM OIL SATURATION PROFILES
     # ##############################################
+    # evidence = [2,9,23]
+    # for i in range(len(evidence)):
+    #     print(X_ED.iloc[evidence[i],:])
+    
 
     tD = 0.36
     # indexes_to_remove = [49,476,733,953,914,1443,1451]    # original
-    nAvoid = -1
+    nAvoid = -2
 
     t_find, isCTscan, isDARTS = tFind(tD)
     idx = np.argmin(np.abs(t-t_find))
+    print(t[idx])
 
     # Residual saturations:
     residuals = {
-        'Swc': 0.197,
-        'Sgr': 0.013,
-        'Sor': 0.103
+        'Swc': 0, # 0.197,
+        'Sgr': 0, # 0.013,
+        'Sor': 0  # 0.103
     }
 
     Scs = np.loadtxt(experiment_dir + '/Scs_' + str(tD) + '.csv')

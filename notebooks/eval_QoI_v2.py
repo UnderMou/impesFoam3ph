@@ -8,11 +8,13 @@ from functools import partial
 from tqdm import tqdm
 from multiprocessing import Pool
 import itertools
+import scienceplots
 
 from aux_funcs import *
 
 def checkOscilations(S):
-    tol = 1e-4
+    L2 = int(len(S)/2)
+    
     # print(S[1:])
     # print(S[:-1])
     boo1 = S[1:] < S[:-1]
@@ -25,14 +27,17 @@ def checkOscilations(S):
         if boo2[i] != last:
             count += 1
             last = boo2[i]
-        
-    
+
     return count
 
 if __name__ == '__main__':
 
+    plt.style.use('science')
+    plt.rcParams.update({'font.size': 16})
+
     # Inputs:
-    experiment_name = 'SA_CTscan_FdryFoilFshear_pdr0.2_steady_moreSamples_fixedfmcap_GammaBeta'
+    # experiment_name = 'SA_CTscan_FdryFoilFshear_pdr0.2_steady_moreSamples_fixedfmcap_fitted_v2'
+    experiment_name = 'SA_CTscan_FdryFoilFshear_pdr0.2_steady_moreSamples_fixedfmcap_fitted_fixedSF'
 
     # Reservoir:
     reservoir = {
@@ -45,30 +50,29 @@ if __name__ == '__main__':
 
     # Time controls:
     ti = 0
-    tf = 40000
+    tf = 10000
     write_interval = 200
     t = np.linspace(ti,tf,int(tf/write_interval + 1))
 
     # Residual saturations:
     residuals = {
-        'Swc': 0.197,
-        'Sgr': 0.013,
-        'Sor': 0.103
+        'Swc': 0,#0.197,
+        'Sgr': 0,#0.013,
+        'Sor': 0 #0.103
     }
 
     # Sampling results
     experiment_dir = set_experimentDir(experiment_name)
     folders = get_folders(experiment_dir)
-    # folders = folders[:100]
-    # indexes_to_remove = [49,476,733,953,914,1443,1451]    # original
-    # indexes_to_remove = [18, 33, 49, 57, 106, 129, 177, 182, 198, 222, 227, 236, 245, 246, 284, 305, 310, 388, 402, 412, 416, 444, 456, 460, 476, 482, 493, 494, 518, 525, 580, 603, 625, 649, 670, 678, 698, 721, 726, 732, 783, 803, 835, 849, 896, 913, 915, 942, 952, 962, 998, 1015, 1037, 1086, 1095, 1098, 1102, 1125, 1136, 1147, 1171, 1193, 1219, 1275, 1286]
-    indexes_to_remove = [0, 17, 18, 49, 57, 71, 78, 84, 94, 106, 125, 128, 129, 137, 142, 159, 162, 166, 175, 177, 182, 198, 201, 222, 227, 236, 245, 246, 255, 259, 279, 284, 286, 289, 305, 310, 312, 345, 364, 377, 383, 388, 401, 402, 404, 406, 412, 416, 426, 444, 456, 460, 463, 468, 476, 482, 493, 494, 498, 504, 518, 525, 527, 545, 560, 571, 573, 580, 603, 614, 615, 625, 643, 647, 649, 662, 670, 678, 690, 695, 696, 697, 698, 705, 706, 721, 726, 732, 738, 770, 772, 783, 792, 795, 803, 817, 822, 835, 849, 867, 869, 896, 904, 911, 912, 913, 915, 922, 942, 952, 962, 970, 972, 983, 998, 1015, 1037, 1067, 1070, 1086, 1095, 1098, 1102, 1119, 1125, 1136, 1142, 1147, 1155, 1171, 1172, 1186, 1193, 1194, 1203, 1209, 1214, 1216, 1219, 1224, 1228, 1238, 1244, 1245, 1275, 1286]
+    folders = folders[:500]
+    # indexes_to_remove = [55, 63, 65, 66, 136, 137, 175, 184, 205, 226, 232, 247, 311, 381, 384, 433]    # original
+    indexes_to_remove = [18, 19, 21, 36, 49, 57, 66, 182, 222, 236, 245, 284, 305, 310, 340, 388, 402, 412, 416, 456, 482, 493, 494] # fixedSF
     folders = remove_indexes(folders, indexes_to_remove) 
     nsamples = len(folders)
 
     
     # EVALUATING QoIs:
-    nAvoid = -1
+    nAvoid = -2
     time_steps = len(t[1:])
 
     # 1st QoI - Cumulative phase production  
@@ -102,12 +106,11 @@ if __name__ == '__main__':
 
 
     # 3rd QoI - Oil recovery factor 
-    Soi = 0.41902
+    Soi = 0.46
     OOIP = Soi
     # print(OOIP)
     ORF = (cuml_prod_o / OOIP) * 100
     plot_OilRecFactor(nsamples, ORF, t, experiment_dir)
-
 
 
     # 4th QoI - Oil cut
@@ -149,11 +152,12 @@ if __name__ == '__main__':
 
 
     # Check oscilations
-    nAvoid = -1
+    # nAvoid = -1
     indexes_to_remove = []
     for i,sample in enumerate(folders):
-        count = checkOscilations(prod_w[i][:nAvoid])
-        if count >= 5:
+        # count = checkOscilations(pressDrop[i][:nAvoid])
+        count = checkOscilations(pressDrop[i][:nAvoid])
+        if count > 2:
             indexes_to_remove.append(i)
         print(i, count)
 
