@@ -58,6 +58,9 @@ if __name__ == '__main__':
     QoI_5_SIM_OilBank_height = pd.read_csv(experiment_dir + '/OilBank_height_OilSat_'+str(tD)+'.csv', header=None).iloc[:nSamples,:]
     QoI_5_SIM_OilBank_area = pd.read_csv(experiment_dir + '/OilBank_area_OilSat_'+str(tD)+'.csv', header=None).iloc[:nSamples,:]
 
+   
+
+
     # ORF collored
     SF_values = X_ED.iloc[:,4].to_numpy()
     norm = Normalize(vmin=np.min(SF_values), vmax=np.max(SF_values))
@@ -71,19 +74,23 @@ if __name__ == '__main__':
     sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
     sm.set_array([])
     cbar = plt.colorbar(sm, ax=ax)
-    cbar.set_label(r"$fmoil$")
+    cbar.set_label(r"$S_w^{\ast}$")
     ax.set_xlabel(r"$t$ [s]")
     ax.set_ylabel(r"Oil recovery factor [\%]")
     ax.grid()
     plt.show()
     plt.close()
 
-    # OilCut collored
-    # SF_values = X_ED.iloc[:,1].to_numpy()
+    # ORF collored filtered
+    SF_dry = 0.21
+    mask = X_ED.iloc[:,1] <= SF_dry
+    X_ED = X_ED.loc[mask].copy()
+    SF_values = X_ED.iloc[:,2].to_numpy()
     norm = Normalize(vmin=np.min(SF_values), vmax=np.max(SF_values))
     cmap = cm.get_cmap('viridis')
     # ORF = pd.read_csv(experiment_dir + '/QoI_2_pressDrop.csv', header=None).iloc[:nSamples,:]
-    ORF = pd.read_csv(experiment_dir + '/QoI_4_OilCut.csv', header=None).iloc[:nSamples,:]
+    ORF = pd.read_csv(experiment_dir + '/QoI_3_OilRecFac.csv', header=None).iloc[:nSamples,:]
+    ORF = ORF.loc[mask].copy()
     fig, ax = plt.subplots(figsize=(5,5))
     for i in range(len(ORF)):
         color = cmap(norm(SF_values[i]))
@@ -91,32 +98,105 @@ if __name__ == '__main__':
     sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
     sm.set_array([])
     cbar = plt.colorbar(sm, ax=ax)
-    cbar.set_label(r"$SF$")
+    cbar.set_label(r"$S_w^{\ast}$")
     ax.set_xlabel(r"$t$ [s]")
-    ax.set_ylabel(r"Oil cut [\%]")
+    ax.set_ylabel(r"Oil recovery factor [\%]")
     ax.grid()
     plt.show()
     plt.close()
-
-    # PressDrop collored
-    # SF_values = X_ED.iloc[:,1].to_numpy()
-    norm = Normalize(vmin=np.min(SF_values), vmax=np.max(SF_values))
-    cmap = cm.get_cmap('viridis')
-    ORF = pd.read_csv(experiment_dir + '/QoI_2_pressDrop.csv', header=None).iloc[:nSamples,:]
-    # ORF = pd.read_csv(experiment_dir + '/QoI_3_OilRecFac.csv', header=None).iloc[:nSamples,:]
-    fig, ax = plt.subplots()
-    for i in range(len(ORF)):
-        color = cmap(norm(SF_values[i]))
-        ax.plot(t[:-1],ORF.iloc[i,:],color=color)
-    sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
-    sm.set_array([])
-    cbar = plt.colorbar(sm, ax=ax)
-    cbar.set_label(r"$SF$")
-    ax.set_xlabel(r"$t$ [s]")
-    ax.set_ylabel(r"Pressure drop [Pa]")
-    ax.grid()
-    plt.show()
     # exit()
+
+    # # ORF collored with evidence
+    # evidence = [2,9,23]
+    # samples = ['A', 'B', 'C']
+    # cs = ['r','k','b']
+    # SF_values = X_ED.iloc[:,1].to_numpy()
+    # norm = Normalize(vmin=np.min(SF_values), vmax=np.max(SF_values))
+    # cmap = cm.get_cmap('viridis')
+    # # ORF = pd.read_csv(experiment_dir + '/QoI_2_pressDrop.csv', header=None).iloc[:nSamples,:]
+    # ORF = pd.read_csv(experiment_dir + '/QoI_3_OilRecFac.csv', header=None).iloc[:nSamples,:]
+    # fig, ax = plt.subplots(figsize=(5,5))
+    # for i in range(len(ORF)):
+    #     color = cmap(norm(SF_values[i]))
+    #     ax.plot(t[:-1],ORF.iloc[i,:],color=color)
+    # for i in range(len(evidence)):
+    #        ax.plot(t[:-1],ORF.iloc[evidence[i],:],c=cs[i],linewidth=1.75,label=f'Sample {samples[i]}') 
+    # sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
+    # sm.set_array([])
+    # cbar = plt.colorbar(sm, ax=ax)
+    # cbar.set_label(r"$S_w^{\ast}$")
+    # ax.set_xlabel(r"$t$ [s]")
+    # ax.set_ylabel(r"Oil recovery factor [\%]")
+    # ax.grid()
+    # plt.legend()
+    # plt.show()
+    # plt.close()
+
+    # # OilCut collored
+    # # SF_values = X_ED.iloc[:,1].to_numpy()
+    # norm = Normalize(vmin=np.min(SF_values), vmax=np.max(SF_values))
+    # cmap = cm.get_cmap('viridis')
+    # # ORF = pd.read_csv(experiment_dir + '/QoI_2_pressDrop.csv', header=None).iloc[:nSamples,:]
+    # ORF = pd.read_csv(experiment_dir + '/QoI_4_OilCut.csv', header=None).iloc[:nSamples,:]
+    # fig, ax = plt.subplots(figsize=(5,5))
+    # for i in range(len(ORF)):
+    #     color = cmap(norm(SF_values[i]))
+    #     ax.plot(t[:-1],ORF.iloc[i,:],color=color)
+    # sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
+    # sm.set_array([])
+    # cbar = plt.colorbar(sm, ax=ax)
+    # cbar.set_label(r"$S_w^{\ast}$")
+    # ax.set_xlabel(r"$t$ [s]")
+    # ax.set_ylabel(r"Oil cut [\%]")
+    # ax.grid()
+    # plt.show()
+    # plt.close()
+
+    # # OilCut collored with evidence
+    # evidence = [2,9,23]
+    # samples = ['A', 'B', 'C']
+    # cs = ['r','k','b']
+    # # SF_values = X_ED.iloc[:,1].to_numpy()
+    # norm = Normalize(vmin=np.min(SF_values), vmax=np.max(SF_values))
+    # cmap = cm.get_cmap('viridis')
+    # # ORF = pd.read_csv(experiment_dir + '/QoI_2_pressDrop.csv', header=None).iloc[:nSamples,:]
+    # ORF = pd.read_csv(experiment_dir + '/QoI_4_OilCut.csv', header=None).iloc[:nSamples,:]
+    # fig, ax = plt.subplots(figsize=(5,5))
+    # for i in range(len(ORF)):
+    #     color = cmap(norm(SF_values[i]))
+    #     ax.plot(t[:-1],ORF.iloc[i,:],color=color)
+    # for i in range(len(evidence)):
+    #        ax.plot(t[:-1],ORF.iloc[evidence[i],:],c=cs[i],linewidth=1.75,label=f'Sample {samples[i]}')
+    # sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
+    # sm.set_array([])
+    # cbar = plt.colorbar(sm, ax=ax)
+    # cbar.set_label(r"$S_w^{\ast}$")
+    # ax.set_xlabel(r"$t$ [s]")
+    # ax.set_ylabel(r"Oil cut [\%]")
+    # ax.grid()
+    # plt.legend()
+    # plt.show()
+    # plt.close()
+
+    # # PressDrop collored
+    # # SF_values = X_ED.iloc[:,1].to_numpy()
+    # norm = Normalize(vmin=np.min(SF_values), vmax=np.max(SF_values))
+    # cmap = cm.get_cmap('viridis')
+    # ORF = pd.read_csv(experiment_dir + '/QoI_2_pressDrop.csv', header=None).iloc[:nSamples,:]
+    # # ORF = pd.read_csv(experiment_dir + '/QoI_3_OilRecFac.csv', header=None).iloc[:nSamples,:]
+    # fig, ax = plt.subplots()
+    # for i in range(len(ORF)):
+    #     color = cmap(norm(SF_values[i]))
+    #     ax.plot(t[:-1],ORF.iloc[i,:],color=color)
+    # sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
+    # sm.set_array([])
+    # cbar = plt.colorbar(sm, ax=ax)
+    # cbar.set_label(r"$SF$")
+    # ax.set_xlabel(r"$t$ [s]")
+    # ax.set_ylabel(r"Pressure drop [Pa]")
+    # ax.grid()
+    # plt.show()
+    # # exit()
 
     # Reshape the dataframe
     X_ED['delta'] = 1 - X_ED.iloc[:,5]/X_ED.iloc[:,4]

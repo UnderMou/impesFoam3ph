@@ -29,7 +29,7 @@ def tFind(tD):
         isCTscan = True
         isDARTS = True
     elif tD in [.82, 1.0]:  
-        t_find = 2600#2200
+        t_find = 2200#2600#2200
         isCTscan = True
         isDARTS = True
     elif tD in [.6]:
@@ -116,8 +116,6 @@ if __name__ == '__main__':
     folders = remove_indexes(folders, indexes_to_remove) 
     Sas, Sbs, Scs = get_Saturations(folders, experiment_dir, idx, residuals)
     Fshears, Foils = get_FsSTARS(folders, experiment_dir, idx, residuals)
-    print("Fshears:", Fshears)
-    print("Type of Fshears:", type(Fshears))
     # exit()
     X_ED = pd.DataFrame(get_samples(experiment_dir))
     X_ED = X_ED.drop(indexes_to_remove).reset_index(drop=True)
@@ -127,6 +125,23 @@ if __name__ == '__main__':
     x = np.linspace(0,1,nCells)
     L = x[-1]
     x = x/L
+
+    # # filter dry-out
+    # SF_dry = 0.216
+    # mask = X_ED.iloc[:,1] <= SF_dry
+    # # mask = (abs(X_ED.iloc[:,0] - 50000) < 1000) &\
+    # #        (abs(X_ED.iloc[:,1] - 0.215) < 1e-3) &\
+    # #        (abs(X_ED.iloc[:,2] - 19950) < 1000) &\
+    # #        (abs(X_ED.iloc[:,3] - 1.321) < 1e-2) &\
+    # #        (abs(X_ED.iloc[:,4] - 0.816752) < 1e-4) #&\
+    # #     #    (abs(X_ED.iloc[:,5] - 0.295) < 1e-2) #&\
+    # #     #    (abs(X_ED.iloc[:,6] - 3.827) < 1e-2)
+    # Sas = [s for s, keep in zip(Sas, mask) if keep]
+    # Sbs = [s for s, keep in zip(Sbs, mask) if keep]
+    # Scs = [s for s, keep in zip(Scs, mask) if keep]
+    # X_ED = X_ED.loc[mask].copy()
+    # folders = [s for s, keep in zip(folders, mask) if keep]
+   
 
     # Check oscilations
     nAvoid = -2
@@ -245,16 +260,17 @@ if __name__ == '__main__':
     if isDARTS:
         ax.plot(DARTS_results['x_So_DARTS'],DARTS_results['So_DARTS'],'r.-',label='DARTS')
     if isCTscan:
-        ax.plot(CTscan_results['x_SoCT'],CTscan_results['So_CT'],'k.-', markersize=15,label='CT scan') 
-    # sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
-    # sm.set_array([])
-    # cbar = plt.colorbar(sm, ax=ax)
-    # cbar.set_label(r"$fmoil$")
+        ax.plot(CTscan_results['x_SoCT'],CTscan_results['So_CT'],'k.-', markersize=7,label='CT scan') 
+    sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
+    sm.set_array([])
+    cbar = plt.colorbar(sm, ax=ax)
+    cbar.set_label(r"$fmoil$")
     plt.xlabel('x [m]')
     plt.ylabel(r'$S_{o}$ [-]')
     plt.ylim([-0.05,1.05])
+    # plt.ylim([0.16,0.58])
     plt.grid()
-    plt.legend()
+    plt.legend(loc='lower right')
     plt.tight_layout()
     plt.savefig(experiment_dir + '/So_fmoil_profiles_PVI_'+str(tD)+'.png',dpi=200)
     plt.show()

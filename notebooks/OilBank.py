@@ -51,7 +51,7 @@ def checkOscilations(S):
 if __name__ == '__main__':
 
     plt.style.use('science')
-    plt.rcParams.update({'font.size': 16})
+    plt.rcParams.update({'font.size': 20})
 
     # Inputs
     # experiment_name = 'SA_CTscan_FdryFoilFshear_pdr0.2_steady_moreSamples_fixedfmcap_fitted_v2'
