@@ -144,7 +144,7 @@ int main(int argc, char *argv[])
 
             fvScalarMatrix SaEqn
             (
-                eps*fvm::ddt(Sa) + fvc::div(phia) 
+                eps*fvm::ddt(Sa) + fvm::div(phia, Sa) // fvc::div(phia) 
                 ==
                 fvModels.source(Sa)
             );
@@ -153,7 +153,7 @@ int main(int argc, char *argv[])
 
             fvScalarMatrix SbEqn
             (
-                eps*fvm::ddt(Sb) + fvc::div(phib) 
+                eps*fvm::ddt(Sb) + fvm::div(phib, Sb) // fvc::div(phib) 
                 ==
                 fvModels.source(Sb)
             );
