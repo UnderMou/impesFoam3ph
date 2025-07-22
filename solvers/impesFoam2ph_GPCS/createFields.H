@@ -378,11 +378,12 @@ surfaceScalarField phiPc("phiPc",Mbf * dpcdSf * fvc::snGrad(Sb) * mesh.magSf());
 
 // SOURCE TERM
 
-volScalarField Q
+// volume rate source term [m3 / s m3] -> [1 / s]
+volScalarField qt
 (
     IOobject
     (
-        "Q",
+        "qt",
         runTime.timeName(),
         mesh,
         IOobject::READ_IF_PRESENT,
@@ -392,38 +393,38 @@ volScalarField Q
     dimensionedScalar("",dimless,0)
 );
 
-volScalarField qw_inj
+volScalarField qt_inj
 (
     IOobject
     (
-        "qw_inj",
+        "qt_inj",
         runTime.timeName(),
         mesh,
         IOobject::NO_READ,
         IOobject::AUTO_WRITE
     ),
-    max(Q, scalar(0))  
+    Foam::mag(max(qt, scalar(0)))
 );
-qw_inj.write();
+qt_inj.write();
 
-volScalarField qw_prod
+volScalarField qt_prod
 (
     IOobject
     (
-        "qw_prod",
+        "qt_prod",
         runTime.timeName(),
         mesh,
         IOobject::NO_READ,
         IOobject::AUTO_WRITE
     ),
-    min(Q, scalar(0))  
+    Foam::mag(min(qt, scalar(0)))
 );
-qw_prod.write();
+qt_prod.write();
 
 std::remove("production.txt");
 std::ofstream outFile("production.txt", std::ios::app);
 outFile << "TimeStep,qw_inj,qw_prod,qo_prod\n"; 
-outFile.close();
+// outFile.close();
 
 #include "createFvModels.H"
 // #include "createFvConstraints.H"

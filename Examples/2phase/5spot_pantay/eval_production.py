@@ -19,18 +19,14 @@ pantay_numericalFe = pd.read_csv('production_pantay_numericalFE.csv', header=Non
 
 # Domain info
 L = 142.245 # [m]
-h = 20 # [m]
+h = 10 # [m]
 V = L**2 * h # [m3]
 phi = 0.2 # [-]
 PV = V*phi
 
-# Fluids 
-rho_w = 1.0e3 # [kg/m3]
-rho_o = 0.8e3 # [kg/m3]
-
 t = data['TimeStep'].to_numpy()
 dt = t[1:] - t[:-1]
-qo_prod = -data['qo_prod'].to_numpy() # [m3/s]  
+qo_prod = data['qo_prod'].to_numpy() # [m3/s]  
 qw_inj = data['qw_inj'].to_numpy() # [m3/s]
 
 Qw_inj = np.zeros_like(qw_inj)
@@ -64,7 +60,8 @@ plt.grid()
 plt.legend(loc='lower right')
 plt.xlabel(r'Water injected [PV]')
 plt.ylabel(r'Cumulative oil recovery [PV]')
-# plt.xlim([-0.1,2.01])
+plt.xlim([-0.1,2.0])
 
 plt.tight_layout()
+plt.savefig('production_5spots.pdf', dpi=300)
 plt.show()

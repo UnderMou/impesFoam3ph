@@ -61,12 +61,25 @@ plt.grid(True)
 
 plt.tight_layout()
 plt.show()
+plt.close()
 
 
 
 
 
+# Plot para pc
+plt.figure(figsize=(5,5))
+plt.scatter(dt['sw'], dt['pc'],c='k', label='Panday et al. (1994)')
+plt.plot(Sw_fit, pc_fit, label=fr'Fitting $p_c$ ($p_{{c,0}}=${{{pc0_fit:.2f}}}, $\alpha=${{{alpha_fit:.2f}}})', color='red')
+plt.xlabel('$S_{w}$')
+plt.ylabel('$p_c$')
+# plt.yscale('log')
+plt.legend(fontsize=12)
+plt.grid(True)
 
-
+plt.tight_layout()
+plt.savefig('fitting_PC_panday.pdf', dpi=300)
+plt.show()
+plt.close()
 
 

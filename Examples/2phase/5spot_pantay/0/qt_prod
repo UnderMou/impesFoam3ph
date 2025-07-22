@@ -10,7 +10,7 @@ FoamFile
     format      ascii;
     class       volScalarField;
     location    "0";
-    object      qw_prod;
+    object      qt_prod;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -2619,7 +2619,7 @@ internalField   nonuniform List<scalar>
 0
 0
 0
--0.0031868
+3.54089e-06
 )
 ;
 
@@ -2681,7 +2681,7 @@ boundaryField
 0
 0
 0
--0.0031868
+3.54089e-06
 0
 0
 0
@@ -2783,7 +2783,7 @@ boundaryField
 0
 0
 0
--0.0031868
+3.54089e-06
 0
 0
 0

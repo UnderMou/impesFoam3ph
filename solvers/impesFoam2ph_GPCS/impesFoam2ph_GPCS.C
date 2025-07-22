@@ -54,16 +54,22 @@ int main(int argc, char *argv[])
     #include "createFields.H"
 
     labelList prod_wells;
-    forAll(Q, celli)
+    forAll(qt, celli)
     {
-        if (Q[celli] < 0)
+        if (qt[celli] < 0)
         {
             prod_wells.append(celli);
         }
     }
-   /*
-   
-   */
+    
+    labelList inj_wells;
+    forAll(qt, celli)
+    {
+        if (qt[celli] > 0)
+        {
+            inj_wells.append(celli);
+        }
+    }
 
     // dimensionedScalar adm_1 = dimensionedScalar("adm_1",dimLength/dimTime,1.0);
     // dimensionedScalar adm_2 = dimensionedScalar("adm_2",dimLength*dimLength/dimTime,1.0);
@@ -138,7 +144,7 @@ int main(int argc, char *argv[])
             (
                 fvm::laplacian(-Mf, p) + fvc::div(phiG) + fvc::div(phiPc)
                 ==
-                Q/rho_b
+                qt
                 // fvModels.source(p) 
             );
 
@@ -205,7 +211,7 @@ int main(int argc, char *argv[])
             (
                 eps*fvm::ddt(Sb) + fvc::div(phib) 
                 ==
-                (qw_inj + Fb*qw_prod)/rho_b
+                (qt_inj - Fb*qt_prod)
                 // fvModels.source(Sb)
             );
 
@@ -220,18 +226,21 @@ int main(int argc, char *argv[])
 
         runTime.write();
 
-        std::ofstream outFile("production.txt", std::ios::app);
+        // std::ofstream outFile("production.txt", std::ios::app);
         forAll(prod_wells,i)
         {   
             // Info << prod_wells[i] << endl;
-            outFile << runTime.timeName() << "," << (qw_inj[0]*mesh.V()[prod_wells[i]]/rho_b).value() << "," << (Fb[prod_wells[i]]*qw_prod[prod_wells[i]]*mesh.V()[prod_wells[i]]/rho_b).value() << "," << ((scalar(1) - Fb[prod_wells[i]])*qw_prod[prod_wells[i]]*mesh.V()[prod_wells[i]]/rho_a).value() << "\n";
+            // outFile << runTime.timeName() << "," << (Qt_inj[inj_wells[i]]*mesh.V()[inj_wells[i]]/rho_b).value() << "," << (Fb[prod_wells[i]]*Qt_prod[prod_wells[i]]*mesh.V()[prod_wells[i]]/rho_b).value() << "," << ((scalar(1) - Fb[prod_wells[i]])*Qt_prod[prod_wells[i]]*mesh.V()[prod_wells[i]]/rho_a).value() << "\n";
+            outFile << runTime.timeName() << "," << (qt_inj[inj_wells[i]]*mesh.V()[inj_wells[i]]) << "," << (Fb[prod_wells[i]]*qt_prod[prod_wells[i]]*mesh.V()[prod_wells[i]]) << "," << ((scalar(1) - Fb[prod_wells[i]])*qt_prod[prod_wells[i]]*mesh.V()[prod_wells[i]]) << "\n";
         }
-        outFile.close();
+        // outFile.close();
 
         Info<< "ExecutionTime = " << runTime.elapsedCpuTime() << " s"
             << "  ClockTime = " << runTime.elapsedClockTime() << " s"
             << nl << endl;
     }
+
+    outFile.close();
 
     Info<< "End\n" << endl;
 

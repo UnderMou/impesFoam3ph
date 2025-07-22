@@ -28,25 +28,25 @@ rho_b              rho_b [0 0 0 0 0 0 0] 1.0e3; // 1.0e3   // kg/m3
 prst            prst [0 0 0 0 0 0 0] 0.2;          // []
 
 // Gravity
-// g_vector        g_vector [0 0 0 0 0 0 0] (0 0 0);
-g_vector        g_vector [0 0 0 0 0 0 0] (0 -9.81 0);
+g_vector        g_vector [0 0 0 0 0 0 0] (0 0 0);
+// g_vector        g_vector [0 0 0 0 0 0 0] (0 -9.81 0);
 
 // Corey-Brooks parameters
 Sa_min       Sa_min [0 0 0 0 0 0 0] 0.067;
 Sb_min       Sb_min [0 0 0 0 0 0 0] 0.3;
 a_exp        a_exp [0 0 0 0 0 0 0] 1.56;  // fitted
 b_exp        b_exp [0 0 0 0 0 0 0] 7.72;  // fitted
-kra_max      kra_max [0 0 0 0 0 0 0] 0.813;
-krb_max      krb_max [0 0 0 0 0 0 0] 0.562;
+kra_max      kra_max [0 0 0 0 0 0 0] 0.8125;
+krb_max      krb_max [0 0 0 0 0 0 0] 0.5625;
 
 // STARS Foam parameters
-fmmob        fmmob [0 0 0 0 0 0 0] 0.0;
-SF           SF [0 0 0 0 0 0 0] 1.0;
-sfbet        sfbet [0 0 0 0 0 0 0] 0;
-fmcap        fmcap [0 0 0 0 0 0 0] 1;
+fmmob        fmmob [0 0 0 0 0 0 0] 0; // NO FOAM
+SF           SF [0 0 0 0 0 0 0] 0.5;
+sfbet        sfbet [0 0 0 0 0 0 0] 1000;
+fmcap        fmcap [0 0 0 0 0 0 0] 1e-4;
 epcap        epcap [0 0 0 0 0 0 0] 0;
-sigma_ba     sigma_ba [0 0 0 0 0 0 0] 0; 
-fmoil     fmoil [0 0 0 0 0 0 0] 0; 
+sigma_ba     sigma_ba [0 0 0 0 0 0 0] 0.03; 
+fmoil     fmoil [0 0 0 0 0 0 0] 1; 
 floil     floil [0 0 0 0 0 0 0] 0; 
 epoil     epoil [0 0 0 0 0 0 0] 0; 
 

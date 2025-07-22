@@ -73,29 +73,29 @@ volScalarField correct_kra(const volScalarField Sb,
         }
     }
 
-    // const double pi = 3.141592653589793; 
+    const double pi = 3.141592653589793; 
 
-    // // double fmmob = 170.113;
-    // // double SF = 0.45656;
-    // // double sfbet = 504.143;
+    // double fmmob = 170.113;
+    // double SF = 0.45656;
+    // double sfbet = 504.143;
 
-    // volScalarField Fdry = 0.5 + (1.0 / pi) * Foam::atan(sfbet * (Sb - SF));
+    volScalarField Fdry = 0.5 + (1.0 / pi) * Foam::atan(sfbet * (Sb - SF));
 
-    // volScalarField Fshear = Fdry;   // Just for initialization!
-    // volScalarField Nca = (mu_b * mag(U)) / sigma_ba;
-    // forAll(Nca,i){
-    //     if (Nca[i] >= fmcap){
-    //         Fshear[i] = Foam::pow(fmcap/Nca[i], epcap);
-    //     }
-    //     else{
-    //         Fshear[i] = 1.0;
-    //     }
-    // } 
+    volScalarField Fshear = Fdry;   // Just for initialization!
+    volScalarField Nca = (mu_b * mag(U)) / sigma_ba;
+    forAll(Nca,i){
+        if (Nca[i] >= fmcap){
+            Fshear[i] = Foam::pow(fmcap/Nca[i], epcap);
+        }
+        else{
+            Fshear[i] = 1.0;
+        }
+    } 
 
-    // // volScalarField MRF = 1.0 / (1.0 + fmmob*Fdry);
-    // volScalarField MRF = 1.0 / (1.0 + fmmob*Fdry*Fshear);
+    // volScalarField MRF = 1.0 / (1.0 + fmmob*Fdry);
+    volScalarField MRF = 1.0 / (1.0 + fmmob*Fdry*Fshear);
 
-    // kra *= MRF;
+    kra *= MRF;
 
     return kra;
 }

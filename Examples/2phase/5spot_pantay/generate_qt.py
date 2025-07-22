@@ -1,11 +1,15 @@
 nx = 51
 n = nx**2
-qt = 0.0031868
+Qt = 0.0031868  # [kg / s m3] - mass flow rate
+qt =  Qt / 900  # [kg / s m3] / [kg / m3] = [m3 / s m3] -> [1 / s]
+#     mean rho = 900 = (rho_w + rho_o) / 2
+#     rho_w = 1000 [kg/m3]
+#     rho_o =  800 [kg/m3]
 
 first_value = qt
 last_value = -qt
 
-with open("Q", "w") as f:
+with open("qt", "w") as f:
     # Header
     f.write("""/*--------------------------------*- C++ -*----------------------------------*\\
   =========                 |
@@ -19,7 +23,7 @@ FoamFile
     format      ascii;
     class       volScalarField;
     location    "0";
-    object      Q;
+    object      qt;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
