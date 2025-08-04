@@ -1,0 +1,106 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  9
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      fvSchemes;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+ddtSchemes
+{
+    default         Euler;
+}
+
+gradSchemes
+{
+    default         cellMDLimited Gauss linear 0.333;
+    // grad(p)         Gauss linear;
+    // grad(fw)         Gauss linear;
+
+    // default         Gauss linear;
+
+}
+
+divSchemes
+{
+    default              none;
+    // div(grad(p))        Gauss linear;
+
+    // div(phi,fw)            Gauss limitedLinear 0.333;  
+    // div(phi,fw)         Gauss upwind;
+    // div(phi,fw)         Gauss linear;
+    // div(phi,fw)         Gauss limitedLinear 0.1;
+
+}
+
+laplacianSchemes
+{
+    default         Gauss linear orthogonal;
+
+    // default         Gauss linear corrected;
+
+    // default            Gauss linear limited 0.75;
+
+    // default         	Gauss linear corrected;
+
+}
+
+interpolationSchemes
+{
+    default         none;
+    K               harmonic;
+
+    // kra	            upwind phia;
+    // krb         	upwind phib;
+    // krc         	upwind phic;
+
+    // kra             limitedLinear phia 1.0;
+    // krb             limitedLinear phib 1.0;
+    // krc             limitedLinear phic 1.0;
+
+    // kra	            QUICK phia;
+    // krb         	QUICK phib;
+    // kra	            SuperBee phia;
+    // krb         	SuperBee phib;
+    
+    kra	            vanLeer phia;
+    krb         	vanLeer phib;
+    krc         	vanLeer phic;
+
+    // kra	            PUBICK phia;
+    // krb         	PUBICK phib;
+
+    flux(Uc)        linear;
+    flux(Ub)        linear;
+    flux(Ua)        linear;
+    flux(U)         linear;
+
+    Dpcwo_DSw       linear;       
+    Dpcgo_DSg       linear;
+}
+
+snGradSchemes
+{
+    default         orthogonal;
+
+    // default            limited 0.333;
+
+    // default         corrected;
+}
+
+fluxRequired
+{
+    default         no;
+    p           ;
+}
+
+
+// ************************************************************************* //
