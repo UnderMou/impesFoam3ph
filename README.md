@@ -10,6 +10,12 @@ New features added:
    - Implicit-texture foam model added [(STARS foam model)](https://www.sciencedirect.com/science/article/pii/S1875510018300878).
    - Mechanistic foam model added [(Ashoori foam model)](https://www.sciencedirect.com/science/article/pii/S0927775711000124).
 - Surfactant concentration transport PDE.
+  
+---
+**IMPORTANT**: This repository is part of ongoing research associated with a scientific paper that is currently under preparation/submission. The contents are under active development and may change.
+
+![Under Development](https://img.shields.io/badge/status-under%20preparation-orange)
+___
 
 ## Instructions
 
