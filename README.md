@@ -1,6 +1,16 @@
 # impesFoam3ph
 Implementation of the IMPES method on the 3 phase flow in porous media with foam.
 
+This solver was inspired on the work of: 
+[An open-source toolbox for multiphase flow in porous media](https://www.sciencedirect.com/science/article/pii/S0010465514003403) P Horgue, C Soulaine, J Franc, R Guibert, G Debenest Computer Physics Communications 187, 217-226, 2015
+
+New features:
+- Three-phase flow modeling
+- Foam modeling:
+   - Implicit-texture foam model added [(STARS foam model)](https://www.sciencedirect.com/science/article/pii/S1875510018300878).
+   - Mechanistic foam model added [Ashoori model](https://www.sciencedirect.com/science/article/pii/S0927775711000124).
+- Surfactant concentration transport PDE.
+
 ## Instructions
 
 ### 1. Installing OpenFOAM on Your Machine
