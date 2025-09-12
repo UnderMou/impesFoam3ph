@@ -1,0 +1,63 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  9
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      transportProperties;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+mu_a              mu_a [0 0 0 0 0 0 0] 1.0e-5;     // Pa.s
+
+mu_b              mu_b [0 0 0 0 0 0 0] 1.0e-3;     // Pa.s
+
+mu_c              mu_c [0 0 0 0 0 0 0] 5.0e-3;    // Pa.s
+
+rho_a              rho_a [0 0 0 0 0 0 0] 1.0e-3;     // 1.0     // kg/m3
+
+rho_b              rho_b [0 0 0 0 0 0 0] 1.0e1; // 1.0e3   // kg/m3
+
+rho_c              rho_c [0 0 0 0 0 0 0] 0.8e1; // 0.8e3   // kg/m3
+
+prst            prst [0 0 0 0 0 0 0] 0.2;       // []
+
+// Gravity
+g_vector        g_vector [0 0 0 0 0 0 0] (0 0 0);
+// g_vector        g_vector [0 0 0 0 0 0 0] (0 -9.81 0);
+
+// Corey-Brooks parameters
+Sa_min       Sa_min [0 0 0 0 0 0 0] 0.0;
+Sc_min       Sc_min [0 0 0 0 0 0 0] 0.1;
+Sb_min       Sb_min [0 0 0 0 0 0 0] 0.1;
+a_exp        a_exp [0 0 0 0 0 0 0] 2.0;
+c_exp        c_exp [0 0 0 0 0 0 0] 2.0;  
+b_exp        b_exp [0 0 0 0 0 0 0] 2.0;  
+kra_max      kra_max [0 0 0 0 0 0 0] 1.0;
+krc_max      krc_max [0 0 0 0 0 0 0] 1.0;
+krb_max      krb_max [0 0 0 0 0 0 0] 1.0;
+
+// STARS Foam parameters
+fmmob        fmmob [0 0 0 0 0 0 0] 20000.0;  // NO FOAM
+SF           SF [0 0 0 0 0 0 0] 0.3;
+sfbet        sfbet [0 0 0 0 0 0 0] 32000;
+fmcap        fmcap [0 0 0 0 0 0 0] 1;
+epcap        epcap [0 0 0 0 0 0 0] 0;
+sigma_ba     sigma_ba [0 0 0 0 0 0 0] 0.03; 
+fmoil     fmoil [0 0 0 0 0 0 0] 1.0; // 0.5; 
+floil     floil [0 0 0 0 0 0 0] 0.0; 
+epoil     epoil [0 0 0 0 0 0 0] 3; 
+
+// Capillary pressure parameters
+epsilon        epsilon [0 0 0 0 0 0 0] 1e-2;
+
+// Wells
+fg_inj     fg_inj [0 0 0 0 0 0 0] 0.8; 
+fw_inj     fw_inj [0 0 0 0 0 0 0] 0.2; 
+// ************************************************************************* //

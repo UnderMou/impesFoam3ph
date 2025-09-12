@@ -1,0 +1,65 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  9
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      controlDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+application     impesFoam;
+
+startFrom       latestTime; //startTime;
+
+startTime       0;
+
+stopAt          endTime;
+
+endTime         1e9;
+
+deltaT          500; 
+
+writeControl    runTime;
+
+writeInterval   1e5;
+
+purgeWrite      0;
+
+writeFormat     ascii;
+
+writePrecision  6;
+
+writeCompression off;
+
+timeFormat      general;
+
+timePrecision   6;
+
+runTimeModifiable true;
+
+libs
+(
+    "libmyPorousMediumBCs.so"
+);
+
+// ************************************************************************* //
+
+
+DebugSwitches
+{
+    dimensionSet 0;
+}
+
+// qtValue 1.27472e-2; // [kg/s]
+// qtValue 3.175e-3; // [kg/s]
+
+// qtValue 0.0509888;
+
+// qtValue 1.27472e-2; // [m3/s]
