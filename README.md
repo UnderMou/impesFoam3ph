@@ -14,7 +14,7 @@ New features added:
 ---
 **IMPORTANT**: This repository is part of ongoing research associated with a scientific paper that is currently under preparation/submission. The contents are under active development and may change.
 
-![Under Development](https://img.shields.io/badge/status-under%20preparation-orange)
+![Under Development](https://img.shields.io/badge/status-under%20development-orange)
 ___
 
 ## Instructions
