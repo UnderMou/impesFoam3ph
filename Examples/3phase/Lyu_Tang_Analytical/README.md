@@ -10,9 +10,9 @@ This repository presents a series of validation cases based on the scientific pa
 ## Description
 
 Each validation case differs in terms of the **initial condition** and **injection condition**, as summarized in **Table 1** below:
-
-<img src="https://github.com/UnderMou/impesFoam3ph/blob/main/Examples/3phase/Lyu_Tang_Analytical/Table1.png" alt="Simulation cases" width="600">
-
+<div align="center">
+  <img src="https://github.com/UnderMou/impesFoam3ph/blob/main/Examples/3phase/Lyu_Tang_Analytical/Table1.png" alt="Simulation cases" width="800">
+</div>
 
 For each case, the simulation results are compared against the **three-phase fractional flow theory analytical solution** presented in **REFERENCE**.
 
@@ -21,9 +21,9 @@ For each case, the simulation results are compared against the **three-phase fra
 ## Validation Results
 
 The figure below illustrates the comparison between simulation profiles and the analytical solutions:
-
-<img src="https://github.com/UnderMou/impesFoam3ph/blob/main/Examples/3phase/Lyu_Tang_Analytical/Validation_graphs.png" alt="Validation cases" width="600">
-
+<div align="center">
+  <img src="https://github.com/UnderMou/impesFoam3ph/blob/main/Examples/3phase/Lyu_Tang_Analytical/Validation_graphs.png" alt="Validation cases" width="800">
+</div>
 ---
 
 ## Repository Structure
