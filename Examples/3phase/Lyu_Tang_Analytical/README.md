@@ -22,7 +22,7 @@ For each case, the simulation results are compared against the **three-phase fra
 
 The figure below illustrates the comparison between simulation profiles and the analytical solutions:
 
-<img src="https://github.com/UnderMou/impesFoam3ph/blob/main/Examples/3phase/Lyu_Tang_Analytical/Validation_graphs.pdf" alt="Validation cases" width="600">
+<img src="https://github.com/UnderMou/impesFoam3ph/blob/main/Examples/3phase/Lyu_Tang_Analytical/Validation_graphs.png" alt="Validation cases" width="600">
 
 ---
 
