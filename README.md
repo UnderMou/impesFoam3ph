@@ -1,7 +1,7 @@
 # impesFoam3ph
-Implementation of the IMPES method on the 3 phase flow in porous media with foam.
+Computational implementation of the IMplicit-Pressure Explicit-Saturation (IMPES) method on the three-phase flow in porous media with foam using OpenFOAM framework.
 
-This solver was inspired on the work of: 
+This solver was based on the work: 
 [An open-source toolbox for multiphase flow in porous media](https://www.sciencedirect.com/science/article/pii/S0010465514003403) P Horgue, C Soulaine, J Franc, R Guibert, G Debenest Computer Physics Communications 187, 217-226, 2015
 
 New features added:
@@ -9,7 +9,13 @@ New features added:
 - Foam modeling:
    - Implicit-texture foam model added [(STARS foam model)](https://www.sciencedirect.com/science/article/pii/S1875510018300878).
    - Mechanistic foam model added [(Ashoori foam model)](https://www.sciencedirect.com/science/article/pii/S0927775711000124).
-- Surfactant concentration transport PDE.
+- Surfactant concentration transport in aqueous phase PDE. [(Surf.Conc. transp. in aq. phase)](https://epubs.siam.org/doi/10.1137/23M1566649) accounting with surfactant adsorption on solid phase.
+  
+---
+**IMPORTANT**: This repository is part of an ongoing research associated with a scientific paper that is currently under preparation/submission. The contents are under active development and may change.
+
+![Under Development](https://img.shields.io/badge/status-under%20development-orange)
+___
 
 ## Instructions
 
@@ -24,9 +30,9 @@ With OpenFOAM properly installed on your machine according to the tutorial above
 
    2.1 **Compiling the `impesFoam3ph` Solver**  
 
-   For now there are two solvers implemented:
-   - impesFoam3ph for the 3 phases cases
-   - impesFoam2ph for the 2 phases cases
+   For now, there are two solvers implemented:
+   - impesFoam3ph for the 3-phase cases
+   - impesFoam2ph for the 2-phase cases
 
    Navigate to your `$FOAM_RUN` directory, and clone this repository there by:
    ```bash
@@ -45,10 +51,10 @@ With OpenFOAM properly installed on your machine according to the tutorial above
    ```bash
    ls $FOAM_USER_APPBIN
    ```
-   If `impesFoam3ph` and `impesFoam2ph` appears in the listing, the compilation was successful.
+   If `impesFoam3ph` and `impesFoam2ph` appear in the listing, the compilation was successful.
 
    2.2 **Compiling the `myPorousMediumBCs` Library**  
-   The `myPorousMediumBCs` directory contains custom boundary conditions for porous media applications (for now there is just `gradPressureDarcy`). This library must also be compiled.
+   The `myPorousMediumBCs` directory contains custom boundary conditions for porous media applications (for now, there is just `gradPressureDarcy`). This library must also be compiled.
 
    Navigate to the `myPorousMediumBCs` directory, and compile it by running:
    ```bash
@@ -65,12 +71,12 @@ With OpenFOAM properly installed on your machine according to the tutorial above
 
    To verify that everything is set up correctly, go to any case within the *Examples* directory and run it using the following commands:
 
-   . for 3 phases cases
+   . for 3-phase cases
    ```bash
    blockMesh
    impesFoam3ph
    ```
-   . for 2 phases cases
+   . for 2-phase cases
    ```bash
    blockMesh
    impesFoam2ph
