@@ -23,7 +23,7 @@ Tang, J., Castaneda, P., Marchesin, D., and Rossen, W. R. *ADIPEC* 2022
 
 The figure below illustrates the comparison between simulation profiles and the analytical solutions:
 <div align="center">
-  <img src="https://github.com/UnderMou/impesFoam3ph/blob/main/Examples/3phase/Lyu_Tang_Analytical/Validation_graphs.png" alt="Validation cases" width="800">
+  <img src="https://github.com/UnderMou/impesFoam3ph/blob/main/Examples/3phase/Lyu_Tang_Analytical/new0_Validation_graphs.png" alt="Validation cases" width="800">
 </div>
 
 ---
