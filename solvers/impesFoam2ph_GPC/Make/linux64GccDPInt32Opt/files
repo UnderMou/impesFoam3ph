@@ -1,3 +1,0 @@
-SOURCE += impesFoam2ph_GPC.C
-
-EXE = $(FOAM_USER_APPBIN)/impesFoam2ph_GPC_test

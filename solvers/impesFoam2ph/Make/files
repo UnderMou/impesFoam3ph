@@ -1,3 +1,0 @@
-impesFoam2ph.C
-
-EXE = $(FOAM_USER_APPBIN)/impesFoam2ph
