@@ -1,3 +1,0 @@
-impesFoam3ph_GPCS.C
-
-EXE = $(FOAM_USER_APPBIN)/impesFoam3ph_GPCS
