@@ -22,10 +22,11 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Application
-    laplacianFoam
+    impesFoam2ph
 
 Description
-    Solves a simple Laplace equation, e.g. for thermal diffusion in a solid.
+    Solves two-phase flow in porous media accounting with foam and neglecting gravity
+    and capillary effects
 
 \*---------------------------------------------------------------------------*/
 
@@ -35,6 +36,7 @@ Description
 #include "fvConstraints.H"
 
 #include "RelPerm.H"
+#include "FoamModel.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -49,22 +51,6 @@ int main(int argc, char *argv[])
 
     #include "createFields.H"
 
-    // dimensionedScalar adm_1 = dimensionedScalar("adm_1",dimLength/dimTime,1.0);
-    // dimensionedScalar adm_2 = dimensionedScalar("adm_2",dimLength*dimLength/dimTime,1.0);
-    // dimensionedScalar adm_3 = dimensionedScalar("adm_2",dimTime,1.0);
-
-    // // INITIALIZE K
-    // forAll(K, i)
-    // {   
-    //     const scalar x = mesh.C()[i][0];
-    //     const scalar y = mesh.C()[i][1];
-
-    //     // K[i] = 1.0e-12 + 1.0e-13*x - 1.0e-13*y;
-    //     // Info << i << "," << K[i] << "," << x << "," << y << endl;
-
-    //     Info << i << "," << x << "," << y << endl;
-    // }  
-
     while (simple.loop(runTime))
     {
 
@@ -72,15 +58,21 @@ int main(int argc, char *argv[])
 
         #include "CourantNo.H"
 
-        Info<< "\nCalculating p and Sb field\n" << endl;
-
-        fvModels.correct();      
+        Info<< "\nCalculating p and Sb field\n" << endl;     
 
         while (simple.correctNonOrthogonal())
         {   
-            //- mobility computation 
-            kra = correct_kra(Sb,Sa_minValue,Sb_minValue,kra_maxValue,a_expValue,fmmobValue,SFValue,sfbetValue,U,fmcapValue,epcapValue,mu_b,sigma_baValue);
-            krb = correct_krb(Sb,Sa_minValue,Sb_minValue,krb_maxValue,b_expValue);
+
+            correct_kra(kra,Sb,Sa_minValue,Sb_minValue,kra_maxValue,a_expValue);
+            correct_krb(krb,Sb,Sa_minValue,Sb_minValue,krb_maxValue,b_expValue);
+
+            // Foam model
+            correct_Nca(Nca, U, mu_b, sigma_baValue); 
+            correct_Fdry(Fdry, Sb, fmmobValue, SFValue, sfbetValue);
+            correct_Fshear(Fshear, Nca, fmcapValue, epcapValue);
+            correct_MRF(MRF, fmmobValue, Fdry, Fshear);
+            correct_kraMRF(kra, MRF);
+
             kraf = fvc::interpolate(kra,"kra");
             krbf = fvc::interpolate(krb,"krb");
             Maf = Kf*kraf/mu_a;	
@@ -93,7 +85,7 @@ int main(int argc, char *argv[])
             (
                 fvm::laplacian(-Mf, p)
                 ==
-                fvModels.source(p)
+                zeroRHS
             );
 
             pEqn.solve();
@@ -131,12 +123,10 @@ int main(int argc, char *argv[])
             (
                 eps*fvm::ddt(Sb) + fvc::div(phib) 
                 ==
-                fvModels.source(Sb)
+                zeroRHS
             );
 
             SbEqn.solve();
-
-            Sb = correct_Sb(Sb,Sa_minValue,Sb_minValue);            
 
         }
 
@@ -151,6 +141,5 @@ int main(int argc, char *argv[])
 
     return 0;
 }
-
 
 // ************************************************************************* //

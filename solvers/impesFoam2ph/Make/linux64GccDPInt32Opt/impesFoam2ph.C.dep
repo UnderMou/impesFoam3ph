@@ -5,6 +5,7 @@ $(WM_PROJECT_DIR)/src/finiteVolume/lnInclude/fvModels.H \
 $(WM_PROJECT_DIR)/src/finiteVolume/lnInclude/simpleControl.H \
 $(WM_PROJECT_DIR)/src/finiteVolume/lnInclude/fvConstraints.H \
 RelPerm.H \
+FoamModel.H \
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/setRootCaseLists.H \
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/createTime.H \
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/createMesh.H \
@@ -47,7 +48,6 @@ $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/listOptions.H \
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/setRootCase.H \
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/listOutput.H \
 $(WM_PROJECT_DIR)/src/finiteVolume/lnInclude/createPhi.H \
-$(WM_PROJECT_DIR)/src/finiteVolume/lnInclude/createFvModels.H \
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/Pstream.H \
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/IOstreams.H \
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/TimePaths.H \
@@ -783,6 +783,7 @@ $(WM_PROJECT_DIR)/src/finiteVolume/lnInclude/fvModels.H :
 $(WM_PROJECT_DIR)/src/finiteVolume/lnInclude/simpleControl.H :
 $(WM_PROJECT_DIR)/src/finiteVolume/lnInclude/fvConstraints.H :
 RelPerm.H :
+FoamModel.H :
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/setRootCaseLists.H :
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/createTime.H :
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/createMesh.H :
@@ -825,7 +826,6 @@ $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/listOptions.H :
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/setRootCase.H :
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/listOutput.H :
 $(WM_PROJECT_DIR)/src/finiteVolume/lnInclude/createPhi.H :
-$(WM_PROJECT_DIR)/src/finiteVolume/lnInclude/createFvModels.H :
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/Pstream.H :
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/IOstreams.H :
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/TimePaths.H :

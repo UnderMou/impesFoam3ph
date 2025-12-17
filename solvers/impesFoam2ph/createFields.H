@@ -198,19 +198,6 @@ volVectorField U
     Ua + Ub
 );
 
-// volVectorField U
-// (
-//     IOobject
-//     (
-//         "U",
-//         runTime.timeName(),
-//         mesh,
-//         IOobject::MUST_READ,
-//         IOobject::AUTO_WRITE
-//     ),
-//     mesh
-// );
-
 #include "createPhi.H"
 surfaceScalarField phiP = phi;
 
@@ -227,7 +214,7 @@ volScalarField kra
     mesh,
     0.0
 );
-kra = correct_kra(Sb,Sa_minValue,Sb_minValue,kra_maxValue,a_expValue,fmmobValue,SFValue,sfbetValue,U,fmcapValue,epcapValue,mu_b,sigma_baValue);
+correct_kra(kra,Sb,Sa_minValue,Sb_minValue,kra_maxValue,a_expValue);
 surfaceScalarField kraf ("kraf",fvc::interpolate(kra,"kra"));
 
 volScalarField krb
@@ -243,16 +230,15 @@ volScalarField krb
     mesh,
     0.0
 );
-krb = correct_krb(Sb,Sa_minValue,Sb_minValue,krb_maxValue,b_expValue);
+correct_krb(krb,Sb,Sa_minValue,Sb_minValue,krb_maxValue,b_expValue);
 surfaceScalarField krbf ("krbf",fvc::interpolate(krb,"krb"));
 
-//- mobility and fractional flow 
+// mobility and fractional flow 
 surfaceScalarField Maf ("Maf",Kf*kraf/mu_a);
 surfaceScalarField Mbf ("Mbf",Kf*krbf/mu_b);
 surfaceScalarField Mf ("Mf",Maf+Mbf);
 surfaceScalarField Fbf ("Fbf",Mbf/Mf);
 
-// volScalarField Fb ("Fb",(krb/mu_b) / ( (kra/mu_a) + (krb/mu_b) ));
 volScalarField Fb
 (
     IOobject
@@ -268,6 +254,78 @@ volScalarField Fb
 );
 Fb = (krb/mu_b) / ( (kra/mu_a) + (krb/mu_b) );
 
-
-#include "createFvModels.H"
+// CREATE zero RHS of equations 
+dimensionedScalar zeroRHS
+(
+    "zero",
+    Sb.dimensions()/dimTime,
+    0.0
+);
+// #include "createFvModels.H"
 // #include "createFvConstraints.H"
+
+
+// FOAM RELATED FIELDS
+// Fdry
+volScalarField Fdry
+(
+    IOobject
+    (
+        "Fdry",
+        runTime.timeName(),
+        mesh,
+        IOobject::NO_READ,
+        IOobject::AUTO_WRITE
+    ),
+    mesh,
+    dimensionedScalar("one", dimless, 1.0)
+);
+correct_Fdry(Fdry, Sb, fmmobValue, SFValue, sfbetValue);
+
+// Fshear
+volScalarField Nca
+(
+    IOobject
+    (
+        "Nca",
+        runTime.timeName(),
+        mesh,
+        IOobject::NO_READ,
+        IOobject::AUTO_WRITE
+    ),
+    mesh,
+    dimensionedScalar("zero", dimless, 0.0)
+);
+correct_Nca(Nca, U, mu_b, sigma_baValue); // TODO: Create a custom definition of Nca
+
+volScalarField Fshear
+(
+    IOobject
+    (
+        "Fshear",
+        runTime.timeName(),
+        mesh,
+        IOobject::NO_READ,
+        IOobject::AUTO_WRITE
+    ),
+    mesh,
+    dimensionedScalar("one", dimless, 1.0)
+);
+correct_Fshear(Fshear, Nca, fmcapValue, epcapValue);
+
+// MRF
+volScalarField MRF
+(
+    IOobject
+    (
+        "MRF",
+        runTime.timeName(),
+        mesh,
+        IOobject::NO_READ,
+        IOobject::AUTO_WRITE
+    ),
+    mesh,
+    dimensionedScalar("one", dimless, 1.0)
+);
+correct_MRF(MRF, fmmobValue, Fdry, Fshear);
+correct_kraMRF(kra, MRF);
