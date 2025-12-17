@@ -43,6 +43,22 @@ IOdictionary transportProperties
     )
 );
 
+const dictionary& CoreyBrooksDict = transportProperties.subDict("CoreyBrooks");
+scalar Sa_minValue = readScalar(CoreyBrooksDict.lookup("Sa_min"));
+scalar Sb_minValue = readScalar(CoreyBrooksDict.lookup("Sb_min"));
+scalar a_expValue = readScalar(CoreyBrooksDict.lookup("a_exp"));
+scalar b_expValue = readScalar(CoreyBrooksDict.lookup("b_exp"));
+scalar kra_maxValue = readScalar(CoreyBrooksDict.lookup("kra_max"));
+scalar krb_maxValue = readScalar(CoreyBrooksDict.lookup("krb_max"));
+
+const dictionary& STARSDict = transportProperties.subDict("STARS");
+scalar fmmobValue = readScalar(STARSDict.lookup("fmmob"));
+scalar SFValue = readScalar(STARSDict.lookup("SF"));
+scalar sfbetValue = readScalar(STARSDict.lookup("sfbet"));
+scalar fmcapValue = readScalar(STARSDict.lookup("fmcap"));
+scalar epcapValue = readScalar(STARSDict.lookup("epcap"));
+scalar sigma_baValue = readScalar(STARSDict.lookup("sigma_ba"));
+
 dimensionedScalar mu_a
 (
     transportProperties.lookup("mu_a")
@@ -67,42 +83,6 @@ dimensionedScalar prst
 (
     transportProperties.lookup("prst")
 );
-
-dimensionedScalar Sa_min = transportProperties.lookup("Sa_min");
-scalar Sa_minValue = Sa_min.value();
-
-dimensionedScalar Sb_min = transportProperties.lookup("Sb_min");
-scalar Sb_minValue = Sb_min.value();
-
-dimensionedScalar a_exp = transportProperties.lookup("a_exp");
-scalar a_expValue = a_exp.value();
-
-dimensionedScalar b_exp = transportProperties.lookup("b_exp");
-scalar b_expValue = b_exp.value();
-
-dimensionedScalar kra_max = transportProperties.lookup("kra_max");
-scalar kra_maxValue = kra_max.value();
-
-dimensionedScalar krb_max = transportProperties.lookup("krb_max");
-scalar krb_maxValue = krb_max.value();
-
-dimensionedScalar fmmob = transportProperties.lookup("fmmob");
-scalar fmmobValue = fmmob.value();
-
-dimensionedScalar SF = transportProperties.lookup("SF");
-scalar SFValue = SF.value();
-
-dimensionedScalar sfbet = transportProperties.lookup("sfbet");
-scalar sfbetValue = sfbet.value();
-
-dimensionedScalar fmcap = transportProperties.lookup("fmcap");
-scalar fmcapValue = fmcap.value();
-
-dimensionedScalar epcap = transportProperties.lookup("epcap");
-scalar epcapValue = epcap.value();
-
-dimensionedScalar sigma_ba = transportProperties.lookup("sigma_ba");
-scalar sigma_baValue = sigma_ba.value();
 
 volScalarField K
 (
