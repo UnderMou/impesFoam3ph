@@ -24,21 +24,32 @@ rho_b              rho_b [0 0 0 0 0 0 0] 1000.0;    // kg/m3
 
 prst            prst [0 0 0 0 0 0 0] 0.25;        // []
 
+// Relative permeability model
 
-// Corey-Brooks parameters
-Sa_min       Sa_min [0 0 0 0 0 0 0] 0.293;
-Sb_min       Sb_min [0 0 0 0 0 0 0] 0.4;
-a_exp        a_exp [0 0 0 0 0 0 0] 0.96;
-b_exp        b_exp [0 0 0 0 0 0 0] 2.98;
-kra_max      kra_max [0 0 0 0 0 0 0] 0.04;
-krb_max      krb_max [0 0 0 0 0 0 0] 0.302;
+relativePermeabilityModel CoreyBrooks;
 
-// STARS Foam parameters
-fmmob        fmmob [0 0 0 0 0 0 0] 269.342055;
-SF           SF [0 0 0 0 0 0 0] 0.43766393;
-sfbet        sfbet [0 0 0 0 0 0 0] 787.457944;
-fmcap        fmcap [0 0 0 0 0 0 0] 1.0;
-epcap        epcap [0 0 0 0 0 0 0] 0.0;
-sigma_ba     sigma_ba [0 0 0 0 0 0 0] 1.0; 
+CoreyBrooks
+{
+  Sa_min    0.293;
+  Sb_min    0.4;
+  a_exp     0.96;
+  b_exp     2.98;
+  kra_max   0.04;
+  krb_max   0.302;
+}
+
+// Foam model 
+
+foamModel STARS;
+
+STARS
+{
+  fmmob     269.342055;
+  SF        0.43766393;
+  sfbet     787.457944;
+  fmcap     1.0;
+  epcap     0.0;
+  sigma_ba  1.0; 
+}
 
 // ************************************************************************* //

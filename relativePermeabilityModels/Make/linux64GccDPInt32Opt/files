@@ -1,0 +1,5 @@
+SOURCE += relativePermeabilityModel.C
+SOURCE += CoreyBrooks/CoreyBrooks.C
+SOURCE += vanGenuchten/vanGenuchten.C
+
+LIB = $(FOAM_USER_LIBBIN)/librelativePermeabilityModels

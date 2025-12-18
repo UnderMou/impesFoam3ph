@@ -14,6 +14,8 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
+// Fluid and rock properties
+
 mu_a              mu_a [0 0 0 0 0 0 0] 2.0e-5;      // Pa.s
 
 mu_b              mu_b [0 0 0 0 0 0 0] 1.05e-3;     // Pa.s
@@ -24,21 +26,41 @@ rho_b              rho_b [0 0 0 0 0 0 0] 1000.0;    // kg/m3
 
 prst            prst [0 0 0 0 0 0 0] 0.1593;        // []
 
+// Relative permeability model
 
-// Corey-Brooks parameters
-Sa_min       Sa_min [0 0 0 0 0 0 0] 0.293;
-Sb_min       Sb_min [0 0 0 0 0 0 0] 0.4;
-a_exp        a_exp [0 0 0 0 0 0 0] 0.96;
-b_exp        b_exp [0 0 0 0 0 0 0] 2.98;
-kra_max      kra_max [0 0 0 0 0 0 0] 0.04;
-krb_max      krb_max [0 0 0 0 0 0 0] 0.302;
+relativePermeabilityModel CoreyBrooks;
 
-// STARS Foam parameters
-fmmob        fmmob [0 0 0 0 0 0 0] 170.113;
-SF           SF [0 0 0 0 0 0 0] 0.45656;
-sfbet        sfbet [0 0 0 0 0 0 0] 504.143;
-fmcap        fmcap [0 0 0 0 0 0 0] 8.4e-8;
-epcap        epcap [0 0 0 0 0 0 0] 0.0;
-sigma_ba     sigma_ba [0 0 0 0 0 0 0] 0.033; 
+CoreyBrooks
+{
+  Sa_min    0.293;
+  Sb_min    0.4;
+  a_exp     0.96;
+  b_exp     2.98;
+  kra_max   0.04;
+  krb_max   0.302;
+}
+
+vanGenuchten
+{
+  Sa_min    0.293;
+  Sb_min    0.4;
+  n         2.0;
+  kra_max   0.04;
+  krb_max   0.302;
+}
+
+// Foam model 
+
+foamModel STARS;
+
+STARS
+{
+  fmmob     170.113;
+  SF        0.45656;
+  sfbet     504.143;
+  fmcap     8.4e-8;
+  epcap     0.52;
+  sigma_ba  0.033;
+}
 
 // ************************************************************************* //

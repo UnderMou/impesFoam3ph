@@ -1,0 +1,4 @@
+SOURCE += foamModel.C
+SOURCE += STARS/STARS.C
+
+LIB = $(FOAM_USER_LIBBIN)/libfoamModels
