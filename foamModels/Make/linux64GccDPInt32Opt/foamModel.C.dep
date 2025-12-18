@@ -4,6 +4,7 @@ foamModel.H \
 $(WM_PROJECT_DIR)/src/finiteVolume/lnInclude/volFields.H \
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/dictionary.H \
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/runTimeSelectionTables.H \
+foamAuxFields.H \
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/GeometricFields.H \
 $(WM_PROJECT_DIR)/src/finiteVolume/lnInclude/volMesh.H \
 $(WM_PROJECT_DIR)/src/finiteVolume/lnInclude/fvMesh.H \
@@ -512,6 +513,7 @@ foamModel.H :
 $(WM_PROJECT_DIR)/src/finiteVolume/lnInclude/volFields.H :
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/dictionary.H :
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/runTimeSelectionTables.H :
+foamAuxFields.H :
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/GeometricFields.H :
 $(WM_PROJECT_DIR)/src/finiteVolume/lnInclude/volMesh.H :
 $(WM_PROJECT_DIR)/src/finiteVolume/lnInclude/fvMesh.H :

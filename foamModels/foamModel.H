@@ -4,6 +4,7 @@
 #include "volFields.H"
 #include "dictionary.H"
 #include "runTimeSelectionTables.H"
+#include "foamAuxFields.H"
 
 namespace Foam
 {
@@ -12,6 +13,8 @@ class foamModel
 {
 protected:
     const dictionary& dict_;
+    foamAuxFields* aux_;
+
     dimensionedScalar mu_b_;
 
 public:
@@ -23,14 +26,16 @@ public:
         foamModel,
         dictionary,
         (
-            const dictionary& dict
+            const dictionary& dict,
+            foamAuxFields* aux
         ),
-        (dict)
+        (dict, aux)
     );
 
-    foamModel(const dictionary& dict)
+    foamModel(const dictionary& dict, foamAuxFields* aux)
     :
         dict_(dict),
+        aux_(aux),
         mu_b_(dict.parent().lookup("mu_b"))
     {}
 
@@ -40,10 +45,6 @@ public:
     virtual void correct
     (
         volScalarField& kra,
-        volScalarField& MRF,
-        volScalarField& Fdry,
-        volScalarField& Fshear,
-        volScalarField& Nca,
         const volVectorField U,
         const volScalarField& Sb
     ) const = 0;
@@ -51,7 +52,8 @@ public:
     // Factory
     static autoPtr<foamModel> New
     (
-        const dictionary& transportProperties
+        const dictionary& transportProperties,
+        foamAuxFields* aux
     );
 };
 

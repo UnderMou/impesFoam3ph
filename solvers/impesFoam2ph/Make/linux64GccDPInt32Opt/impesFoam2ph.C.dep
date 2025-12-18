@@ -46,6 +46,7 @@ $(WM_PROJECT_DIR)/src/finiteVolume/lnInclude/fvConstraint.H \
 $(WM_PROJECT_DIR)/src/finiteVolume/lnInclude/fvConstraintsTemplates.C \
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/dictionary.H \
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/runTimeSelectionTables.H \
+../../foamModels/foamAuxFields.H \
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/listOptions.H \
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/setRootCase.H \
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/listOutput.H \
@@ -824,6 +825,7 @@ $(WM_PROJECT_DIR)/src/finiteVolume/lnInclude/fvConstraint.H :
 $(WM_PROJECT_DIR)/src/finiteVolume/lnInclude/fvConstraintsTemplates.C :
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/dictionary.H :
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/runTimeSelectionTables.H :
+../../foamModels/foamAuxFields.H :
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/listOptions.H :
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/setRootCase.H :
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/listOutput.H :

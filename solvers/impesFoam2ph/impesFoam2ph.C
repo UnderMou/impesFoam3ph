@@ -70,7 +70,7 @@ int main(int argc, char *argv[])
 
             // Foam model
             Info<< "Using foam model: " << foamModel->type() << nl << endl;
-            foamModel->correct(kra, MRF, Fdry, Fshear, Nca, U, Sb);
+            foamModel->correct(kra, U, Sb);
 
             kraf = fvc::interpolate(kra,"kra");
             krbf = fvc::interpolate(krb,"krb");

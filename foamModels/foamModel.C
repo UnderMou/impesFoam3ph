@@ -18,7 +18,8 @@ defineRunTimeSelectionTable
 autoPtr<foamModel>
 foamModel::New
 (
-    const dictionary& transportProperties
+    const dictionary& transportProperties,
+    foamAuxFields* aux
 )
 {
     word modelName
@@ -47,7 +48,7 @@ foamModel::New
 
     return autoPtr<foamModel>
     (
-        iter()(modelDict)
+        iter()(modelDict, aux)
     );
 }
 

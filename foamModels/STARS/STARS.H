@@ -20,7 +20,7 @@ class STARS
 public:
     TypeName("STARS");
 
-    STARS(const dictionary& dict);
+    STARS(const dictionary& dict, foamAuxFields* aux);
 
     // STARS Fi functions
     void correct_Fdry
@@ -52,10 +52,6 @@ public:
     virtual void correct
     (
         volScalarField& kra,
-        volScalarField& MRF,
-        volScalarField& Fdry,
-        volScalarField& Fshear,
-        volScalarField& Nca,
         const volVectorField U,
         const volScalarField& Sb
     ) const;

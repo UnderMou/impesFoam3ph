@@ -80,12 +80,6 @@ dimensionedScalar prst
 
 autoPtr<relativePermeabilityModel> krModel = relativePermeabilityModel::New(transportProperties);
 
-// Class foam model
-
-autoPtr<foamModel> foamModel = foamModel::New(transportProperties);
-
-// ===========================
-
 volScalarField K
 (
     IOobject
@@ -244,64 +238,78 @@ dimensionedScalar zeroRHS
     0.0
 );
 
+// Class foam model
+
 // FOAM RELATED FIELDS
-// Fdry
-volScalarField Fdry
-(
-    IOobject
-    (
-        "Fdry",
-        runTime.timeName(),
-        mesh,
-        IOobject::NO_READ,
-        IOobject::AUTO_WRITE
-    ),
-    mesh,
-    dimensionedScalar("one", dimless, 1.0)
-);
+foamAuxFields foamAux;
 
-// Fshear
-volScalarField Nca
-(
-    IOobject
-    (
-        "Nca",
-        runTime.timeName(),
-        mesh,
-        IOobject::NO_READ,
-        IOobject::AUTO_WRITE
-    ),
-    mesh,
-    dimensionedScalar("zero", dimless, 0.0)
-);
+word foamModelName(transportProperties.lookup("foamModel")); 
 
-volScalarField Fshear
-(
-    IOobject
+if (foamModelName == "STARS")
+{
+    // Fdry
+    foamAux.Fdry = new volScalarField
     (
-        "Fshear",
-        runTime.timeName(),
+        IOobject
+        (
+            "Fdry",
+            runTime.timeName(),
+            mesh,
+            IOobject::NO_READ,
+            IOobject::AUTO_WRITE
+        ),
         mesh,
-        IOobject::NO_READ,
-        IOobject::AUTO_WRITE
-    ),
-    mesh,
-    dimensionedScalar("one", dimless, 1.0)
-);
+        dimensionedScalar("one", dimless, 1.0)
+    );
 
-// MRF
-volScalarField MRF
-(
-    IOobject
+    // Fshear
+    foamAux.Nca = new volScalarField
     (
-        "MRF",
-        runTime.timeName(),
+        IOobject
+        (
+            "Nca",
+            runTime.timeName(),
+            mesh,
+            IOobject::NO_READ,
+            IOobject::AUTO_WRITE
+        ),
         mesh,
-        IOobject::NO_READ,
-        IOobject::AUTO_WRITE
-    ),
-    mesh,
-    dimensionedScalar("one", dimless, 1.0)
-);
+        dimensionedScalar("zero", dimless, 0.0)
+    );
 
-foamModel->correct(kra, MRF, Fdry, Fshear, Nca, U, Sb);
+    foamAux.Fshear = new volScalarField 
+    (
+        IOobject
+        (
+            "Fshear",
+            runTime.timeName(),
+            mesh,
+            IOobject::NO_READ,
+            IOobject::AUTO_WRITE
+        ),
+        mesh,
+        dimensionedScalar("one", dimless, 1.0)
+    );
+
+    // MRF
+    foamAux.MRF = new volScalarField
+    (
+        IOobject
+        (
+            "MRF",
+            runTime.timeName(),
+            mesh,
+            IOobject::NO_READ,
+            IOobject::AUTO_WRITE
+        ),
+        mesh,
+        dimensionedScalar("one", dimless, 1.0)
+    );
+}
+
+
+autoPtr<foamModel> foamModel = foamModel::New(transportProperties, &foamAux);
+
+// ===========================
+
+// foamModel->correct(kra, U, Sb);

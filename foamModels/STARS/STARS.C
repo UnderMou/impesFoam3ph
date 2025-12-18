@@ -17,9 +17,9 @@ addToRunTimeSelectionTable
     dictionary
 );
 
-STARS::STARS(const dictionary& dict)
+STARS::STARS(const dictionary& dict, foamAuxFields* aux)
 :
-    foamModel(dict),
+    foamModel(dict, aux),
     fmmob_(readScalar(dict.lookup("fmmob"))),
     SF_(readScalar(dict.lookup("SF"))),
     sfbet_(readScalar(dict.lookup("sfbet"))),
@@ -88,16 +88,24 @@ void STARS::correct_MRF
 void STARS::correct
 (
     volScalarField& kra,
-    volScalarField& MRF,
-    volScalarField& Fdry,
-    volScalarField& Fshear,
-    volScalarField& Nca,
     const volVectorField U,
     const volScalarField& Sb
 ) const
 {
     // Info << "fmmob = " << fmmob_ << endl;
     // Info << "mu_w = " << mu_b_.value() << endl;
+
+    if (!aux_ || !aux_->Nca)
+    {
+        FatalErrorInFunction
+            << "STARS requires auxiliary fields but none provided"
+            << exit(FatalError);
+    }
+
+    volScalarField& Nca    = *aux_->Nca;
+    volScalarField& Fdry   = *aux_->Fdry;
+    volScalarField& Fshear = *aux_->Fshear;
+    volScalarField& MRF    = *aux_->MRF;
 
     correct_Nca(Nca, U); 
     correct_Fdry(Fdry, Sb);
