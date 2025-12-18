@@ -259,7 +259,6 @@ volScalarField Fdry
     mesh,
     dimensionedScalar("one", dimless, 1.0)
 );
-// correct_Fdry(Fdry, Sb, fmmobValue, SFValue, sfbetValue);
 
 // Fshear
 volScalarField Nca
@@ -275,7 +274,6 @@ volScalarField Nca
     mesh,
     dimensionedScalar("zero", dimless, 0.0)
 );
-// correct_Nca(Nca, U, mu_b, sigma_baValue); // TODO: Create a custom definition of Nca
 
 volScalarField Fshear
 (
@@ -290,7 +288,6 @@ volScalarField Fshear
     mesh,
     dimensionedScalar("one", dimless, 1.0)
 );
-// correct_Fshear(Fshear, Nca, fmcapValue, epcapValue);
 
 // MRF
 volScalarField MRF
@@ -306,6 +303,5 @@ volScalarField MRF
     mesh,
     dimensionedScalar("one", dimless, 1.0)
 );
-// correct_MRF(MRF, fmmobValue, Fdry, Fshear);
-// correct_kraMRF(kra, MRF);
+
 foamModel->correct(kra, MRF, Fdry, Fshear, Nca, U, Sb);

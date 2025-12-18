@@ -32,8 +32,7 @@ public:
     void correct_Nca
     (
         volScalarField& Nca,
-        const volVectorField U,
-        const dimensionedScalar mu_b
+        const volVectorField U
     ) const;
 
     void correct_Fshear

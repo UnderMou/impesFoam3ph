@@ -41,11 +41,10 @@ void STARS::correct_Fdry
 void STARS::correct_Nca
 (
     volScalarField& Nca,
-    const volVectorField U,
-    const dimensionedScalar mu_b
+    const volVectorField U
 ) const
 {
-    Nca = (mu_b.value() * mag(U)) / sigma_ba_;
+    Nca = (mu_b_.value() * mag(U)) / sigma_ba_;
 }
 
 void STARS::correct_Fshear
@@ -100,7 +99,7 @@ void STARS::correct
     // Info << "fmmob = " << fmmob_ << endl;
     // Info << "mu_w = " << mu_b_.value() << endl;
 
-    correct_Nca(Nca, U, mu_b_); 
+    correct_Nca(Nca, U); 
     correct_Fdry(Fdry, Sb);
     correct_Fshear(Fshear, Nca);
     correct_MRF(MRF, Fdry, Fshear);
