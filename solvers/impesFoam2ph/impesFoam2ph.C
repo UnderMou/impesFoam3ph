@@ -35,8 +35,10 @@ Description
 #include "simpleControl.H"
 #include "fvConstraints.H"
 
-#include "RelPerm.H"
-#include "FoamModel.H"
+// #include "RelPerm.H"
+// #include "FoamModel.H"
+#include "relativePermeabilityModel.H"
+#include "foamModel.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -62,16 +64,13 @@ int main(int argc, char *argv[])
 
         while (simple.correctNonOrthogonal())
         {   
-
-            correct_kra(kra,Sb,Sa_minValue,Sb_minValue,kra_maxValue,a_expValue);
-            correct_krb(krb,Sb,Sa_minValue,Sb_minValue,krb_maxValue,b_expValue);
+            // Relative permeability model
+            Info<< "Using relative permeability model: " << krModel->type() << nl << endl;
+            krModel->correct(kra, krb, Sb);
 
             // Foam model
-            correct_Nca(Nca, U, mu_b, sigma_baValue); 
-            correct_Fdry(Fdry, Sb, fmmobValue, SFValue, sfbetValue);
-            correct_Fshear(Fshear, Nca, fmcapValue, epcapValue);
-            correct_MRF(MRF, fmmobValue, Fdry, Fshear);
-            correct_kraMRF(kra, MRF);
+            Info<< "Using foam model: " << foamModel->type() << nl << endl;
+            foamModel->correct(kra, MRF, Fdry, Fshear, Nca, U, Sb);
 
             kraf = fvc::interpolate(kra,"kra");
             krbf = fvc::interpolate(krb,"krb");

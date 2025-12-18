@@ -43,21 +43,13 @@ IOdictionary transportProperties
     )
 );
 
-const dictionary& CoreyBrooksDict = transportProperties.subDict("CoreyBrooks");
-scalar Sa_minValue = readScalar(CoreyBrooksDict.lookup("Sa_min"));
-scalar Sb_minValue = readScalar(CoreyBrooksDict.lookup("Sb_min"));
-scalar a_expValue = readScalar(CoreyBrooksDict.lookup("a_exp"));
-scalar b_expValue = readScalar(CoreyBrooksDict.lookup("b_exp"));
-scalar kra_maxValue = readScalar(CoreyBrooksDict.lookup("kra_max"));
-scalar krb_maxValue = readScalar(CoreyBrooksDict.lookup("krb_max"));
-
-const dictionary& STARSDict = transportProperties.subDict("STARS");
-scalar fmmobValue = readScalar(STARSDict.lookup("fmmob"));
-scalar SFValue = readScalar(STARSDict.lookup("SF"));
-scalar sfbetValue = readScalar(STARSDict.lookup("sfbet"));
-scalar fmcapValue = readScalar(STARSDict.lookup("fmcap"));
-scalar epcapValue = readScalar(STARSDict.lookup("epcap"));
-scalar sigma_baValue = readScalar(STARSDict.lookup("sigma_ba"));
+// const dictionary& STARSDict = transportProperties.subDict("STARS");
+// scalar fmmobValue = readScalar(STARSDict.lookup("fmmob"));
+// scalar SFValue = readScalar(STARSDict.lookup("SF"));
+// scalar sfbetValue = readScalar(STARSDict.lookup("sfbet"));
+// scalar fmcapValue = readScalar(STARSDict.lookup("fmcap"));
+// scalar epcapValue = readScalar(STARSDict.lookup("epcap"));
+// scalar sigma_baValue = readScalar(STARSDict.lookup("sigma_ba"));
 
 dimensionedScalar mu_a
 (
@@ -83,6 +75,16 @@ dimensionedScalar prst
 (
     transportProperties.lookup("prst")
 );
+
+// Class relative permeability model
+
+autoPtr<relativePermeabilityModel> krModel = relativePermeabilityModel::New(transportProperties);
+
+// Class foam model
+
+autoPtr<foamModel> foamModel = foamModel::New(transportProperties);
+
+// ===========================
 
 volScalarField K
 (
@@ -194,8 +196,6 @@ volScalarField kra
     mesh,
     0.0
 );
-correct_kra(kra,Sb,Sa_minValue,Sb_minValue,kra_maxValue,a_expValue);
-surfaceScalarField kraf ("kraf",fvc::interpolate(kra,"kra"));
 
 volScalarField krb
 (
@@ -210,7 +210,9 @@ volScalarField krb
     mesh,
     0.0
 );
-correct_krb(krb,Sb,Sa_minValue,Sb_minValue,krb_maxValue,b_expValue);
+
+krModel->correct(kra, krb, Sb);
+surfaceScalarField kraf ("kraf",fvc::interpolate(kra,"kra"));
 surfaceScalarField krbf ("krbf",fvc::interpolate(krb,"krb"));
 
 // mobility and fractional flow 
@@ -241,9 +243,6 @@ dimensionedScalar zeroRHS
     Sb.dimensions()/dimTime,
     0.0
 );
-// #include "createFvModels.H"
-// #include "createFvConstraints.H"
-
 
 // FOAM RELATED FIELDS
 // Fdry
@@ -260,7 +259,7 @@ volScalarField Fdry
     mesh,
     dimensionedScalar("one", dimless, 1.0)
 );
-correct_Fdry(Fdry, Sb, fmmobValue, SFValue, sfbetValue);
+// correct_Fdry(Fdry, Sb, fmmobValue, SFValue, sfbetValue);
 
 // Fshear
 volScalarField Nca
@@ -276,7 +275,7 @@ volScalarField Nca
     mesh,
     dimensionedScalar("zero", dimless, 0.0)
 );
-correct_Nca(Nca, U, mu_b, sigma_baValue); // TODO: Create a custom definition of Nca
+// correct_Nca(Nca, U, mu_b, sigma_baValue); // TODO: Create a custom definition of Nca
 
 volScalarField Fshear
 (
@@ -291,7 +290,7 @@ volScalarField Fshear
     mesh,
     dimensionedScalar("one", dimless, 1.0)
 );
-correct_Fshear(Fshear, Nca, fmcapValue, epcapValue);
+// correct_Fshear(Fshear, Nca, fmcapValue, epcapValue);
 
 // MRF
 volScalarField MRF
@@ -307,5 +306,6 @@ volScalarField MRF
     mesh,
     dimensionedScalar("one", dimless, 1.0)
 );
-correct_MRF(MRF, fmmobValue, Fdry, Fshear);
-correct_kraMRF(kra, MRF);
+// correct_MRF(MRF, fmmobValue, Fdry, Fshear);
+// correct_kraMRF(kra, MRF);
+foamModel->correct(kra, MRF, Fdry, Fshear, Nca, U, Sb);
