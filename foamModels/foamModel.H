@@ -46,7 +46,10 @@ public:
     (
         volScalarField& kra,
         const volVectorField U,
-        const volScalarField& Sb
+        const volScalarField& Sa,
+        const volScalarField& Sb,
+        const surfaceScalarField& phia,
+        const volScalarField& eps
     ) const = 0;
 
     // Factory

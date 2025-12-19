@@ -35,8 +35,6 @@ Description
 #include "simpleControl.H"
 #include "fvConstraints.H"
 
-// #include "RelPerm.H"
-// #include "FoamModel.H"
 #include "relativePermeabilityModel.H"
 #include "foamModel.H"
 
@@ -70,7 +68,7 @@ int main(int argc, char *argv[])
 
             // Foam model
             Info<< "Using foam model: " << foamModel->type() << nl << endl;
-            foamModel->correct(kra, U, Sb);
+            foamModel->correct(kra, U, Sa, Sb, phia, eps);
 
             kraf = fvc::interpolate(kra,"kra");
             krbf = fvc::interpolate(krb,"krb");
@@ -126,6 +124,8 @@ int main(int argc, char *argv[])
             );
 
             SbEqn.solve();
+
+            Sa = scalar(1.0) - Sb;
 
         }
 

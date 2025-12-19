@@ -28,6 +28,20 @@ volScalarField Sb
     mesh
 );
 
+volScalarField Sa
+(
+    IOobject
+    (
+        "Sa",
+        runTime.timeName(),
+        mesh,
+        IOobject::NO_READ,
+        IOobject::AUTO_WRITE
+    ),
+    mesh,
+    dimensionedScalar("one", dimless, 1.0)
+);
+Sa = scalar(1.0) - Sb;
 
 Info<< "Reading transportProperties\n" << endl;
 
@@ -42,14 +56,6 @@ IOdictionary transportProperties
         IOobject::NO_WRITE
     )
 );
-
-// const dictionary& STARSDict = transportProperties.subDict("STARS");
-// scalar fmmobValue = readScalar(STARSDict.lookup("fmmob"));
-// scalar SFValue = readScalar(STARSDict.lookup("SF"));
-// scalar sfbetValue = readScalar(STARSDict.lookup("sfbet"));
-// scalar fmcapValue = readScalar(STARSDict.lookup("fmcap"));
-// scalar epcapValue = readScalar(STARSDict.lookup("epcap"));
-// scalar sigma_baValue = readScalar(STARSDict.lookup("sigma_ba"));
 
 dimensionedScalar mu_a
 (
@@ -238,8 +244,6 @@ dimensionedScalar zeroRHS
     0.0
 );
 
-// Class foam model
-
 // FOAM RELATED FIELDS
 foamAuxFields foamAux;
 
@@ -305,11 +309,98 @@ if (foamModelName == "STARS")
         mesh,
         dimensionedScalar("one", dimless, 1.0)
     );
+
+} else if (foamModelName == "ashoori")
+{
+    Info<< "Reading field nD\n" << endl;
+
+    foamAux.nD = new volScalarField
+    (
+        IOobject
+        (
+            "nD",
+            runTime.timeName(),
+            mesh,
+            IOobject::MUST_READ,
+            IOobject::AUTO_WRITE
+        ),
+        mesh
+    );
+
+    foamAux.rgrc = new volScalarField
+    (
+        IOobject
+        (
+            "rgrc",
+            runTime.timeName(),
+            mesh,
+            IOobject::NO_READ,
+            IOobject::AUTO_WRITE
+        ),
+        mesh,
+        0.0
+    );
+
+    foamAux.F = new volScalarField
+    (
+        IOobject
+        (
+            "F",
+            runTime.timeName(),
+            mesh,
+            IOobject::NO_READ,
+            IOobject::AUTO_WRITE
+        ),
+        mesh,
+        dimensionedScalar("zero", dimless, 0.0)
+    );
+    *foamAux.F = -fvc::div(phia); // + qa
+
+    foamAux.AcumCoeff = new volScalarField
+    (
+        IOobject
+        (
+            "AcumCoeff",
+            runTime.timeName(),
+            mesh,
+            IOobject::NO_READ,
+            IOobject::AUTO_WRITE
+        ),
+        mesh,
+        dimensionedScalar("zero", dimless, 0.0)
+    );
+    *foamAux.AcumCoeff = eps*(scalar(1.0) - Sb + VSMALL);
+
+    foamAux.nDLE = new volScalarField
+    (
+        IOobject
+        (
+            "nDLE",
+            runTime.timeName(),
+            mesh,
+            IOobject::NO_READ,
+            IOobject::AUTO_WRITE
+        ),
+        mesh,
+        dimensionedScalar("zero", dimless, 0.0)
+    );
+
+    foamAux.MRF = new volScalarField
+    (
+        IOobject
+        (
+            "MRF",
+            runTime.timeName(),
+            mesh,
+            IOobject::NO_READ,
+            IOobject::AUTO_WRITE
+        ),
+        mesh,
+        dimensionedScalar("one", dimless, 1.0)
+    );
 }
 
 
 autoPtr<foamModel> foamModel = foamModel::New(transportProperties, &foamAux);
 
 // ===========================
-
-// foamModel->correct(kra, U, Sb);

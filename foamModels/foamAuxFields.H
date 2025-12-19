@@ -8,17 +8,29 @@ namespace Foam
 
 struct foamAuxFields
 {
+    volScalarField* MRF;
+    // STARS
     volScalarField* Nca;
     volScalarField* Fdry;
     volScalarField* Fshear;
-    volScalarField* MRF;
+    // Ashoori
+    volScalarField* nD;
+    volScalarField* rgrc;
+    volScalarField* F;
+    volScalarField* AcumCoeff;
+    volScalarField* nDLE;
 
     foamAuxFields()
     :
-        Nca(nullptr),
+        MRF(nullptr),
+        Nca(nullptr),   // STARS
         Fdry(nullptr),
         Fshear(nullptr),
-        MRF(nullptr)
+        nD(nullptr),    // Ashoori
+        rgrc(nullptr),
+        F(nullptr),
+        AcumCoeff(nullptr),
+        nDLE(nullptr)
     {}
 };
 
