@@ -37,6 +37,20 @@ solvers
         // relTol          0.1;
         // tolerance       1e-8;
     }
+
+    nD
+    {
+        solver          smoothSolver;
+        smoother        GaussSeidel;
+        nSweeps         2;
+        tolerance       1e-10;
+        relTol          0.0;
+
+        // solver          PBiCGStab;
+        // preconditioner  DIC;
+        // relTol          0.1;
+        // tolerance       1e-8;
+    }
 }
 
 SIMPLE

@@ -34,6 +34,9 @@ divSchemes
     default              none;
     // div(grad(p))        Gauss linear;
 
+    div(phia,nD)         Gauss upwind;
+    // div(phia,nD)         Gauss vanLeer;
+
     // div(phi,fw)            Gauss limitedLinear 0.333;  
     // div(phi,fw)         Gauss upwind;
     // div(phi,fw)         Gauss linear;
