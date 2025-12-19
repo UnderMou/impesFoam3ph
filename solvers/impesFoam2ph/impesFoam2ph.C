@@ -34,6 +34,7 @@ Description
 #include "fvModels.H"
 #include "simpleControl.H"
 #include "fvConstraints.H"
+#include "wallFvPatch.H"
 
 #include "relativePermeabilityModel.H"
 #include "foamModel.H"
@@ -75,12 +76,26 @@ int main(int argc, char *argv[])
             Maf = Kf*kraf/mu_a;	
             Mbf = Kf*krbf/mu_b;
             Mf = Maf+Mbf;
+
+            Laf = rho_a*Kf*kraf/mu_a;
+            Lbf = rho_b*Kf*krbf/mu_b;	
+            Lf = Laf+Lbf;
+            phiG = (Lf * g) & mesh.Sf();
+
             Fbf = Mbf/Mf;
             Fb = (krb/mu_b) / ( (kra/mu_a) + (krb/mu_b) );
 
+            forAll(mesh.boundary(),patchi)
+            {   
+                if ( Ua.boundaryField()[patchi].type() == "slip" )
+                {   
+                    phiG.boundaryFieldRef()[patchi] = 0.0;
+                }
+            }
+
             fvScalarMatrix pEqn
             (
-                fvm::laplacian(-Mf, p)
+                fvm::laplacian(-Mf, p) + fvc::div(phiG)
                 ==
                 zeroRHS
             );
@@ -89,9 +104,9 @@ int main(int argc, char *argv[])
 
             phiP = pEqn.flux();
 
-            phi = phiP;
+            phi = phiP + phiG;
 
-            phib = Fbf*phiP;
+            phib = Fbf*phiP + (Lbf/Lf)*phiG;
 
             phia = phi - phib;
 

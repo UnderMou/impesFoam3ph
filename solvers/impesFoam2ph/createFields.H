@@ -180,7 +180,19 @@ volVectorField U
     Ua + Ub
 );
 
-#include "createPhi.H"
+surfaceScalarField phi
+(
+    IOobject
+    (
+        "phi",
+        runTime.timeName(),
+        mesh,
+        IOobject::NO_READ,
+        IOobject::AUTO_WRITE
+    ),
+    fvc::flux(U)
+);
+
 surfaceScalarField phiP = phi;
 
 volScalarField kra
@@ -400,7 +412,34 @@ if (foamModelName == "STARS")
     );
 }
 
-
 autoPtr<foamModel> foamModel = foamModel::New(transportProperties, &foamAux);
 
 // ===========================
+
+// GRAVITATIONAL EFFECTS
+Info<< "\nReading g" << endl;
+
+dimensionedVector g_vector
+(
+    transportProperties.lookup("g_vector")
+);
+
+surfaceVectorField g
+(
+    IOobject
+    (
+        "g",
+        runTime.timeName(),
+        mesh,
+        IOobject::NO_READ,
+        IOobject::AUTO_WRITE
+    ),
+    mesh,
+    g_vector
+);
+
+surfaceScalarField Laf ("Laf",rho_a*Kf*kraf/mu_a);
+surfaceScalarField Lbf ("Lbf",rho_b*Kf*krbf/mu_b);
+surfaceScalarField Lf ("Lf",Laf+Lbf);
+
+surfaceScalarField phiG("phiG",(Lf * g) & mesh.Sf());

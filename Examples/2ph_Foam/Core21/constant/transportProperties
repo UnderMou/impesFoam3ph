@@ -20,11 +20,15 @@ mu_a              mu_a [0 0 0 0 0 0 0] 2.0e-5;      // Pa.s
 
 mu_b              mu_b [0 0 0 0 0 0 0] 1.05e-3;     // Pa.s
 
-rho_a              rho_a [0 0 0 0 0 0 0] 1000.0;    // kg/m3
+rho_a              rho_a [0 0 0 0 0 0 0] 1.0;    // kg/m3
 
 rho_b              rho_b [0 0 0 0 0 0 0] 1000.0;    // kg/m3
 
 prst            prst [0 0 0 0 0 0 0] 0.1593;        // []
+
+// Gravity
+// g_vector        g_vector [0 0 0 0 0 0 0] (-9.81 0 0);
+g_vector        g_vector [0 0 0 0 0 0 0] (0 0 0);
 
 // Relative permeability model
 
@@ -51,7 +55,7 @@ vanGenuchten
 
 // Foam model 
 
-foamModel ashoori;
+foamModel STARS;
 
 STARS
 {
@@ -61,6 +65,11 @@ STARS
   fmcap     8.4e-8;
   epcap     0.52;
   sigma_ba  0.033;
+}
+
+noFoam
+{
+  
 }
 
 // ************************************************************************* //
