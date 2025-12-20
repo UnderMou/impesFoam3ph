@@ -37,6 +37,7 @@ Description
 #include "wallFvPatch.H"
 
 #include "relativePermeabilityModel.H"
+#include "capillaryPressureModel.H"
 #include "foamModel.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
@@ -84,6 +85,13 @@ int main(int argc, char *argv[])
 
             Fbf = Mbf/Mf;
             Fb = (krb/mu_b) / ( (kra/mu_a) + (krb/mu_b) );
+            
+            // Capillary pressure model
+            Info<< "Using capillary pressure model: " << capPressModel->type() << nl << endl;
+            capPressModel->correct(pc, dpcds, Sb);
+
+            dpcdsf = fvc::interpolate(dpcds,"dpcds");
+            phiPc = Mbf * dpcdsf * fvc::snGrad(Sb) * mesh.magSf();
 
             forAll(mesh.boundary(),patchi)
             {   
@@ -95,7 +103,7 @@ int main(int argc, char *argv[])
 
             fvScalarMatrix pEqn
             (
-                fvm::laplacian(-Mf, p) + fvc::div(phiG)
+                fvm::laplacian(-Mf, p) + fvc::div(phiG) + fvc::div(phiPc)
                 ==
                 zeroRHS
             );
@@ -104,9 +112,17 @@ int main(int argc, char *argv[])
 
             phiP = pEqn.flux();
 
-            phi = phiP + phiG;
+            forAll(mesh.boundary(),patchi)
+            {   
+                if ( Ua.boundaryField()[patchi].type() == "slip" )
+                {   
+                    phiP.boundaryFieldRef()[patchi] = 0.0;
+                }
+            }
 
-            phib = Fbf*phiP + (Lbf/Lf)*phiG;
+            phi = phiP + phiG + phiPc;
+
+            phib = Fbf*phiP + (Lbf/Lf)*phiG + phiPc;
 
             phia = phi - phib;
 
@@ -141,6 +157,9 @@ int main(int argc, char *argv[])
             SbEqn.solve();
 
             Sa = scalar(1.0) - Sb;
+
+            Info << "Saturation a: " << " Min(Sa) = " << gMin(Sa) << " Max(Sa) = " << gMax(Sa) << endl;
+            Info << "Saturation b: " << " Min(Sb) = " << gMin(Sb) << " Max(Sb) = " << gMax(Sb) << endl;
 
         }
 

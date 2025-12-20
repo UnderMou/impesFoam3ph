@@ -4,11 +4,14 @@ EXE_INC = \
     -I../../relativePermeabilityModels \
     -I../../relativePermeabilityModels/lnInclude \
     -I../../foamModels \
-    -I../../foamModels/lnInclude
+    -I../../foamModels/lnInclude \
+    -I../../capillaryPressureModels \
+    -I../../capillaryPressureModels/lnInclude
 
 EXE_LIBS = \
     -L$(FOAM_USER_LIBBIN) \
     -lrelativePermeabilityModels \
+    -lcapillaryPressureModels \
     -lfoamModels \
     -lfiniteVolume \
     -lfvModels \

@@ -443,3 +443,44 @@ surfaceScalarField Lbf ("Lbf",rho_b*Kf*krbf/mu_b);
 surfaceScalarField Lf ("Lf",Laf+Lbf);
 
 surfaceScalarField phiG("phiG",(Lf * g) & mesh.Sf());
+
+// CAPILLARY PRESSURE EFFECTS
+
+Info<< "\nInitializing Pc" << endl;
+volScalarField pc
+(
+    IOobject
+    (
+        "pc",
+        runTime.timeName(),
+        mesh,
+        IOobject::NO_READ,
+        IOobject::AUTO_WRITE
+    ),
+    mesh,
+    0.0
+);
+
+Info<< "\nInitializing dpcds" << endl;
+volScalarField dpcds
+(
+    IOobject
+    (
+        "dpcds",
+        runTime.timeName(),
+        mesh,
+        IOobject::NO_READ,
+        IOobject::AUTO_WRITE
+    ),
+    mesh,
+    0.0
+);
+
+// // Class capillary pressure model
+autoPtr<capillaryPressureModel> capPressModel = capillaryPressureModel::New(transportProperties);
+capPressModel->correct(pc, dpcds, Sb);
+
+surfaceScalarField dpcdsf ("dpcdsf",fvc::interpolate(dpcds,"dpcds"));
+surfaceScalarField phiPc("phiPc",Mbf * dpcdsf * fvc::snGrad(Sb) * mesh.magSf());
+
+
