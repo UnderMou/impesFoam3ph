@@ -1,5 +1,6 @@
 relativePermeabilityModel.C
 CoreyBrooks/CoreyBrooks.C
 vanGenuchten/vanGenuchten.C
+CoreyBrooksExtd/CoreyBrooksExtd.C
 
 LIB = $(FOAM_USER_LIBBIN)/librelativePermeabilityModels

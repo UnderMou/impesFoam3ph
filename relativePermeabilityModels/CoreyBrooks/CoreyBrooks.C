@@ -32,7 +32,7 @@ void CoreyBrooks::correct
 (
     volScalarField& kra,
     volScalarField& krb,
-    const volScalarField& Sb
+    volScalarField& Sb
 ) const
 {
 

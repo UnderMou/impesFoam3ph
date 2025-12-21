@@ -24,11 +24,11 @@ stopAt          endTime;
 
 endTime         2e6;
 
-deltaT          1e1; // ti = 1e-3, tf = 1e1;
+deltaT          1e-3; // ti = 1e-3, tf = 1e1;
 
 writeControl    runTime;
 
-writeInterval   1000;
+writeInterval   10;
 
 purgeWrite      0;
 

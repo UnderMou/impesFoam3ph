@@ -32,7 +32,7 @@ void vanGenuchten::correct
 (
     volScalarField& kra,
     volScalarField& krb,
-    const volScalarField& Sb
+    volScalarField& Sb
 ) const
 {
 

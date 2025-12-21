@@ -44,6 +44,16 @@ CoreyBrooks
   krb_max   1.0;
 }
 
+CoreyBrooksExtd
+{
+  Sa_min    1e-3;
+  Sb_min    1e-3;
+  a_exp     3.0;
+  b_exp     3.0;
+  kra_max   1.0;
+  krb_max   1.0;
+}
+
 // Foam model 
 
 foamModel noFoam;

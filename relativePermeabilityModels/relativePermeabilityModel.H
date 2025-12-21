@@ -39,7 +39,7 @@ public:
     (
         volScalarField& kra,
         volScalarField& krb,
-        const volScalarField& Sb
+        volScalarField& Sb
     ) const = 0;
 
     // Factory

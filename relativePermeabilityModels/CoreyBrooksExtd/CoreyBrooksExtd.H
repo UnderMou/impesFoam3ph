@@ -1,12 +1,12 @@
-#ifndef CoreyBrooks_H
-#define CoreyBrooks_H
+#ifndef CoreyBrooksExtd_H
+#define CoreyBrooksExtd_H
 
 #include "relativePermeabilityModel.H"
 
 namespace Foam
 {
 
-class CoreyBrooks
+class CoreyBrooksExtd
 :
     public relativePermeabilityModel
 {
@@ -18,9 +18,9 @@ class CoreyBrooks
     scalar krb_max_;
 
 public:
-    TypeName("CoreyBrooks");
+    TypeName("CoreyBrooksExtd");
 
-    CoreyBrooks(const dictionary& dict);
+    CoreyBrooksExtd(const dictionary& dict);
 
     virtual void correct
     (
