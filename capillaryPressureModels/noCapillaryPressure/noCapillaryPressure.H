@@ -1,24 +1,20 @@
-#ifndef CoreyBrooksPC_H
-#define CoreyBrooksPC_H
+#ifndef noCapillaryPressure_H
+#define noCapillaryPressure_H
 
 #include "capillaryPressureModel.H"
 
 namespace Foam
 {
 
-class CoreyBrooksPC
+class noCapillaryPressure
 :
     public capillaryPressureModel
 {
-    scalar Spc_irr_;
-    scalar Spc_max_;
-    scalar pc0_;
-    double alpha_;
 
 public:
-    TypeName("CoreyBrooksPC");
+    TypeName("noCapillaryPressure");
 
-    CoreyBrooksPC(const dictionary& dict);
+    noCapillaryPressure(const dictionary& dict);
 
     virtual void correct
     (

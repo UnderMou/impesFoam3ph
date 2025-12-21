@@ -35,12 +35,6 @@ public:
     virtual ~capillaryPressureModel() = default;
 
     // ---- Interface ----
-    virtual void correct_dpcds
-    (
-        volScalarField& dpcds,
-        const volScalarField& Sb
-    ) const = 0;
-
     virtual void correct
     (
         volScalarField& pc,

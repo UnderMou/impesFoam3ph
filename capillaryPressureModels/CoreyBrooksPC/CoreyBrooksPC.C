@@ -25,19 +25,7 @@ CoreyBrooksPC::CoreyBrooksPC(const dictionary& dict)
     pc0_(readScalar(dict.lookup("pc0"))),
     alpha_(readScalar(dict.lookup("alpha")))
 {
-    Info << "alpha = " << alpha_ << endl;
-}
 
-void CoreyBrooksPC::correct_dpcds
-(
-    volScalarField& dpcds,
-    const volScalarField& Sb
-) const
-{
-    volScalarField SbSafe = Foam::max(Sb, Spc_irr_ + SMALL);
-    volScalarField Se = (SbSafe-Spc_irr_)/(Spc_max_-Spc_irr_);
-    volScalarField SeSafe = Foam::max(Se, SMALL);
-    dpcds = -alpha_ * pc0_ * Foam::pow(SeSafe, -alpha_ - 1.0) / (Spc_max_ - Spc_irr_);
 }
 
 void CoreyBrooksPC::correct
@@ -48,12 +36,12 @@ void CoreyBrooksPC::correct
 ) const
 {   
     // correct dpcds
-    correct_dpcds(dpcds, Sb);
+    volScalarField SbSafe = Foam::max(Sb, Spc_irr_ + SMALL);
+    volScalarField Se = (SbSafe-Spc_irr_)/(Spc_max_-Spc_irr_);
+    volScalarField SeSafe = Foam::max(Se, SMALL);
+    dpcds = -alpha_ * pc0_ * Foam::pow(SeSafe, -alpha_ - 1.0) / (Spc_max_ - Spc_irr_);
 
     // correct pc
-    volScalarField SbSafe = Foam::max(Sb, Spc_irr_ + SMALL);
-    volScalarField Se = (SbSafe-Spc_irr_)/(Spc_max_-Spc_irr_); 
-    volScalarField SeSafe = Foam::max(Se, SMALL);
     pc = pc0_ * Foam::pow(SeSafe, -alpha_);
 }
 

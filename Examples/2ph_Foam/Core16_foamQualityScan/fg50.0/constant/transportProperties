@@ -43,7 +43,7 @@ CoreyBrooks
 
 // Foam model 
 
-foamModel ashoori;
+foamModel STARS;
 
 STARS
 {
@@ -63,5 +63,14 @@ ashoori
   Sw_ast  0.434987;
   nMAX    8.0e13;
 } 
+
+// Capillary pressure model
+
+capillaryPressureModel noCapillaryPressure;
+
+noCapillaryPressure
+{
+
+}
 
 // ************************************************************************* //
