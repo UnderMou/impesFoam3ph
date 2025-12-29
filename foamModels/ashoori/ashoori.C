@@ -99,7 +99,7 @@ void ashoori::correct
     volScalarField& nD        = *aux_->nD;
     volScalarField& rgrc      = *aux_->rgrc;
     volScalarField& F         = *aux_->F;
-    volScalarField& AcumCoeff = *aux_->AcumCoeff;
+    volScalarField& AcumCoeff = *aux_->AcumCoeff_nD;
     volScalarField& nDLE      = *aux_->nDLE;
     volScalarField& MRF       = *aux_->MRF;
 

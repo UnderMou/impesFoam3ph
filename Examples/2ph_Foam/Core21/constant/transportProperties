@@ -65,7 +65,8 @@ vanGenuchten
 
 // Foam model 
 
-foamModel noFoam;
+foamModel STARS;
+FsurfActive false;
 
 STARS
 {
@@ -75,6 +76,8 @@ STARS
   fmcap     8.4e-8;
   epcap     0.52;
   sigma_ba  0.033;
+  fmsurf    1.0;
+  epsurf    0.0;
 }
 
 noFoam
@@ -89,6 +92,17 @@ capillaryPressureModel noCapillaryPressure;
 noCapillaryPressure
 {
 
+}
+
+// Surfactante concentration transport
+
+surfactantTransportModel Csw;
+surfTranspActive false;
+
+Csw
+{
+  Kd    1.0;
+  rho_s 1.0;
 }
 
 // ************************************************************************* //

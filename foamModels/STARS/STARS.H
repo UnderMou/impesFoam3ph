@@ -16,6 +16,10 @@ class STARS
     scalar fmcap_;
     scalar epcap_;
     scalar sigma_ba_;
+    scalar fmsurf_;
+    scalar epsurf_;
+
+    Switch FsurfActive_;
 
 public:
     TypeName("STARS");
@@ -41,11 +45,18 @@ public:
         volScalarField& Nca
     ) const;
 
+    void correct_Fsurf
+    (
+        volScalarField& Fsurf,
+        volScalarField& Cs
+    ) const;
+
     void correct_MRF
     (
         volScalarField& MRF,
         const volScalarField Fdry,
-        const volScalarField Fshear
+        const volScalarField Fshear,
+        const volScalarField Fsurf
     ) const;
 
     // Correct
