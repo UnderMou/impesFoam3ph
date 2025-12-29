@@ -162,12 +162,9 @@ int main(int argc, char *argv[])
             Info << "Saturation a: " << " Min(Sa) = " << gMin(Sa) << " Max(Sa) = " << gMax(Sa) << endl;
             Info << "Saturation b: " << " Min(Sb) = " << gMin(Sb) << " Max(Sb) = " << gMax(Sb) << endl;
 
-            // Surfactant transport
-            if(surfTranspActive)
-            {
-                Info<< "Using surfactant transport model: " << surfTranspModel->type() << nl << endl;
-                surfTranspModel->correct(Sb, phib, eps);
-            }
+            // Surfactant transport model
+            Info<< "Using surfactant transport model: " << surfTranspModel->type() << nl << endl;
+            surfTranspModel->correct(Sb, phib, eps);
 
         }
 

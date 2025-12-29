@@ -497,12 +497,12 @@ surfaceScalarField phiPc("phiPc",Mbf * dpcdsf * fvc::snGrad(Sb) * mesh.magSf());
 
 // Surfactant concentration transport 
 
-Switch surfTranspActive(transportProperties.lookup("surfTranspActive"));
+word surfTranspModelName(transportProperties.lookup("surfactantTransportModel")); 
 
-Info<< "Reading field Cs\n" << endl;
-
-if (surfTranspActive)
+if (surfTranspModelName == "Csw")
 {
+    Info<< "Reading field Cs\n" << endl;
+
     foamAux.Cs = new volScalarField
     (
         IOobject
@@ -545,7 +545,8 @@ if (surfTranspActive)
         dimensionedScalar("zero", dimless, 0.0)
     );
     // AcumCoeff_csw = eps*Sb + (scalar(1.0) - eps)*rho_sw*Kd; // Kd = dpcsds
-}
+
+} 
 
 autoPtr<surfactantTransportModel> surfTranspModel = surfactantTransportModel::New(transportProperties, &foamAux);
 autoPtr<foamModel> foamModel = foamModel::New(transportProperties, &foamAux);

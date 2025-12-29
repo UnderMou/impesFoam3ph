@@ -96,8 +96,9 @@ noCapillaryPressure
 
 // Surfactante concentration transport
 
-surfactantTransportModel Csw;
-surfTranspActive false;
+surfactantTransportModel noSurfTransp;
+
+noSurfTransp{}
 
 Csw
 {
