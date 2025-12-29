@@ -42,8 +42,6 @@ void Csw::correct
     const volScalarField& eps
 ) const
 {
-    if (!active_) return;
-
     if (!aux_ || !aux_->Cs)
     {
         FatalErrorInFunction
@@ -67,7 +65,7 @@ void Csw::correct
 
     CsEqn.solve();
 
-    Info << "Solving Cs equation!" << nl << endl;
+    Info << "Surfactant concentration: " << " Min(Cs) = " << gMin(Cs) << " Max(Cs) = " << gMax(Cs) << endl;
 }
 
 } // End namespace Foam

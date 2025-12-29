@@ -15,7 +15,6 @@ protected:
     const dictionary& dict_;
     foamAuxFields* aux_;
 
-    Switch active_;
     dimensionedScalar rho_b_;
 
 public:
@@ -37,23 +36,14 @@ public:
     :
         dict_(dict),
         aux_(aux),
-        active_(dict.parent().lookupOrDefault<Switch>("surfTranspActive",false)),
         rho_b_(dict.parent().lookup("rho_b"))
     {
-        if (!active_)
-        {
-            Info<< "Surfactant concentration transport disabled\n" << endl;
-            return;
-        }
-
-        Info<< "Surfactant concentration transport enabled\n" << endl;
+    
     }
 
     virtual ~surfactantTransportModel() = default;
 
     // ---- Interface ----
-    Switch active() const { return active_; }
-
     virtual void correct
     (
         const volScalarField& Sb,
