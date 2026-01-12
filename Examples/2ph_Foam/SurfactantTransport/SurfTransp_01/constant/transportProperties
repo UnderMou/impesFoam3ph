@@ -84,11 +84,17 @@ Csw
 
 // Adorption isotherm
 
-isothermModel noAdsorption;
+isothermModel Langmuir;
 
 Henry
 {
   Kd    1.0;
+}
+
+Langmuir
+{
+  qo    0.3;
+  KL    1.0;
 }
 
 noAdsorption
