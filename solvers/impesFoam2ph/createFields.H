@@ -546,7 +546,36 @@ if (surfTranspModelName == "Csw")
     );
     // AcumCoeff_csw = eps*Sb + (scalar(1.0) - eps)*rho_sw*Kd; // Kd = dpcsds
 
+    foamAux.CsEq = new volScalarField
+    (
+        IOobject
+        (
+            "CsEq",
+            runTime.timeName(),
+            mesh,
+            IOobject::NO_READ,
+            IOobject::AUTO_WRITE
+        ),
+        mesh,
+        dimensionedScalar("one", dimless, 1.0)
+    );
+
+    foamAux.dCsEqdCs = new volScalarField
+    (
+        IOobject
+        (
+            "dCsEqdCs",
+            runTime.timeName(),
+            mesh,
+            IOobject::NO_READ,
+            IOobject::NO_WRITE
+        ),
+        mesh,
+        dimensionedScalar("one", dimless, 1.0)
+    );
+
 } 
 
+autoPtr<isothermModel> isothermModel = isothermModel::New(transportProperties, &foamAux);
 autoPtr<surfactantTransportModel> surfTranspModel = surfactantTransportModel::New(transportProperties, &foamAux);
 autoPtr<foamModel> foamModel = foamModel::New(transportProperties, &foamAux);

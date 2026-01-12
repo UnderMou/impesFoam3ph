@@ -79,8 +79,21 @@ surfactantTransportModel Csw;
 
 Csw
 {
-  Kd    0.05;
   rho_s 2.0e3;
+}
+
+// Adorption isotherm
+
+isothermModel noAdsorption;
+
+Henry
+{
+  Kd    1.0;
+}
+
+noAdsorption
+{
+
 }
 
 // ************************************************************************* //

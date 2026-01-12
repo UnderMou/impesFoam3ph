@@ -24,6 +24,8 @@ struct foamAuxFields
     volScalarField* Cs;
     volScalarField* Fcsw;
     volScalarField* AcumCoeff_csw;
+    volScalarField* CsEq;
+    volScalarField* dCsEqdCs;
 
     foamAuxFields()
     :
@@ -39,7 +41,9 @@ struct foamAuxFields
         nDLE(nullptr),
         Cs(nullptr),    // SurfTransp
         Fcsw(nullptr),
-        AcumCoeff_csw(nullptr)
+        AcumCoeff_csw(nullptr),
+        CsEq(nullptr),
+        dCsEqdCs(nullptr)
     {}
 };
 

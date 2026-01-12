@@ -11,7 +11,6 @@ class Csw
 :
     public surfactantTransportModel
 {
-    scalar Kd_;
     scalar rho_s_;
 
     scalar rho_sw_;
@@ -22,11 +21,6 @@ public:
     Csw(const dictionary& dict, foamAuxFields* aux);
 
     // Csw functions
-
-    scalar correct_dCsEqdCs
-    (
-
-    ) const;
 
     virtual void correct
     (

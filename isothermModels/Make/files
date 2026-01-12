@@ -1,0 +1,5 @@
+isothermModel.C
+Henry/Henry.C
+noAdsorption/noAdsorption.C
+
+LIB = $(FOAM_USER_LIBBIN)/libisothermModels

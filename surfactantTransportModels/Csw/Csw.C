@@ -20,19 +20,10 @@ addToRunTimeSelectionTable
 Csw::Csw(const dictionary& dict, foamAuxFields* aux)
 :
     surfactantTransportModel(dict, aux),
-    Kd_(readScalar(dict.lookup("Kd"))),
     rho_s_(readScalar(dict.lookup("rho_s")))
 {
     rho_sw_ = rho_s_ / rho_b_.value();
     Info << "rho_sw = " << rho_sw_ << endl;
-}
-
-scalar Csw::correct_dCsEqdCs
-(
-
-) const
-{
-    return Kd_;
 }
 
 void Csw::correct
@@ -50,11 +41,12 @@ void Csw::correct
     }
 
     volScalarField& Cs        = *aux_->Cs;
+    volScalarField& dCsEqdCs  = *aux_->dCsEqdCs;
     volScalarField& Fcsw      = *aux_->Fcsw;
     volScalarField& AcumCoeff = *aux_->AcumCoeff_csw;
 
     Fcsw = -fvc::div(phib); // + qb
-    AcumCoeff = eps*Sb + (scalar(1.0) - eps)*rho_sw_*correct_dCsEqdCs();
+    AcumCoeff = eps*Sb + (scalar(1.0) - eps)*rho_sw_*dCsEqdCs;
 
     fvScalarMatrix CsEqn
     (
