@@ -73,33 +73,32 @@ noCapillaryPressure
 
 }
 
-// Surfactante concentration transport
+// Surfactante concentration transport and adsorption isotherm
 
 surfactantTransportModel Csw;
 
 Csw
 {
   rho_s 2.0e3;
+
+  isothermModel Henry;
+
+  // Adorption isotherms
+  Henry
+  {
+    Kd    0.05;
+  }
+  Langmuir
+  {
+    qo    0.3;
+    KL    1.0;
+  }
+  noAdsorption
+  {
+
+  }
 }
 
-// Adorption isotherm
 
-isothermModel Langmuir;
-
-Henry
-{
-  Kd    1.0;
-}
-
-Langmuir
-{
-  qo    0.3;
-  KL    1.0;
-}
-
-noAdsorption
-{
-
-}
 
 // ************************************************************************* //

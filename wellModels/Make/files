@@ -1,0 +1,5 @@
+wellModel.C
+ConstantInjection/ConstantInjection.C
+noWell/noWell.C
+
+LIB = $(FOAM_USER_LIBBIN)/libwellModels

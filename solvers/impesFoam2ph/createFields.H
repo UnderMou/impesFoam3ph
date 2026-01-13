@@ -546,6 +546,8 @@ if (surfTranspModelName == "Csw")
     );
     // AcumCoeff_csw = eps*Sb + (scalar(1.0) - eps)*rho_sw*Kd; // Kd = dpcsds
 
+
+    // Adsorption fields
     foamAux.CsEq = new volScalarField
     (
         IOobject
@@ -573,9 +575,90 @@ if (surfTranspModelName == "Csw")
         mesh,
         dimensionedScalar("one", dimless, 1.0)
     );
-
 } 
 
-autoPtr<isothermModel> isothermModel = isothermModel::New(transportProperties, &foamAux);
+
+
+
+// autoPtr<isothermModel> isothermModel = isothermModel::New(transportProperties, &foamAux);
 autoPtr<surfactantTransportModel> surfTranspModel = surfactantTransportModel::New(transportProperties, &foamAux);
 autoPtr<foamModel> foamModel = foamModel::New(transportProperties, &foamAux);
+
+
+// SOURCE TERMS
+
+// volume rate source term [m3 / s m3] -> [1 / s]
+volScalarField qt
+(
+    IOobject
+    (
+        "qt",
+        runTime.timeName(),
+        mesh,
+        IOobject::READ_IF_PRESENT,
+        IOobject::AUTO_WRITE
+    ),
+    mesh,
+    dimensionedScalar("zero",dimless,0)
+);
+
+volScalarField qb
+(
+    IOobject
+    (
+        "qb",
+        runTime.timeName(),
+        mesh,
+        IOobject::NO_READ,
+        IOobject::AUTO_WRITE
+    ),
+    mesh,
+    dimensionedScalar("zero", dimless, 0.0)
+);
+
+volScalarField qt_inj
+(
+    IOobject
+    (
+        "qt_inj",
+        runTime.timeName(),
+        mesh,
+        IOobject::NO_READ,
+        IOobject::AUTO_WRITE
+    ),
+    Foam::mag(max(qt, scalar(0)))
+);
+
+volScalarField qt_prod
+(
+    IOobject
+    (
+        "qt_prod",
+        runTime.timeName(),
+        mesh,
+        IOobject::NO_READ,
+        IOobject::AUTO_WRITE
+    ),
+    Foam::mag(min(qt, scalar(0)))
+);
+
+Info<< "Reading wellProperties\n" << endl;
+
+IOdictionary wellProperties
+(
+    IOobject
+    (
+        "wellProperties",
+        runTime.constant(),
+        mesh,
+        IOobject::MUST_READ_IF_MODIFIED,
+        IOobject::NO_WRITE
+    )
+);
+
+// Switch wellActive(wellProperties.headerOk());
+// Info << "wellActive: " << wellActive << nl << endl;
+
+autoPtr<wellModel> wellModel = wellModel::New(wellProperties);
+
+

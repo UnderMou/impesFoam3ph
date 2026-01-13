@@ -45,6 +45,10 @@ void Csw::correct
     volScalarField& Fcsw      = *aux_->Fcsw;
     volScalarField& AcumCoeff = *aux_->AcumCoeff_csw;
 
+    // isotherm
+    Info<< "Using isotherm model: " << isothermModel_->type() << nl << endl;
+    isothermModel_->correct();
+
     Fcsw = -fvc::div(phib); // + qb
     AcumCoeff = eps*Sb + (scalar(1.0) - eps)*rho_sw_*dCsEqdCs;
 

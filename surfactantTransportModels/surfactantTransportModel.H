@@ -5,6 +5,7 @@
 #include "dictionary.H"
 #include "runTimeSelectionTables.H"
 #include "foamAuxFields.H"
+#include "isothermModel.H"
 
 namespace Foam
 {
@@ -14,6 +15,7 @@ class surfactantTransportModel
 protected:
     const dictionary& dict_;
     foamAuxFields* aux_;
+    autoPtr<isothermModel> isothermModel_;
 
     dimensionedScalar rho_b_;
 
@@ -38,7 +40,7 @@ public:
         aux_(aux),
         rho_b_(dict.parent().lookup("rho_b"))
     {
-    
+        isothermModel_ = isothermModel::New(dict, aux);
     }
 
     virtual ~surfactantTransportModel() = default;

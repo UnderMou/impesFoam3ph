@@ -41,6 +41,9 @@ Description
 #include "foamModel.H"
 #include "surfactantTransportModel.H"
 #include "isothermModel.H"
+#include "wellModel.H"
+
+// #include "wellModeling.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -107,7 +110,8 @@ int main(int argc, char *argv[])
             (
                 fvm::laplacian(-Mf, p) + fvc::div(phiG) + fvc::div(phiPc)
                 ==
-                zeroRHS
+                // zeroRHS
+                qt
             );
 
             pEqn.solve();
@@ -149,11 +153,15 @@ int main(int argc, char *argv[])
                 }
             }
 
+            // well correction
+            wellModel->correct(qb,Fb,qt_inj,qt_prod);
+
             fvScalarMatrix SbEqn
             (
                 eps*fvm::ddt(Sb) + fvc::div(phib) 
                 ==
-                zeroRHS
+                // zeroRHS
+                qb
             );
 
             SbEqn.solve();
@@ -164,8 +172,8 @@ int main(int argc, char *argv[])
             Info << "Saturation b: " << " Min(Sb) = " << gMin(Sb) << " Max(Sb) = " << gMax(Sb) << endl;
 
             // Surfactant transport model
-            Info<< "Using isotherm model: " << isothermModel->type() << nl << endl;
-            isothermModel->correct();
+            // Info<< "Using isotherm model: " << isothermModel->type() << nl << endl;
+            // isothermModel->correct();
             Info<< "Using surfactant transport model: " << surfTranspModel->type() << nl << endl;
             surfTranspModel->correct(Sb, phib, eps);
 
