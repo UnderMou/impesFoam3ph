@@ -11,15 +11,15 @@ spe10 = spe10.iloc[:,0].to_numpy()
 perm_base = 1e-12
 
 # DATA OPENFOAM
-openf = pd.read_csv('out.csv', header=None)
+openf = pd.read_csv('mesh_info_toPlot.csv', header=None)
 openf_x = openf.iloc[:,1].to_numpy()
 openf_y = openf.iloc[:,2].to_numpy()
 K = perm_base * spe10
 
 nx = 220
 ny = 60
-for i in range(ny):
-    K[i*nx] = 1e-13
+# for i in range(ny):
+#     K[i*nx] = 1e-13
 
 # PLOT
 # plt.scatter(spe10_x, spe10_y, c=spe10_perm, marker='o', label="Original Data", cmap='viridis', edgecolor='black')
@@ -71,8 +71,7 @@ boundaryField
 {
     inlet
     {
-        type            calculated;
-        value           uniform 1e-13;
+        type            zeroGradient;
     }
     outlet
     {

@@ -29,15 +29,7 @@ boundaryField
 
     inlet
     {
-        // type               zeroGradient;
-
-        // type            fixedGradient;
-        // gradient        uniform 210208.77490586368;
-
-        // type            fixedValue;
-        // value           uniform 1e5;
-
-        type                darcyGradPressure;
+        type                darcyGradPressure_GPC;
         value               uniform 0.0;
     }
 

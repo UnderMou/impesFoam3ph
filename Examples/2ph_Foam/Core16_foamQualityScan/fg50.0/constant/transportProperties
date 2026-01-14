@@ -14,15 +14,19 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
+// Fluid and rock properties
+// a: gas
+// b: water
+
 mu_a              mu_a [0 0 0 0 0 0 0] 2.112e-5;      // Pa.s
 
-mu_b              mu_b [0 0 0 0 0 0 0] 5.0e-4;     // Pa.s
+mu_b              mu_b [0 0 0 0 0 0 0] 5.0e-4;        // Pa.s
 
-rho_a              rho_a [0 0 0 0 0 0 0] 1000.0;    // kg/m3
+rho_a              rho_a [0 0 0 0 0 0 0] 1000.0;      // kg/m3
 
-rho_b              rho_b [0 0 0 0 0 0 0] 1000.0;    // kg/m3
+rho_b              rho_b [0 0 0 0 0 0 0] 1000.0;      // kg/m3
 
-prst            prst [0 0 0 0 0 0 0] 0.25;        // []
+prst            prst [0 0 0 0 0 0 0] 0.25;            // []
 
 // Gravity
 g_vector        g_vector [0 0 0 0 0 0 0] (0 0 0);
@@ -54,6 +58,7 @@ CoreyBrooksExtd
 // Foam model 
 
 foamModel STARS;
+FsurfActive false;
 
 STARS
 {
@@ -63,16 +68,13 @@ STARS
   fmcap     1.0;
   epcap     0.0;
   sigma_ba  1.0; 
+  fmsurf    1.0;
+  epsurf    0.0;
 }
 
-ashoori
+noFoam
 {
-  Kc      0.01; 
-  A       228.3637;
-  Cmrf    259.6237;
-  Sw_ast  0.434987;
-  nMAX    8.0e13;
-} 
+}
 
 // Capillary pressure model
 
@@ -80,7 +82,20 @@ capillaryPressureModel noCapillaryPressure;
 
 noCapillaryPressure
 {
+}
 
+// Surfactante concentration transport
+
+surfactantTransportModel noSurfTransp;
+
+noSurfTransp
+{
+  isothermModel noAdsorption;
+
+  // Adorption isotherms
+  noAdsorption
+  {
+  }
 }
 
 // ************************************************************************* //

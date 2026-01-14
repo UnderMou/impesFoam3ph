@@ -14,50 +14,95 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-// mu_a              mu_a [0 0 0 0 0 0 0] 1.0e-5;   // Pa.s
+// Fluid and rock properties
+// a: gas
+// b: water
 
-// mu_b              mu_b [0 0 0 0 0 0 0] 1.0e-3;     // Pa.s
-
-// rho_a              rho_a [0 0 0 0 0 0 0] 1000.0;    // kg/m3
-
-// rho_b              rho_b [0 0 0 0 0 0 0] 1000.0;    // kg/m3
-
-// prst            prst [0 0 0 0 0 0 0] 0.25;        // []
-
-
-// // Corey-Brooks parameters
-// Sa_min       Sa_min [0 0 0 0 0 0 0] 0.1;
-// Sb_min       Sb_min [0 0 0 0 0 0 0] 0.15;
-// a_exp        a_exp [0 0 0 0 0 0 0] 8.0;
-// b_exp        b_exp [0 0 0 0 0 0 0] 3.0;
-// kra_max      kra_max [0 0 0 0 0 0 0] 0.5;
-// krb_max      krb_max [0 0 0 0 0 0 0] 1.0;
-
-mu_a              mu_a [0 0 0 0 0 0 0] 2.0e-5;   // Pa.s
+mu_a              mu_a [0 0 0 0 0 0 0] 2.0e-5;      // Pa.s
 
 mu_b              mu_b [0 0 0 0 0 0 0] 1.05e-3;     // Pa.s
 
-rho_a              rho_a [0 0 0 0 0 0 0] 1000.0;    // kg/m3
+rho_a              rho_a [0 0 0 0 0 0 0] 700.0;     // kg/m3
 
 rho_b              rho_b [0 0 0 0 0 0 0] 1000.0;    // kg/m3
 
 prst            prst [0 0 0 0 0 0 0] 0.1593;        // []
 
+// Gravity
+g_vector        g_vector [0 0 0 0 0 0 0] (0 0 0);
 
-// Corey-Brooks parameters
-Sa_min       Sa_min [0 0 0 0 0 0 0] 0.293;
-Sb_min       Sb_min [0 0 0 0 0 0 0] 0.4;
-a_exp        a_exp [0 0 0 0 0 0 0] 0.96;
-b_exp        b_exp [0 0 0 0 0 0 0] 2.98;
-kra_max      kra_max [0 0 0 0 0 0 0] 0.04;
-krb_max      krb_max [0 0 0 0 0 0 0] 0.302;
+// Relative permeability model
 
-// STARS Foam parameters
-fmmob        fmmob [0 0 0 0 0 0 0] 688.743;
-SF           SF [0 0 0 0 0 0 0] 0.45783;
-sfbet        sfbet [0 0 0 0 0 0 0] 144.383;
-fmcap        fmcap [0 0 0 0 0 0 0] 8.4e-8;
-epcap        epcap [0 0 0 0 0 0 0] 0.52463;
-sigma_ba     sigma_ba [0 0 0 0 0 0 0] 0.033; 
+relativePermeabilityModel CoreyBrooksExtd;
+
+CoreyBrooks
+{
+  Sa_min    0.293;
+  Sb_min    0.4;
+  a_exp     0.96;
+  b_exp     2.98;
+  kra_max   0.04;
+  krb_max   0.302;
+}
+
+CoreyBrooksExtd
+{
+  Sa_min    0.293;
+  Sb_min    0.4;
+  a_exp     0.96;
+  b_exp     2.98;
+  kra_max   0.04;
+  krb_max   0.302;
+}
+
+// Foam model 
+
+foamModel STARS;
+FsurfActive false;
+
+STARS
+{
+  fmmob     688.743;
+  SF        0.45783;
+  sfbet     144.383;
+
+  // With Fshear
+  fmcap     8.4e-8;
+  epcap     0.52463;
+
+  //Without Fshear
+  // fmcap     1.0;      // could be any value
+  // epcap     0; 
+
+  sigma_ba  0.033;
+  fmsurf    1.0;
+  epsurf    0.0;
+}
+
+noFoam
+{
+}
+
+// Capillary pressure model
+
+capillaryPressureModel noCapillaryPressure;
+
+noCapillaryPressure
+{
+}
+
+// Surfactante concentration transport
+
+surfactantTransportModel noSurfTransp;
+
+noSurfTransp
+{
+  isothermModel noAdsorption;
+
+  // Adorption isotherms
+  noAdsorption
+  {
+  }
+}
 
 // ************************************************************************* //

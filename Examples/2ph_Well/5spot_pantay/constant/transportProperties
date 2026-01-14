@@ -71,12 +71,12 @@ surfactantTransportModel noSurfTransp;
 noSurfTransp
 {}
 
-// Adorption isotherm
+// // Adorption isotherm
 
-isothermModel noAdsorption;
+// isothermModel noAdsorption;
 
-noAdsorption
-{}
+// noAdsorption
+// {}
 
 // Surfactante concentration transport and adsorption isotherm
 

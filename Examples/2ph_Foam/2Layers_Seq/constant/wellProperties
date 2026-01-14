@@ -7,36 +7,17 @@
 \*---------------------------------------------------------------------------*/
 FoamFile
 {
-    version     2.0;
     format      ascii;
-    class       volScalarField;
-    location    "0";
-    object      p;
+    class       dictionary;
+    location    "constant";
+    object      wellProperties;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-dimensions      [0 0 0 0 0 0 0];    // Pa
+wellModel noWell;
 
-internalField   uniform 0;
-
-boundaryField
+noWell
 {
-    outlet
-    {
-        type            fixedValue;
-        value           uniform 0.0;
-    }
-
-    inlet
-    {
-        type               darcyGradPressure_GPC;
-        value              uniform 0.0;
-    }
-
-    emptyWalls
-    {
-        type            empty;
-    }
 }
 
 // ************************************************************************* //

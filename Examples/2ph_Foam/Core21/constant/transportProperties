@@ -15,19 +15,20 @@ FoamFile
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 // Fluid and rock properties
+// a: gas
+// b: water
 
 mu_a              mu_a [0 0 0 0 0 0 0] 2.0e-5;      // Pa.s
 
 mu_b              mu_b [0 0 0 0 0 0 0] 1.05e-3;     // Pa.s
 
-rho_a              rho_a [0 0 0 0 0 0 0] 1.0;    // kg/m3
+rho_a              rho_a [0 0 0 0 0 0 0] 1.0;       // kg/m3
 
 rho_b              rho_b [0 0 0 0 0 0 0] 1000.0;    // kg/m3
 
 prst            prst [0 0 0 0 0 0 0] 0.1593;        // []
 
 // Gravity
-// g_vector        g_vector [0 0 0 0 0 0 0] (-9.81 0 0);
 g_vector        g_vector [0 0 0 0 0 0 0] (0 0 0);
 
 // Relative permeability model
@@ -82,7 +83,6 @@ STARS
 
 noFoam
 {
-  
 }
 
 // Capillary pressure model
@@ -91,19 +91,20 @@ capillaryPressureModel noCapillaryPressure;
 
 noCapillaryPressure
 {
-
 }
 
 // Surfactante concentration transport
 
 surfactantTransportModel noSurfTransp;
 
-noSurfTransp{}
-
-Csw
+noSurfTransp
 {
-  Kd    1.0;
-  rho_s 1.0;
+  isothermModel noAdsorption;
+
+  // Adorption isotherms
+  noAdsorption
+  {
+  }
 }
 
 // ************************************************************************* //
