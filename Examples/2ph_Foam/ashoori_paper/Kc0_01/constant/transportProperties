@@ -57,5 +57,30 @@ ashoori
   nMAX    8.0e13;
 }
 
+// Capillary pressure model
+
+capillaryPressureModel ashooriPC;
+
+ashooriPC
+{
+  Swc   0.2;
+  Sgr   0.18;
+  pc0   330;
+  c     0.01;
+}
+
+// Surfactante concentration transport
+
+surfactantTransportModel noSurfTransp;
+
+noSurfTransp
+{
+  isothermModel noAdsorption;
+
+  // Adorption isotherms
+  noAdsorption
+  {
+  }
+}
 
 // ************************************************************************* //

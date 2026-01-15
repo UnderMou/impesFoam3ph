@@ -8,33 +8,16 @@
 FoamFile
 {
     format      ascii;
-    class       polyBoundaryMesh;
-    location    "constant/polyMesh";
-    object      boundary;
+    class       dictionary;
+    location    "constant";
+    object      wellProperties;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-3
-(
-    inlet
-    {
-        type            patch;
-        nFaces          1;
-        startFace       499;
-    }
-    outlet
-    {
-        type            patch;
-        nFaces          1;
-        startFace       500;
-    }
-    emptyWalls
-    {
-        type            empty;
-        inGroups        List<word> 1(empty);
-        nFaces          2000;
-        startFace       501;
-    }
-)
+wellModel noWell;
+
+noWell
+{
+}
 
 // ************************************************************************* //
