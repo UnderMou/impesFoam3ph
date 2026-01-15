@@ -17,9 +17,9 @@ FoamFile
 // a: gas
 // b: water
 
-mu_a              mu_a [0 0 0 0 0 0 0] 2.0e-5;    // Pa.s
+mu_a              mu_a [0 0 0 0 0 0 0] 2.0e-5;      // Pa.s
 
-mu_b              mu_b [0 0 0 0 0 0 0] 1.0e-3;    // Pa.s
+mu_b              mu_b [0 0 0 0 0 0 0] 1.0e-3;      // Pa.s
 
 rho_a              rho_a [0 0 0 0 0 0 0] 1.0;       // kg/m3
 
@@ -50,10 +50,34 @@ foamModel ashoori;
 
 ashoori
 {
-  Kc      1.0; // 0, 0.1, 1, 200
+  Kc      1; // 0, 0.1, 1, 200
   A       400;
   Cmrf    18500;
   Sw_ast  0.37;
   nMAX    8.0e13;
+}
+
+// Capillary pressure model
+
+capillaryPressureModel noCapillaryPressure;
+
+noCapillaryPressure
+{
+}
+
+// Surfactante concentration transport and adsorption isotherm
+
+surfactantTransportModel noSurfTransp;
+
+noSurfTransp
+{
+
+  isothermModel noAdsorption;
+
+  // Adorption isotherms
+  noAdsorption
+  {
+
+  }
 }
 // ************************************************************************* //

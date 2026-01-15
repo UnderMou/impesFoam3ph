@@ -120,7 +120,7 @@ if __name__ == '__main__':
         # Time and domain
         time_dirs = np.arange(1,150+1,1)
         data_dict = parse_openfoam_case(paths[i], variables=['Sb','nD'],time_dirs=time_dirs.tolist())
-        t_find = 100
+        t_find = 150
         idt = np.argmin(np.abs(time_dirs - t_find))
         x = np.linspace(0,0.051,len(data_dict['Sb'][0]))
         x = x[:-2]
