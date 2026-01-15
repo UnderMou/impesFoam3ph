@@ -47,7 +47,7 @@ runTimeModifiable true;
 
 libs
 (
-    "libmyPorousMediumBCs.so"
+    "libboundaryConditions_2ph.so"
 );
 
 // ************************************************************************* //

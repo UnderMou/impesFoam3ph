@@ -2,4 +2,4 @@ darcyGradPressure/darcyGradPressure.C
 darcyGradPressure_G/darcyGradPressure_G.C
 darcyGradPressure_GPC/darcyGradPressure_GPC.C
 
-LIB = $(FOAM_USER_LIBBIN)/libmyPorousMediumBCs
+LIB = $(FOAM_USER_LIBBIN)/libboundaryConditions_2ph

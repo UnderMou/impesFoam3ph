@@ -5,9 +5,9 @@ $(WM_PROJECT_DIR)/src/finiteVolume/lnInclude/fvModels.H \
 $(WM_PROJECT_DIR)/src/finiteVolume/lnInclude/simpleControl.H \
 $(WM_PROJECT_DIR)/src/finiteVolume/lnInclude/fvConstraints.H \
 $(WM_PROJECT_DIR)/src/finiteVolume/lnInclude/wallFvPatch.H \
-../../relativePermeabilityModels/relativePermeabilityModel.H \
-../../capillaryPressureModels/capillaryPressureModel.H \
-../../foamModels/foamModel.H \
+../../relativePermeabilityModels/2ph/relativePermeabilityModel.H \
+../../capillaryPressureModels/2ph/capillaryPressureModel.H \
+../../foamModels/2ph/foamModel.H \
 ../../surfactantTransportModels/surfactantTransportModel.H \
 ../../isothermModels/isothermModel.H \
 ../../wellModels/wellModel.H \
@@ -54,7 +54,7 @@ $(WM_PROJECT_DIR)/src/finiteVolume/lnInclude/fvPatch.H \
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/wallPolyPatch.H \
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/dictionary.H \
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/runTimeSelectionTables.H \
-../../foamModels/foamAuxFields.H \
+../../foamModels/2ph/foamAuxFields.H \
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/listOptions.H \
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/setRootCase.H \
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/listOutput.H \
@@ -790,9 +790,9 @@ $(WM_PROJECT_DIR)/src/finiteVolume/lnInclude/fvModels.H :
 $(WM_PROJECT_DIR)/src/finiteVolume/lnInclude/simpleControl.H :
 $(WM_PROJECT_DIR)/src/finiteVolume/lnInclude/fvConstraints.H :
 $(WM_PROJECT_DIR)/src/finiteVolume/lnInclude/wallFvPatch.H :
-../../relativePermeabilityModels/relativePermeabilityModel.H :
-../../capillaryPressureModels/capillaryPressureModel.H :
-../../foamModels/foamModel.H :
+../../relativePermeabilityModels/2ph/relativePermeabilityModel.H :
+../../capillaryPressureModels/2ph/capillaryPressureModel.H :
+../../foamModels/2ph/foamModel.H :
 ../../surfactantTransportModels/surfactantTransportModel.H :
 ../../isothermModels/isothermModel.H :
 ../../wellModels/wellModel.H :
@@ -839,7 +839,7 @@ $(WM_PROJECT_DIR)/src/finiteVolume/lnInclude/fvPatch.H :
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/wallPolyPatch.H :
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/dictionary.H :
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/runTimeSelectionTables.H :
-../../foamModels/foamAuxFields.H :
+../../foamModels/2ph/foamAuxFields.H :
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/listOptions.H :
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/setRootCase.H :
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/listOutput.H :

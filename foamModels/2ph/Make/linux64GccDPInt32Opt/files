@@ -3,4 +3,4 @@ SOURCE += STARS/STARS.C
 SOURCE += ashoori/ashoori.C
 SOURCE += noFoam/noFoam.C
 
-LIB = $(FOAM_USER_LIBBIN)/libfoamModels
+LIB = $(FOAM_USER_LIBBIN)/libfoamModels_2ph

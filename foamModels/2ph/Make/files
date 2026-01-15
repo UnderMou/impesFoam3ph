@@ -3,4 +3,4 @@ STARS/STARS.C
 ashoori/ashoori.C
 noFoam/noFoam.C
 
-LIB = $(FOAM_USER_LIBBIN)/libfoamModels
+LIB = $(FOAM_USER_LIBBIN)/libfoamModels_2ph
