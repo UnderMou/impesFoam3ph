@@ -26,24 +26,27 @@ struct foamAuxFields
     volScalarField* AcumCoeff_csw;
     volScalarField* CsEq;
     volScalarField* dCsEqdCs;
+    // isotherm
+    volScalarField* oneField;
 
     foamAuxFields()
     :
         MRF(nullptr),
-        Nca(nullptr),   // STARS
+        Nca(nullptr),       // STARS
         Fdry(nullptr),
         Fshear(nullptr),
         Fsurf(nullptr),
-        nD(nullptr),    // Ashoori
+        nD(nullptr),        // Ashoori
         rgrc(nullptr),
         F(nullptr),
         AcumCoeff_nD(nullptr),
         nDLE(nullptr),
-        Cs(nullptr),    // SurfTransp
+        Cs(nullptr),        // SurfTransp
         Fcsw(nullptr),
         AcumCoeff_csw(nullptr),
         CsEq(nullptr),
-        dCsEqdCs(nullptr)
+        dCsEqdCs(nullptr),
+        oneField(nullptr)   // isotherm
     {}
 };
 

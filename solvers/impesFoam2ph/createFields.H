@@ -575,6 +575,20 @@ if (surfTranspModelName == "Csw")
         mesh,
         dimensionedScalar("one", dimless, 1.0)
     );
+
+    foamAux.oneField = new volScalarField
+    (
+        IOobject
+        (
+            "oneField",
+            runTime.timeName(),
+            mesh,
+            IOobject::NO_READ,
+            IOobject::NO_WRITE
+        ),
+        mesh,
+        dimensionedScalar("one", dimless, 1.0)
+    );
 } 
 
 

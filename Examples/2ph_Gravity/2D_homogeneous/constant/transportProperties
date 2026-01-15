@@ -14,67 +14,62 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-// Fluid and rock properties
-// a: gas
+// a: oil
 // b: water
 
-mu_a              mu_a [0 0 0 0 0 0 0] 1.76e-5;    // Pa.s
+mu_a              mu_a [0 0 0 0 0 0 0] 2.0e-5;      // Pa.s
 
-mu_b              mu_b [0 0 0 0 0 0 0] 1e-3;       // Pa.s
+mu_b              mu_b [0 0 0 0 0 0 0] 1.05e-3;     // Pa.s
 
-rho_a              rho_a [0 0 0 0 0 0 0] 1e0;      // kg/m3
+rho_a              rho_a [0 0 0 0 0 0 0] 1.0;       // kg/m3
 
-rho_b              rho_b [0 0 0 0 0 0 0] 1e3;      // kg/m3
+rho_b              rho_b [0 0 0 0 0 0 0] 1000.0;    // kg/m3
 
-prst            prst [0 0 0 0 0 0 0] 0.5;          // [-]
+prst            prst [0 0 0 0 0 0 0] 0.1593;        // []
 
 // Gravity
-g_vector        g_vector [0 0 0 0 0 0 0] (-9.81 0 0);
+g_vector        g_vector [0 0 0 0 0 0 0] (0 -9.81 0);
 
 // Relative permeability model
 
 relativePermeabilityModel CoreyBrooksExtd;
 
-CoreyBrooks
-{
-  Sa_min    1e-3;
-  Sb_min    1e-3;
-  a_exp     3.0;
-  b_exp     3.0;
-  kra_max   1.0;
-  krb_max   1.0;
-}
-
 CoreyBrooksExtd
 {
-  Sa_min    1e-3;
-  Sb_min    1e-3;
-  a_exp     3.0;
-  b_exp     3.0;
-  kra_max   1.0;
-  krb_max   1.0;
+  Sa_min    0.293;
+  Sb_min    0.4;
+  a_exp     0.96;      
+  b_exp     2.98;   
+  kra_max   0.04;
+  krb_max   0.302;
 }
 
 // Foam model 
 
-foamModel noFoam;
+foamModel STARS;
 FsurfActive false;
 
-noFoam
+STARS
 {
-  
+  fmmob     10.0;     // Weak foam
+  SF        0.45656;
+  sfbet     504.143;
+  fmcap     1.0;
+  epcap     0.0;
+  sigma_ba  1.0;
+  fmsurf    1.0;
+  epsurf    0.0;
 }
+
+noFoam
+{}
 
 // Capillary pressure model
 
-capillaryPressureModel CoreyBrooksPC;
+capillaryPressureModel noCapillaryPressure;
 
-CoreyBrooksPC
+noCapillaryPressure
 {
-  Spc_irr 0.0;
-  Spc_max 1.0;
-  pc0     1000.0;
-  alpha   0.5;
 }
 
 // Surfactante concentration transport

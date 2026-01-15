@@ -47,7 +47,7 @@ CoreyBrooks
 // Foam model 
 
 foamModel noFoam;
-// FsurfActive true;
+// FsurfActive false;
 
 noFoam
 {}

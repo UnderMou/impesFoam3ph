@@ -39,9 +39,9 @@ void Henry::correct
     volScalarField& Cs              = *aux_->Cs;
     volScalarField& dCsEqdCs        = *aux_->dCsEqdCs;
     volScalarField& CsEq            = *aux_->CsEq;
+    const volScalarField& oneField  = *aux_->oneField;
 
-    dCsEqdCs = Kd_ * dCsEqdCs; // because dCsEqdCs is initially
-                               // filled of 1.0
+    dCsEqdCs = Kd_ * oneField;
     CsEq = Kd_ * Cs;
 
 }

@@ -17,9 +17,9 @@ FoamFile
 // a: gas
 // b: water
 
-mu_a              mu_a [0 0 0 0 0 0 0] 5e-5;    // Pa.s
+mu_a              mu_a [0 0 0 0 0 0 0] 5e-5;        // Pa.s
 
-mu_b              mu_b [0 0 0 0 0 0 0] 1e-3;    // Pa.s
+mu_b              mu_b [0 0 0 0 0 0 0] 1e-3;        // Pa.s
 
 rho_a              rho_a [0 0 0 0 0 0 0] 1.0;       // kg/m3
 
@@ -73,14 +73,32 @@ noCapillaryPressure
 
 }
 
-// Surfactante concentration transport
+// Surfactante concentration transport and adsorption isotherm
 
 surfactantTransportModel Csw;
 
 Csw
 {
-  Kd    0.05;
   rho_s 2.0e3;
+
+  isothermModel Henry;
+
+  // Adorption isotherms
+  Henry
+  {
+    Kd    0.05;
+  }
+  Langmuir
+  {
+    qo    0.3;
+    KL    1.0;
+  }
+  noAdsorption
+  {
+
+  }
 }
+
+
 
 // ************************************************************************* //

@@ -9,50 +9,13 @@ FoamFile
 {
     format      ascii;
     class       dictionary;
-    location    "system";
-    object      controlDict;
+    location    "constant";
+    object      wellProperties;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-application     impesFoam;
+wellModel noWell;
 
-startFrom       latestTime; // startTime;
-
-startTime       0;
-
-stopAt          endTime;
-
-endTime         2e6;
-
-deltaT          1e-3; // ti = 1e-3, tf = 1e1;
-
-writeControl    runTime;
-
-writeInterval   10; // ti = 10, tf = 1000;
-
-purgeWrite      0;
-
-writeFormat     ascii;
-
-writePrecision  6;
-
-writeCompression off;
-
-timeFormat      general;
-
-timePrecision   6;
-
-runTimeModifiable true;
-
-libs
-(
-    "libmyPorousMediumBCs.so"
-);
+noWell{}
 
 // ************************************************************************* //
-
-
-DebugSwitches
-{
-    dimensionSet 0;
-}
