@@ -1,0 +1,6 @@
+foamModel.C
+STARS/STARS.C
+ashoori/ashoori.C
+noFoam/noFoam.C
+
+LIB = $(FOAM_USER_LIBBIN)/libfoamModels_3ph
