@@ -11,6 +11,7 @@ $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/setRootCaseLists.H \
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/createTime.H \
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/createMesh.H \
 createFields.H \
+CourantNo.H \
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/parRun.H \
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/Time.H \
 $(WM_PROJECT_DIR)/src/finiteVolume/lnInclude/fvMesh.H \
@@ -790,6 +791,7 @@ $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/setRootCaseLists.H :
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/createTime.H :
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/createMesh.H :
 createFields.H :
+CourantNo.H :
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/parRun.H :
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/Time.H :
 $(WM_PROJECT_DIR)/src/finiteVolume/lnInclude/fvMesh.H :

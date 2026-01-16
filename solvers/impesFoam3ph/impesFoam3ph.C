@@ -61,7 +61,7 @@ int main(int argc, char *argv[])
 
         Info<< "Time = " << runTime.timeName() << nl << endl;
 
-        // #include "CourantNo.H"
+        #include "CourantNo.H"
         // #include "GdEpsilon.H"
 
         Info<< "\nCalculating p and Sb field\n" << endl;     
