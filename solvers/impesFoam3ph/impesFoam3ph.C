@@ -41,7 +41,7 @@ Description
 #include "foamModel.H"
 // #include "surfactantTransportModel.H"
 // #include "isothermModel.H"
-// #include "wellModel.H"
+#include "wellModel.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -62,7 +62,7 @@ int main(int argc, char *argv[])
         Info<< "Time = " << runTime.timeName() << nl << endl;
 
         #include "CourantNo.H"
-        // #include "GdEpsilon.H"
+        #include "GdEpsilon.H"
 
         Info<< "\nCalculating p and Sb field\n" << endl;     
 
@@ -83,18 +83,21 @@ int main(int argc, char *argv[])
             Mbf = Kf*krbf/mu_b;
             Mcf = Kf*krcf/mu_c;
             Mf = Maf+Mbf+Mcf;
+            Mf = max(Mf, VSMALL);
 
             Laf = rho_a*Kf*kraf/mu_a;
             Lbf = rho_b*Kf*krbf/mu_b;
             Lcf = rho_c*Kf*krcf/mu_c;
             Lf = Laf+Lbf+Lcf;
+            Lf = max(Lf, VSMALL);
+
             phiG = (Lf * g) & mesh.Sf();
 
             Faf = Maf/Mf;
             Fbf = Mbf/Mf;
             Fa = (kra/mu_a) / ( (kra/mu_a) + (krb/mu_b) + (krc/mu_c) );
             Fb = (krb/mu_b) / ( (kra/mu_a) + (krb/mu_b) + (krc/mu_c) );
-            
+
             // // Capillary pressure model
             // Info<< "Using capillary pressure model: " << capPressModel->type() << nl << endl;
             // capPressModel->correct(pc, dpcds, Sb);
@@ -114,7 +117,6 @@ int main(int argc, char *argv[])
             (
                 fvm::laplacian(-Mf, p) + fvc::div(phiG) // + fvc::div(phiPc)
                 ==
-                // zeroRHS
                 qt
             );
 
@@ -165,7 +167,7 @@ int main(int argc, char *argv[])
             }
 
             // well correction
-            // wellModel->correct(qb,Fb,qt_inj,qt_prod);
+            wellModel->correct(qa,qb,Fa,Fb,qt_inj,qt_prod);
 
             fvScalarMatrix SaEqn
             (
@@ -185,11 +187,15 @@ int main(int argc, char *argv[])
 
             SbEqn.solve();
 
-            Sc = scalar(1.0) - Sa - Sb;
-
             Sb.correctBoundaryConditions();  
             Sa.correctBoundaryConditions();
             Sc.correctBoundaryConditions();  
+
+            Sa = min(max(Sa, scalar(0)), scalar(1));
+            Sb = min(max(Sb, scalar(0)), scalar(1));
+
+            Sc = scalar(1.0) - Sa - Sb;
+            Sc = min(max(Sc, scalar(0)), scalar(1));
 
             Info << "Saturation a: " << " Min(Sa) = " << gMin(Sa) << " Max(Sa) = " << gMax(Sa) << endl;
             Info << "Saturation b: " << " Min(Sb) = " << gMin(Sb) << " Max(Sb) = " << gMax(Sb) << endl;

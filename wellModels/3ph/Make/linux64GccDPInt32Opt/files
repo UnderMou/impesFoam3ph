@@ -1,0 +1,5 @@
+SOURCE += wellModel.C
+SOURCE += ConstantInjection/ConstantInjection.C
+SOURCE += noWell/noWell.C
+
+LIB = $(FOAM_USER_LIBBIN)/libwellModels_3ph

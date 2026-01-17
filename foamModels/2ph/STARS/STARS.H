@@ -19,6 +19,7 @@ class STARS
     scalar fmsurf_;
     scalar epsurf_;
 
+    Switch FshearActive_;
     Switch FsurfActive_;
 
 public:

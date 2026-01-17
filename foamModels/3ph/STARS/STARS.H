@@ -22,6 +22,7 @@ class STARS
     scalar floil_;
     scalar epoil_;
 
+    Switch FshearActive_;
     Switch FsurfActive_;
     Switch FoilActive_;
 

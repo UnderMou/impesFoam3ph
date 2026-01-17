@@ -10,7 +10,7 @@ $(WM_PROJECT_DIR)/src/finiteVolume/lnInclude/wallFvPatch.H \
 ../../foamModels/2ph/foamModel.H \
 ../../surfactantTransportModels/surfactantTransportModel.H \
 ../../isothermModels/isothermModel.H \
-../../wellModels/wellModel.H \
+../../wellModels/2ph/wellModel.H \
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/setRootCaseLists.H \
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/createTime.H \
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/createMesh.H \
@@ -795,7 +795,7 @@ $(WM_PROJECT_DIR)/src/finiteVolume/lnInclude/wallFvPatch.H :
 ../../foamModels/2ph/foamModel.H :
 ../../surfactantTransportModels/surfactantTransportModel.H :
 ../../isothermModels/isothermModel.H :
-../../wellModels/wellModel.H :
+../../wellModels/2ph/wellModel.H :
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/setRootCaseLists.H :
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/createTime.H :
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/createMesh.H :

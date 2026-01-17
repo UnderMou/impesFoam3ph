@@ -741,49 +741,49 @@ volScalarField qb
     dimensionedScalar("zero", dimless, 0.0)
 );
 
-// volScalarField qt_inj
-// (
-//     IOobject
-//     (
-//         "qt_inj",
-//         runTime.timeName(),
-//         mesh,
-//         IOobject::NO_READ,
-//         IOobject::AUTO_WRITE
-//     ),
-//     Foam::mag(max(qt, scalar(0)))
-// );
+volScalarField qt_inj
+(
+    IOobject
+    (
+        "qt_inj",
+        runTime.timeName(),
+        mesh,
+        IOobject::NO_READ,
+        IOobject::AUTO_WRITE
+    ),
+    Foam::mag(max(qt, scalar(0)))
+);
 
-// volScalarField qt_prod
-// (
-//     IOobject
-//     (
-//         "qt_prod",
-//         runTime.timeName(),
-//         mesh,
-//         IOobject::NO_READ,
-//         IOobject::AUTO_WRITE
-//     ),
-//     Foam::mag(min(qt, scalar(0)))
-// );
+volScalarField qt_prod
+(
+    IOobject
+    (
+        "qt_prod",
+        runTime.timeName(),
+        mesh,
+        IOobject::NO_READ,
+        IOobject::AUTO_WRITE
+    ),
+    Foam::mag(min(qt, scalar(0)))
+);
 
-// Info<< "Reading wellProperties\n" << endl;
+Info<< "Reading wellProperties\n" << endl;
 
-// IOdictionary wellProperties
-// (
-//     IOobject
-//     (
-//         "wellProperties",
-//         runTime.constant(),
-//         mesh,
-//         IOobject::MUST_READ_IF_MODIFIED,
-//         IOobject::NO_WRITE
-//     )
-// );
+IOdictionary wellProperties
+(
+    IOobject
+    (
+        "wellProperties",
+        runTime.constant(),
+        mesh,
+        IOobject::MUST_READ_IF_MODIFIED,
+        IOobject::NO_WRITE
+    )
+);
 
-// // Switch wellActive(wellProperties.headerOk());
-// // Info << "wellActive: " << wellActive << nl << endl;
+// Switch wellActive(wellProperties.headerOk());
+// Info << "wellActive: " << wellActive << nl << endl;
 
-// autoPtr<wellModel> wellModel = wellModel::New(wellProperties);
+autoPtr<wellModel> wellModel = wellModel::New(wellProperties);
 
 

@@ -31,6 +31,7 @@ STARS::STARS(const dictionary& dict, foamAuxFields* aux)
     fmoil_(readScalar(dict.lookup("fmoil"))),
     floil_(readScalar(dict.lookup("floil"))),
     epoil_(readScalar(dict.lookup("epoil"))),
+    FshearActive_(dict.parent().lookupOrDefault<Switch>("FshearActive",false)),
     FsurfActive_(dict.parent().lookupOrDefault<Switch>("FsurfActive",false)),
     FoilActive_(dict.parent().lookupOrDefault<Switch>("FoilActive",false))
 {}
@@ -126,12 +127,12 @@ void STARS::correct_Foil
 {
     // Correct at cell center
     forAll(Sc,i){
-        if (Sc[i] < floil_){
+        if (Sc[i] <= floil_ + SMALL){
             Foil[i] = 1.0;
-        } else if (Sc[i] >= fmoil_){
+        } else if (Sc[i] >= fmoil_ - SMALL){
             Foil[i] = 0.0;
         } else {
-          Foil[i] = Foam::pow((fmoil_-Sc[i])/(fmoil_-floil_),epoil_);  
+            Foil[i] = Foam::pow((fmoil_-Sc[i])/(fmoil_-floil_),epoil_);  
         }
     } 
 
@@ -195,9 +196,12 @@ void STARS::correct
     volScalarField& MRF    = *aux_->MRF;
     volScalarField& Cs     = *aux_->Cs;
 
-    correct_Nca(Nca, U); 
     correct_Fdry(Fdry, Sb);
-    correct_Fshear(Fshear, Nca);
+    if (FshearActive_)
+    {
+        correct_Nca(Nca, U); 
+        correct_Fshear(Fshear, Nca);
+    }
     if (FsurfActive_)
     {
         correct_Fsurf(Fsurf, Cs);

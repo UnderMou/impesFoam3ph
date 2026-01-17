@@ -4,12 +4,15 @@ EXE_INC = \
     -I../../relativePermeabilityModels/3ph \
     -I../../relativePermeabilityModels/3ph/lnInclude \
     -I../../foamModels/3ph \
-    -I../../foamModels/3ph/lnInclude
+    -I../../foamModels/3ph/lnInclude \
+    -I../../wellModels/3ph \
+    -I../../wellModels/3ph/lnInclude
 
 EXE_LIBS = \
     -L$(FOAM_USER_LIBBIN) \
     -lrelativePermeabilityModels_3ph \
     -lfoamModels_3ph \
+    -lwellModels_3ph \
     -lfiniteVolume \
     -lfvModels \
     -lfvConstraints \

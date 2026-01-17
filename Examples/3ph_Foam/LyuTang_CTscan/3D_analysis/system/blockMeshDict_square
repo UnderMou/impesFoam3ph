@@ -1,0 +1,115 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2012                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+scale   1;
+a 0.01;
+rb 0.005;
+gradc 11;
+gradd 6;
+gradz 100;
+h 0.1;
+
+
+ma #calc "-1*$a";
+mrb #calc "-1*$rb";
+mid #calc "$a*0.707107";
+mmid #calc "-1*$mid";
+
+
+
+
+
+vertices
+(
+	($mrb $mrb 0) //0
+	($rb $mrb 0) //1	
+	($rb $rb 0) //2
+	($mrb $rb 0) //3
+	
+	($mmid $mmid 0) //4
+	($mid $mmid 0) //5	
+	($mid $mid 0) //6
+	($mmid $mid 0) //7
+	
+	($mrb $mrb $h) //8
+	($rb $mrb $h) //9	
+	($rb $rb $h) //10
+	($mrb $rb $h) //11
+	
+	($mmid $mmid $h) //12
+	($mid $mmid $h) //13	
+	($mid $mid $h) //14
+	($mmid $mid $h) //15
+);
+
+blocks
+(
+    hex (0 1 2 3 8 9 10 11) ($gradc $gradc $gradz) simpleGrading (1 1 1) //centro
+    hex (4 5 1 0 12 13 9 8) ($gradc $gradd $gradz) simpleGrading (1 1 1) //abajo
+    hex (5 6 2 1 13 14 10 9) ($gradc $gradd $gradz) simpleGrading (1 1 1) //der
+    hex (3 2 6 7 11 10 14 15) ($gradc $gradd $gradz) simpleGrading (1 1 1) //arriba
+    hex (4 0 3 7 12 8 11 15) ($gradd $gradc $gradz) simpleGrading (1 1 1) //izq
+);
+
+edges
+(
+	arc 4 5 (0 $ma 0)
+	arc 5 6 ($a 0 0)
+	arc 6 7 (0 $a 0)
+	arc 7 4 ($ma 0 0)
+	
+	arc 12 13 (0 $ma $h)
+	arc 13 14 ($a 0 $h)
+	arc 14 15 (0 $a $h)
+	arc 15 12 ($ma 0 $h)
+);
+
+patches
+(
+    wall bottom
+    (
+		(0 3 2 1)
+		(0 1 5 4)
+		(2 6 5 1)
+		(7 6 2 3)
+		(7 3 0 4)
+        	
+    )
+    
+    patch outlet
+    (
+        (11 8 9 10)
+        (9 8 12 13)
+        (9 13 14 10)
+        (10 14 15 11)
+        (11 15 12 8)
+    )
+    
+    wall walls
+    (
+		(6 7 15 14)
+		(7 4 12 15)
+		(4 5 13 12)
+		(5 6 14 13)
+	)
+
+);
+
+mergePatchPairs
+(
+);
+
+// ************************************************************************* //

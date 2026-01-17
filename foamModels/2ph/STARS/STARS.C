@@ -28,6 +28,7 @@ STARS::STARS(const dictionary& dict, foamAuxFields* aux)
     sigma_ba_(readScalar(dict.lookup("sigma_ba"))),
     fmsurf_(readScalar(dict.lookup("fmsurf"))),
     epsurf_(readScalar(dict.lookup("epsurf"))),
+    FshearActive_(dict.parent().lookupOrDefault<Switch>("FshearActive",false)),
     FsurfActive_(dict.parent().lookupOrDefault<Switch>("FsurfActive",false))
 {}
 
@@ -152,9 +153,12 @@ void STARS::correct
     volScalarField& MRF    = *aux_->MRF;
     volScalarField& Cs     = *aux_->Cs;
 
-    correct_Nca(Nca, U); 
     correct_Fdry(Fdry, Sb);
-    correct_Fshear(Fshear, Nca);
+    if (FshearActive_)
+    {
+        correct_Nca(Nca, U);
+        correct_Fshear(Fshear, Nca);
+    }
     if (FsurfActive_)
     {
         correct_Fsurf(Fsurf, Cs);

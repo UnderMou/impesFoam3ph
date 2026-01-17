@@ -1,0 +1,26 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  4.0                                   |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      setFieldsDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+//First step of patching the fields: setting Sw to 0.1 everywhere
+defaultFieldValues ( volScalarFieldValue Sw 0.1 );
+
+
+//Second step: setting Sw 0.707 in only those cells, which are -inside- the box
+regions         ( boxToCell { box (0.0 -0.5 -0.5) (0.01 0.5 0.5) ; fieldValues ( volScalarFieldValue Sw 0.85 ) ; } );
+
+
+// ************************************************************************* //

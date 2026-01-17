@@ -7,11 +7,13 @@ $(WM_PROJECT_DIR)/src/finiteVolume/lnInclude/fvConstraints.H \
 $(WM_PROJECT_DIR)/src/finiteVolume/lnInclude/wallFvPatch.H \
 ../../relativePermeabilityModels/3ph/relativePermeabilityModel.H \
 ../../foamModels/3ph/foamModel.H \
+../../wellModels/3ph/wellModel.H \
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/setRootCaseLists.H \
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/createTime.H \
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/createMesh.H \
 createFields.H \
 CourantNo.H \
+GdEpsilon.H \
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/parRun.H \
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/Time.H \
 $(WM_PROJECT_DIR)/src/finiteVolume/lnInclude/fvMesh.H \
@@ -787,11 +789,13 @@ $(WM_PROJECT_DIR)/src/finiteVolume/lnInclude/fvConstraints.H :
 $(WM_PROJECT_DIR)/src/finiteVolume/lnInclude/wallFvPatch.H :
 ../../relativePermeabilityModels/3ph/relativePermeabilityModel.H :
 ../../foamModels/3ph/foamModel.H :
+../../wellModels/3ph/wellModel.H :
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/setRootCaseLists.H :
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/createTime.H :
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/createMesh.H :
 createFields.H :
 CourantNo.H :
+GdEpsilon.H :
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/parRun.H :
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/Time.H :
 $(WM_PROJECT_DIR)/src/finiteVolume/lnInclude/fvMesh.H :
