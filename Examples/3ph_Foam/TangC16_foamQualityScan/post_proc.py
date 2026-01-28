@@ -207,10 +207,10 @@ if __name__ == '__main__':
     for i in range(len(folders_sorted)):
     
         ti = 0
-        tf = 40000 if i == 0 else 2500
+        tf = 40000 if i == 0 else 3000
         write_interval = 500
         t = np.linspace(ti,tf,int(tf/write_interval + 1))
-        nAvoid = -1
+        # nAvoid = -1
         time_steps = len(t[1:])
 
         path = folders_sorted[i]
@@ -219,8 +219,11 @@ if __name__ == '__main__':
         last_t = total_t[-1]
         for j in range(1, time_steps):
 
-            p_out = data_dict['p'].iloc[j][:nAvoid][-1]
-            p_in = data_dict['p'].iloc[j][:nAvoid][0]
+            # p_out = data_dict['p'].iloc[j][:nAvoid][-1]
+            # p_in = data_dict['p'].iloc[j][:nAvoid][0]
+
+            p_out = data_dict['p'].iloc[j][:][-1]
+            p_in = data_dict['p'].iloc[j][:][0]
 
             PD.append(p_in - p_out)
             muApp.append(k*PD[-1]/(ut*L))

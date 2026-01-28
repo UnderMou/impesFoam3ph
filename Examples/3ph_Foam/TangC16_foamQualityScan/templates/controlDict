@@ -22,7 +22,7 @@ startTime       0;      // Last state of the baseline simulation
 
 stopAt          endTime;
 
-endTime         2500;
+endTime         3000;
 
 deltaT          {{deltaT}};
 

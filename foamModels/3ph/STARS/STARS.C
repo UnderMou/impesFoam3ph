@@ -33,13 +33,14 @@ STARS::STARS(const dictionary& dict, foamAuxFields* aux)
     epoil_(readScalar(dict.lookup("epoil"))),
     FshearActive_(dict.parent().lookupOrDefault<Switch>("FshearActive",false)),
     FsurfActive_(dict.parent().lookupOrDefault<Switch>("FsurfActive",false)),
-    FoilActive_(dict.parent().lookupOrDefault<Switch>("FoilActive",false))
+    FoilActive_(dict.parent().lookupOrDefault<Switch>("FoilActive",false)),
+    ncaModel_(dict.parent().lookupOrDefault<word>("ncaModel","zeng"))
 {}
 
 void STARS::correct_Fdry
 (
     volScalarField& Fdry,
-    const volScalarField Sb
+    const volScalarField& Sb
 ) const
 {
     const double pi = 3.141592653589793; 
@@ -49,10 +50,22 @@ void STARS::correct_Fdry
 void STARS::correct_Nca
 (
     volScalarField& Nca,
-    const volVectorField U
+    const volVectorField& U,
+    const volScalarField& K,
+    const volVectorField& gradP
 ) const
 {
-    Nca = (mu_b_.value() * mag(U)) / sigma_ba_;
+    if (ncaModel_ == "zeng") {
+        Nca = (mu_b_.value() * mag(U)) / sigma_ba_;
+    } else if (ncaModel_ == "boeije"){
+        Nca = (K * mag(gradP)) / sigma_ba_; 
+    } else {
+        FatalErrorInFunction
+            << "Unknown Nca model "
+            << ncaModel_ << nl
+            << exit(FatalError);
+    }
+    Info << "Nca model: " << ncaModel_ << endl;
 }
 
 void STARS::correct_Fshear
@@ -175,7 +188,9 @@ void STARS::correct
     const volScalarField& Sb,
     volScalarField& Sc,
     const surfaceScalarField& phia,
-    const volScalarField& eps
+    const volScalarField& eps,
+    const volScalarField& K,
+    const volVectorField& gradP
 ) const
 {
     // Info << "fmmob = " << fmmob_ << endl;
@@ -199,7 +214,7 @@ void STARS::correct
     correct_Fdry(Fdry, Sb);
     if (FshearActive_)
     {
-        correct_Nca(Nca, U); 
+        correct_Nca(Nca, U, K, gradP); 
         correct_Fshear(Fshear, Nca);
     }
     if (FsurfActive_)

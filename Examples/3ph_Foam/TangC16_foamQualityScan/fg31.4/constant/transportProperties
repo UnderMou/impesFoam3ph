@@ -51,9 +51,10 @@ CoreyBrooksExtd
 // Foam model 
 
 foamModel STARS;
-FshearActive false;
+FshearActive true;
 FsurfActive false;
 FoilActive true;
+ncaModel boeije;
 
 STARS
 {

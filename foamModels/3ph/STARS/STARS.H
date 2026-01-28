@@ -26,6 +26,8 @@ class STARS
     Switch FsurfActive_;
     Switch FoilActive_;
 
+    word   ncaModel_;
+
 public:
     TypeName("STARS");
 
@@ -35,13 +37,15 @@ public:
     void correct_Fdry
     (
         volScalarField& Fdry,
-        const volScalarField Sb
+        const volScalarField& Sb
     ) const;
 
     void correct_Nca
     (
         volScalarField& Nca,
-        const volVectorField U
+        const volVectorField& U,
+        const volScalarField& K,
+        const volVectorField& gradP
     ) const;
 
     void correct_Fshear
@@ -80,7 +84,9 @@ public:
         const volScalarField& Sb,
         volScalarField& Sc,
         const surfaceScalarField& phia,
-        const volScalarField& eps
+        const volScalarField& eps,
+        const volScalarField& K,
+        const volVectorField& gradP
     ) const;
 };
 
