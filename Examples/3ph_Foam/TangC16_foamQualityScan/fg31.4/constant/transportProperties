@@ -63,7 +63,7 @@ STARS
   sfbet     2151.801364283265;
   fmcap     1.54e-4;
   epcap     1.0885659528157074;
-  sigma_ba  0.033;
+  sigma_ba  0.03;
   fmsurf    1.0;
   epsurf    0.0;
   fmoil     0.7534338586150372;

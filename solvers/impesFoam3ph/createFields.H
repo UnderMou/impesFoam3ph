@@ -293,7 +293,6 @@ surfaceScalarField kraf ("kraf",fvc::interpolate(kra,"kra"));
 surfaceScalarField krbf ("krbf",fvc::interpolate(krb,"krb"));
 surfaceScalarField krcf ("krcf",fvc::interpolate(krc,"krc"));
 
-
 // mobility and fractional flow 
 surfaceScalarField Maf ("Maf",Kf*kraf/mu_a);
 surfaceScalarField Mbf ("Mbf",Kf*krbf/mu_b);
@@ -317,7 +316,6 @@ volScalarField Fa
 );
 Fa = (kra/mu_a) / ( (kra/mu_a) + (krb/mu_b) + (krc/mu_c) );
 
-
 volScalarField Fb
 (
     IOobject
@@ -332,7 +330,6 @@ volScalarField Fb
     0.0
 );
 Fa = (krb/mu_b) / ( (kra/mu_a) + (krb/mu_b) + (krc/mu_c) );
-
 
 // CREATE zero RHS of equations 
 dimensionedScalar zeroRHS
@@ -376,7 +373,7 @@ if (foamModelName == "STARS")
             IOobject::AUTO_WRITE
         ),
         mesh,
-        dimensionedScalar("zero", dimless, 0.0)
+        dimensionedScalar("zero", dimless, 1.0)
     );
 
     foamAux.Fshear = new volScalarField 
