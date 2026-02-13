@@ -218,34 +218,6 @@ surfaceScalarField phic
     fvc::flux(Uc)
 );
 
-volVectorField U
-(
-    IOobject
-    (
-        "U",
-        runTime.timeName(),
-        mesh,
-        IOobject::NO_READ,
-        IOobject::AUTO_WRITE
-    ),
-    Ua + Ub + Uc
-);
-
-surfaceScalarField phi
-(
-    IOobject
-    (
-        "phi",
-        runTime.timeName(),
-        mesh,
-        IOobject::NO_READ,
-        IOobject::AUTO_WRITE
-    ),
-    fvc::flux(U)
-);
-
-surfaceScalarField phiP = phi;
-
 volScalarField kra
 (
     IOobject
@@ -330,6 +302,38 @@ volScalarField Fb
     0.0
 );
 Fa = (krb/mu_b) / ( (kra/mu_a) + (krb/mu_b) + (krc/mu_c) );
+
+Ub.correctBoundaryConditions();  
+Ua.correctBoundaryConditions();
+Uc.correctBoundaryConditions();
+
+volVectorField U
+(
+    IOobject
+    (
+        "U",
+        runTime.timeName(),
+        mesh,
+        IOobject::NO_READ,
+        IOobject::AUTO_WRITE
+    ),
+    Ua + Ub + Uc
+);
+
+surfaceScalarField phi
+(
+    IOobject
+    (
+        "phi",
+        runTime.timeName(),
+        mesh,
+        IOobject::NO_READ,
+        IOobject::AUTO_WRITE
+    ),
+    fvc::flux(U)
+);
+
+surfaceScalarField phiP = phi;
 
 // CREATE zero RHS of equations 
 dimensionedScalar zeroRHS

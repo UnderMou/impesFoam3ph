@@ -1,0 +1,3 @@
+SOURCE += fractionalVelocity/fractionalVelocity.C
+
+LIB = $(FOAM_USER_LIBBIN)/libboundaryConditions_3ph

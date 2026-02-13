@@ -2,5 +2,6 @@ SOURCE += foamModel.C
 SOURCE += STARS/STARS.C
 SOURCE += ashoori/ashoori.C
 SOURCE += noFoam/noFoam.C
+SOURCE += Lozano/Lozano.C
 
 LIB = $(FOAM_USER_LIBBIN)/libfoamModels_3ph

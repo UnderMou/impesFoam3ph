@@ -66,8 +66,8 @@ ax.set_xticks(np.linspace(0, A.shape[1]-1, nx))
 ax.set_yticks(np.linspace(0, A.shape[0]-1, nz))
 
 # tick labels (physical coordinates)
-x = np.linspace(0,300,nx)
-z = np.linspace(0,300,nz)
+x = np.linspace(0,2000,nx)
+z = np.linspace(0,100,nz)
 ax.set_xticklabels(np.round(np.linspace(x[0], x[-1], nx), 1))
 ax.set_yticklabels(np.round(np.linspace(z[0], z[-1], nz), 1))
 
