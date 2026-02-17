@@ -1,3 +1,4 @@
 fractionalVelocity/fractionalVelocity.C
+prescribedFracFlowVelocity/prescribedFracFlowVelocity.C
 
 LIB = $(FOAM_USER_LIBBIN)/libboundaryConditions_3ph

@@ -23,13 +23,14 @@ boundaryField
 {
     inlet
     {
-        type            fixedValue;
-        value           uniform (0 0 1.1310039999999998e-05);
+        // type            fixedValue;
+        // value           uniform (0 0 1.1310039999999998e-05);
 
-        // type            calculated;
-        // value           uniform (0 0 0);
+        type            prescribedFracFlowVelocity;
+        U               uniform (0 0 1.61572e-5);
+        fractionalFlow  0.7;
+        value           uniform (0 0 0);
 
-        // type            zeroGradient;
     }
 
     outlet

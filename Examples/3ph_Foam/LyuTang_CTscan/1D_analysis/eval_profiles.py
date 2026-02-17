@@ -137,7 +137,7 @@ if __name__ == '__main__':
     ExeTime_OF = 2.92
     # ExeTime_FOSSIL = 23.5
 
-    tD = 10.4 
+    tD = 1.00 
     files_dir = os.getcwd() + '/Tang/'
     post_filename = '_PVI_' + str(tD) + '.csv'
 
