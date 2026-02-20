@@ -2,3 +2,4 @@ backup
 notebooks
 simulator
 Examples/3ph_Foam/Oil_bank
+Examples/3ph_Foam/LozanoFoam/numericalOilBankTheorem/experiments
