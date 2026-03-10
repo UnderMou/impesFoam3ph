@@ -40,12 +40,14 @@ With OpenFOAM properly installed on your machine according to the tutorial above
    git clone <repository-link>
    ```
 
-   Once the repository is cloned, go to the repository directory and compile the solvers by executing:
+   Once the repository is cloned, go to the repository directory and compile the files by executing:
    ```bash
    cd <the-directory-of-the-cloned-repository>'
-   chmod +x build_solvers.sh
-   ./build_solvers.sh
+   chmod +x compile.sh
+   ./compile.sh
    ```
+
+   2.2 **Checking the compiled files** 
 
    Verify that the solver compiled successfully by listing the contents of the `$FOAM_USER_APPBIN` directory:
    ```bash
@@ -53,19 +55,12 @@ With OpenFOAM properly installed on your machine according to the tutorial above
    ```
    If `impesFoam3ph` and `impesFoam2ph` appear in the listing, the compilation was successful.
 
-   2.2 **Compiling the `myPorousMediumBCs` Library**  
-   The `myPorousMediumBCs` directory contains custom boundary conditions for porous media applications (for now, there is just `gradPressureDarcy`). This library must also be compiled.
-
-   Navigate to the `myPorousMediumBCs` directory, and compile it by running:
-   ```bash
-   wmake libso .
-   ```
-
-   Check if the library was successfully compiled by listing the contents of the `$FOAM_USER_LIBBIN` directory:
+   Check if the libraries was successfully compiled by listing the contents of the `$FOAM_USER_LIBBIN` directory:
    ```bash
    ls $FOAM_USER_LIBBIN
    ```
-   If `libmyPorousMediumBCs.so` is listed, the compilation was successful.
+   If all the following files are listed, the compilation was successfull:
+   `libboundaryConditions_2ph.so`, `libfoamModels_2ph.so`, `librelativePermeabilityModels_2ph.so`, `libwellModels_2ph.so`, `libboundaryConditions_3ph.so`, `libfoamModels_3ph.so`, `librelativePermeabilityModels_3ph.so`, `libwellModels_3ph.so`, `libcapillaryPressureModels_2ph.so`, `libisothermModels.so` and `libsurfactantTransportModels.s`.
 
 ### 3. Running an Example
 

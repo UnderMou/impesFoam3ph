@@ -51,7 +51,7 @@ def check_oilBank(
 exp_config = {
         'solver': 'Allrun', 
         'input_path': "templates/S3C2",  
-        'output_path': "experiments/init_inj", 
+        'output_path': "experiments/init_inj_stars", 
         'parameter_ranges': {},
         'nthreads': 1
     }
@@ -93,6 +93,9 @@ for i in range(n_folders):
         Sc = data_single.Sc[j,:]
         if check_oilBank(Sc, Soi):
             temp_check.append(True)
+
+            # print(j,"|",len(data_single.time))
+            plt.plot(Sc, c='b',alpha=0.5)
             break
         else:
             temp_check.append(False)
@@ -101,8 +104,9 @@ for i in range(n_folders):
 
 #     if checkOil_bank[-1]:
 #         plt.plot(Sc, c='b',alpha=0.5)
-# plt.show()
-# plt.close()
+plt.show()
+plt.close()
+
 # Graph
 scale = 1
 matplotlib.rcParams['figure.figsize'] = (8, 7)

@@ -24,19 +24,12 @@ boundaryField
     inlet
     {
         type            fixedValue;
-        value           uniform (0 0 0);
-    
+        value           uniform (0 0 0);  
     }
 
     outlet
     {
-        // type            fixedValue;
-        // value           $internalField;
-
         type            zeroGradient;
-
-        // type            fixedInternalValue;
-        // value           internalField;
     }
 
     emptyWalls

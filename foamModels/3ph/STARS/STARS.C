@@ -149,23 +149,23 @@ void STARS::correct_Foil
         }
     } 
 
-    // // Correct at the boundaries
-    // forAll(Sc.boundaryField(), patchi)
-    // {
-    //     fvPatchScalarField& ScPatch = Sc.boundaryFieldRef()[patchi];
-    //     fvPatchScalarField& FoilPatch = Foil.boundaryFieldRef()[patchi];
+    // Correct at the boundaries
+    forAll(Sc.boundaryField(), patchi)
+    {
+        fvPatchScalarField& ScPatch = Sc.boundaryFieldRef()[patchi];
+        fvPatchScalarField& FoilPatch = Foil.boundaryFieldRef()[patchi];
 
-    //     forAll(ScPatch, facei)
-    //     {
-    //         if (ScPatch[facei] < floil_){
-    //             FoilPatch[facei] = 1.0;
-    //         } else if (ScPatch[facei] >= fmoil_){
-    //             FoilPatch[facei] = 0.0;
-    //         } else {
-    //             FoilPatch[facei] = Foam::pow((fmoil_-ScPatch[facei])/(fmoil_-floil_),epoil_);  
-    //         }
-    //     }
-    // }
+        forAll(ScPatch, facei)
+        {
+            if (ScPatch[facei] < floil_){
+                FoilPatch[facei] = 1.0;
+            } else if (ScPatch[facei] >= fmoil_){
+                FoilPatch[facei] = 0.0;
+            } else {
+                FoilPatch[facei] = Foam::pow((fmoil_-ScPatch[facei])/(fmoil_-floil_),epoil_);  
+            }
+        }
+    }
 }
 
 void STARS::correct_MRF

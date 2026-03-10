@@ -25,8 +25,8 @@ def run_case(i, X_row, exp_config_base):
 if __name__ == "__main__":
     exp_config = {
         'solver': 'Allrun', 
-        'input_path': "templates/S3C2",  
-        'output_path': "experiments/init_inj", 
+        'input_path': "templates/S3C2_stars",  
+        'output_path': "experiments/init_inj_stars", 
         'parameter_ranges': {},
         'nthreads': 1
     }
@@ -44,7 +44,7 @@ if __name__ == "__main__":
         next(reader) 
         data = [list(map(float, row)) for row in reader]
     X_inj = np.array(data)
-    # X_inj = X_inj[np.argmin(np.linalg.norm(np.array([0.3125, 0, 0.6875]) - X_inj[:,None], axis=2), axis=0)]
+    X_inj = X_inj[np.argmin(np.linalg.norm(np.array([0.3125, 0, 0.6875]) - X_inj[:,None], axis=2), axis=0)]
     # X_inj = X_inj[np.argmin(np.linalg.norm(np.array([0.05, 0, 0.95]) - X_inj[:,None], axis=2), axis=0)]
     # X_inj = X_inj[np.argmin(np.linalg.norm(np.array([0, 0, 1.0]) - X_inj[:,None], axis=2), axis=0)]
     X_inj = np.delete(X_inj, 1, axis=1)

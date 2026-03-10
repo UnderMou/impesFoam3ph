@@ -82,7 +82,9 @@ if __name__ == "__main__":
     tax.left_corner_label("G", fontsize=fontsize, color="green", fontweight="bold")
 
     # INITIAL CONDITIONS
-    k = 25
+    # k = 25
+    k = 5
+
     # Sw, So, Sg = ternary_grid(k)
     Sw, So, Sg = ternary_grid_bounded(k)
     points = [(float(w)*scale, float(o)*scale, float(g)*scale) for w,o,g in zip(Sw,So,Sg)]
@@ -96,7 +98,9 @@ if __name__ == "__main__":
 
 
     # INJECTION CONDITIONS
+    # k = 10
     k = 10
+    
     points = injection_points(k)
     tax.scatter(points, marker='s', color='red', label="Injection")
     
