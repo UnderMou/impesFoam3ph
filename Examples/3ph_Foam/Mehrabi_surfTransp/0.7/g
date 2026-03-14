@@ -1,0 +1,41 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  9
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    format      ascii;
+    class       surfaceVectorField;
+    location    "0.7";
+    object      g;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [0 0 0 0 0 0 0];
+
+internalField   uniform (0 0 0);
+
+boundaryField
+{
+    inlet
+    {
+        type            calculated;
+        value           uniform (0 0 0);
+    }
+    outlet
+    {
+        type            calculated;
+        value           uniform (0 0 0);
+    }
+    emptyWalls
+    {
+        type            empty;
+        value           nonuniform List<vector> 0();
+    }
+}
+
+
+// ************************************************************************* //

@@ -5,6 +5,10 @@ EXE_INC = \
     -I../../relativePermeabilityModels/3ph/lnInclude \
     -I../../foamModels/3ph \
     -I../../foamModels/3ph/lnInclude \
+    -I../../surfactantTransportModels/3ph \
+    -I../../surfactantTransportModels/3ph/lnInclude \
+    -I../../isothermModels/3ph \
+    -I../../isothermModels/3ph/lnInclude \
     -I../../wellModels/3ph \
     -I../../wellModels/3ph/lnInclude
 
@@ -13,6 +17,8 @@ EXE_LIBS = \
     -lrelativePermeabilityModels_3ph \
     -lfoamModels_3ph \
     -lwellModels_3ph \
+    -lsurfactantTransportModels_3ph \
+    -lisothermModels_3ph \
     -lfiniteVolume \
     -lfvModels \
     -lfvConstraints \

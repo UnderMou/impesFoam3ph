@@ -1,0 +1,6 @@
+SOURCE += isothermModel.C
+SOURCE += Henry/Henry.C
+SOURCE += noAdsorption/noAdsorption.C
+SOURCE += Langmuir/Langmuir.C
+
+LIB = $(FOAM_USER_LIBBIN)/libisothermModels_2ph

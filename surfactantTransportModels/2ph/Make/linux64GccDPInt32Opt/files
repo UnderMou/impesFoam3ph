@@ -1,0 +1,5 @@
+SOURCE += surfactantTransportModel.C
+SOURCE += Csw/Csw.C
+SOURCE += noSurfTransp/noSurfTransp.C
+
+LIB = $(FOAM_USER_LIBBIN)/libsurfactantTransportModels_2ph

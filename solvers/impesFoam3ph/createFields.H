@@ -260,81 +260,6 @@ volScalarField krc
     0.0
 );
 
-krModel->correct(kra, krb, krc, Sa, Sb);
-surfaceScalarField kraf ("kraf",fvc::interpolate(kra,"kra"));
-surfaceScalarField krbf ("krbf",fvc::interpolate(krb,"krb"));
-surfaceScalarField krcf ("krcf",fvc::interpolate(krc,"krc"));
-
-// mobility and fractional flow 
-surfaceScalarField Maf ("Maf",Kf*kraf/mu_a);
-surfaceScalarField Mbf ("Mbf",Kf*krbf/mu_b);
-surfaceScalarField Mcf ("Mcf",Kf*krcf/mu_c);
-surfaceScalarField Mf ("Mf",Maf+Mbf+Mcf);
-surfaceScalarField Faf ("Faf",Maf/Mf);
-surfaceScalarField Fbf ("Fbf",Mbf/Mf);
-
-volScalarField Fa
-(
-    IOobject
-    (
-        "Fa",
-        runTime.timeName(),
-        mesh,
-        IOobject::NO_READ,
-        IOobject::AUTO_WRITE
-    ),
-    mesh,
-    0.0
-);
-Fa = (kra/mu_a) / ( (kra/mu_a) + (krb/mu_b) + (krc/mu_c) );
-
-volScalarField Fb
-(
-    IOobject
-    (
-        "Fb",
-        runTime.timeName(),
-        mesh,
-        IOobject::NO_READ,
-        IOobject::AUTO_WRITE
-    ),
-    mesh,
-    0.0
-);
-Fa = (krb/mu_b) / ( (kra/mu_a) + (krb/mu_b) + (krc/mu_c) );
-
-Ub.correctBoundaryConditions();  
-Ua.correctBoundaryConditions();
-Uc.correctBoundaryConditions();
-
-volVectorField U
-(
-    IOobject
-    (
-        "U",
-        runTime.timeName(),
-        mesh,
-        IOobject::NO_READ,
-        IOobject::AUTO_WRITE
-    ),
-    Ua + Ub + Uc
-);
-
-surfaceScalarField phi
-(
-    IOobject
-    (
-        "phi",
-        runTime.timeName(),
-        mesh,
-        IOobject::NO_READ,
-        IOobject::AUTO_WRITE
-    ),
-    fvc::flux(U)
-);
-
-surfaceScalarField phiP = phi;
-
 // CREATE zero RHS of equations 
 dimensionedScalar zeroRHS
 (
@@ -526,6 +451,197 @@ if (foamModelName == "STARS")
         dimensionedScalar("one", dimless, 1.0)
     );
 }
+else if (foamModelName == "MehrabiFoam")
+{
+    foamAux.MRF = new volScalarField
+    (
+        IOobject
+        (
+            "MRF",
+            runTime.timeName(),
+            mesh,
+            IOobject::NO_READ,
+            IOobject::AUTO_WRITE
+        ),
+        mesh,
+        dimensionedScalar("one", dimless, 1.0)
+    );
+}
+
+// SURFACTANT CONCENTRATION TRANSPORT 
+
+word surfTranspModelName(transportProperties.lookup("surfactantTransportModel")); 
+
+if (surfTranspModelName == "Csw")
+{
+    Info<< "Reading field Cs\n" << endl;
+
+    foamAux.Cs = new volScalarField
+    (
+        IOobject
+        (
+            "Cs",
+            runTime.timeName(),
+            mesh,
+            IOobject::MUST_READ,
+            IOobject::AUTO_WRITE
+        ),
+        mesh
+    );
+
+    foamAux.Fcsw = new volScalarField
+    (
+        IOobject
+        (
+            "Fcsw",
+            runTime.timeName(),
+            mesh,
+            IOobject::NO_READ,
+            IOobject::AUTO_WRITE
+        ),
+        mesh,
+        dimensionedScalar("zero", dimless, 0.0)
+    );
+    // Fcsw = -fvc::div(phib); // + qb
+
+    foamAux.AcumCoeff_csw = new volScalarField
+    (
+        IOobject
+        (
+            "AcumCoeff_csw",
+            runTime.timeName(),
+            mesh,
+            IOobject::NO_READ,
+            IOobject::AUTO_WRITE
+        ),
+        mesh,
+        dimensionedScalar("zero", dimless, 0.0)
+    );
+    // AcumCoeff_csw = eps*Sb + (scalar(1.0) - eps)*rho_sw*Kd; // Kd = dpcsds
+
+
+    // Adsorption fields
+    foamAux.CsEq = new volScalarField
+    (
+        IOobject
+        (
+            "CsEq",
+            runTime.timeName(),
+            mesh,
+            IOobject::NO_READ,
+            IOobject::AUTO_WRITE
+        ),
+        mesh,
+        dimensionedScalar("one", dimless, 1.0)
+    );
+
+    foamAux.dCsEqdCs = new volScalarField
+    (
+        IOobject
+        (
+            "dCsEqdCs",
+            runTime.timeName(),
+            mesh,
+            IOobject::NO_READ,
+            IOobject::NO_WRITE
+        ),
+        mesh,
+        dimensionedScalar("one", dimless, 1.0)
+    );
+
+    foamAux.oneField = new volScalarField
+    (
+        IOobject
+        (
+            "oneField",
+            runTime.timeName(),
+            mesh,
+            IOobject::NO_READ,
+            IOobject::NO_WRITE
+        ),
+        mesh,
+        dimensionedScalar("one", dimless, 1.0)
+    );
+} 
+
+autoPtr<surfactantTransportModel> surfTranspModel = surfactantTransportModel::New(transportProperties, &foamAux);
+autoPtr<foamModel> foamModel = foamModel::New(transportProperties, &foamAux);
+
+
+// mobility and fractional flow 
+krModel->correct(kra, krb, krc, Sa, Sb, *foamAux.Cs); 
+surfaceScalarField kraf ("kraf",fvc::interpolate(kra,"kra"));
+surfaceScalarField krbf ("krbf",fvc::interpolate(krb,"krb"));
+surfaceScalarField krcf ("krcf",fvc::interpolate(krc,"krc"));
+
+surfaceScalarField Maf ("Maf",Kf*kraf/mu_a);
+surfaceScalarField Mbf ("Mbf",Kf*krbf/mu_b);
+surfaceScalarField Mcf ("Mcf",Kf*krcf/mu_c);
+surfaceScalarField Mf ("Mf",Maf+Mbf+Mcf);
+surfaceScalarField Faf ("Faf",Maf/Mf);
+surfaceScalarField Fbf ("Fbf",Mbf/Mf);
+
+volScalarField Fa
+(
+    IOobject
+    (
+        "Fa",
+        runTime.timeName(),
+        mesh,
+        IOobject::NO_READ,
+        IOobject::AUTO_WRITE
+    ),
+    mesh,
+    0.0
+);
+Fa = (kra/mu_a) / ( (kra/mu_a) + (krb/mu_b) + (krc/mu_c) );
+
+volScalarField Fb
+(
+    IOobject
+    (
+        "Fb",
+        runTime.timeName(),
+        mesh,
+        IOobject::NO_READ,
+        IOobject::AUTO_WRITE
+    ),
+    mesh,
+    0.0
+);
+Fa = (krb/mu_b) / ( (kra/mu_a) + (krb/mu_b) + (krc/mu_c) );
+
+Ub.correctBoundaryConditions();  
+Ua.correctBoundaryConditions();
+Uc.correctBoundaryConditions();
+
+volVectorField U
+(
+    IOobject
+    (
+        "U",
+        runTime.timeName(),
+        mesh,
+        IOobject::NO_READ,
+        IOobject::AUTO_WRITE
+    ),
+    Ua + Ub + Uc
+);
+
+surfaceScalarField phi
+(
+    IOobject
+    (
+        "phi",
+        runTime.timeName(),
+        mesh,
+        IOobject::NO_READ,
+        IOobject::AUTO_WRITE
+    ),
+    fvc::flux(U)
+);
+
+surfaceScalarField phiP = phi;
 
 // ===========================
 
@@ -596,105 +712,6 @@ surfaceScalarField phiG("phiG",(Lf * g) & mesh.Sf());
 
 // surfaceScalarField dpcdsf ("dpcdsf",fvc::interpolate(dpcds,"dpcds"));
 // surfaceScalarField phiPc("phiPc",Mbf * dpcdsf * fvc::snGrad(Sb) * mesh.magSf());
-
-// Surfactant concentration transport 
-
-// word surfTranspModelName(transportProperties.lookup("surfactantTransportModel")); 
-
-// if (surfTranspModelName == "Csw")
-// {
-//     Info<< "Reading field Cs\n" << endl;
-
-//     foamAux.Cs = new volScalarField
-//     (
-//         IOobject
-//         (
-//             "Cs",
-//             runTime.timeName(),
-//             mesh,
-//             IOobject::MUST_READ,
-//             IOobject::AUTO_WRITE
-//         ),
-//         mesh
-//     );
-
-//     foamAux.Fcsw = new volScalarField
-//     (
-//         IOobject
-//         (
-//             "Fcsw",
-//             runTime.timeName(),
-//             mesh,
-//             IOobject::NO_READ,
-//             IOobject::AUTO_WRITE
-//         ),
-//         mesh,
-//         dimensionedScalar("zero", dimless, 0.0)
-//     );
-//     // Fcsw = -fvc::div(phib); // + qb
-
-//     foamAux.AcumCoeff_csw = new volScalarField
-//     (
-//         IOobject
-//         (
-//             "AcumCoeff_csw",
-//             runTime.timeName(),
-//             mesh,
-//             IOobject::NO_READ,
-//             IOobject::AUTO_WRITE
-//         ),
-//         mesh,
-//         dimensionedScalar("zero", dimless, 0.0)
-//     );
-//     // AcumCoeff_csw = eps*Sb + (scalar(1.0) - eps)*rho_sw*Kd; // Kd = dpcsds
-
-
-//     // Adsorption fields
-//     foamAux.CsEq = new volScalarField
-//     (
-//         IOobject
-//         (
-//             "CsEq",
-//             runTime.timeName(),
-//             mesh,
-//             IOobject::NO_READ,
-//             IOobject::AUTO_WRITE
-//         ),
-//         mesh,
-//         dimensionedScalar("one", dimless, 1.0)
-//     );
-
-//     foamAux.dCsEqdCs = new volScalarField
-//     (
-//         IOobject
-//         (
-//             "dCsEqdCs",
-//             runTime.timeName(),
-//             mesh,
-//             IOobject::NO_READ,
-//             IOobject::NO_WRITE
-//         ),
-//         mesh,
-//         dimensionedScalar("one", dimless, 1.0)
-//     );
-
-//     foamAux.oneField = new volScalarField
-//     (
-//         IOobject
-//         (
-//             "oneField",
-//             runTime.timeName(),
-//             mesh,
-//             IOobject::NO_READ,
-//             IOobject::NO_WRITE
-//         ),
-//         mesh,
-//         dimensionedScalar("one", dimless, 1.0)
-//     );
-// } 
-
-// autoPtr<surfactantTransportModel> surfTranspModel = surfactantTransportModel::New(transportProperties, &foamAux);
-autoPtr<foamModel> foamModel = foamModel::New(transportProperties, &foamAux);
 
 
 // SOURCE TERMS
@@ -788,3 +805,4 @@ IOdictionary wellProperties
 autoPtr<wellModel> wellModel = wellModel::New(wellProperties);
 
 
+foamAux.printStatus();

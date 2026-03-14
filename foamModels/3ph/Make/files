@@ -3,5 +3,6 @@ STARS/STARS.C
 ashoori/ashoori.C
 noFoam/noFoam.C
 Lozano/Lozano.C
+MehrabiFoam/MehrabiFoam.C
 
 LIB = $(FOAM_USER_LIBBIN)/libfoamModels_3ph

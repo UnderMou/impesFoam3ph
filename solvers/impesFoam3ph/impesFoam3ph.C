@@ -39,8 +39,8 @@ Description
 #include "relativePermeabilityModel.H"
 // #include "capillaryPressureModel.H"
 #include "foamModel.H"
-// #include "surfactantTransportModel.H"
-// #include "isothermModel.H"
+#include "surfactantTransportModel.H"
+#include "isothermModel.H"
 #include "wellModel.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
@@ -70,7 +70,7 @@ int main(int argc, char *argv[])
         {   
             // Relative permeability model
             Info<< "Using relative permeability model: " << krModel->type() << nl << endl;
-            krModel->correct(kra, krb, krc, Sa, Sb);
+            krModel->correct(kra, krb, krc, Sa, Sb, *foamAux.Cs);
 
             // Foam model
             Info<< "Using foam model: " << foamModel->type() << nl << endl;
@@ -202,8 +202,8 @@ int main(int argc, char *argv[])
             Info << "Saturation c: " << " Min(Sc) = " << gMin(Sc) << " Max(Sc) = " << gMax(Sc) << endl;
 
             // Surfactant transport model
-            // Info<< "Using surfactant transport model: " << surfTranspModel->type() << nl << endl;
-            // surfTranspModel->correct(Sb, phib, eps);
+            Info<< "Using surfactant transport model: " << surfTranspModel->type() << nl << endl;
+            surfTranspModel->correct(Sb, phib, eps);
 
         }
 

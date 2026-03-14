@@ -69,4 +69,16 @@ STARS
   epoil     3.0;
 }
 
+// Surfactante concentration transport and adsorption isotherm
+
+surfactantTransportModel noSurfTransp;
+
+noSurfTransp
+{
+  isothermModel noAdsorption;
+  noAdsorption
+  {
+  }
+}
+
 // ************************************************************************* //
