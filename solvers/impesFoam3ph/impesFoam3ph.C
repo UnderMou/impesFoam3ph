@@ -37,7 +37,7 @@ Description
 #include "wallFvPatch.H"
 
 #include "relativePermeabilityModel.H"
-// #include "capillaryPressureModel.H"
+#include "capillaryPressureModel.H"
 #include "foamModel.H"
 #include "surfactantTransportModel.H"
 #include "isothermModel.H"
@@ -98,12 +98,21 @@ int main(int argc, char *argv[])
             Fa = (kra/mu_a) / ( (kra/mu_a) + (krb/mu_b) + (krc/mu_c) );
             Fb = (krb/mu_b) / ( (kra/mu_a) + (krb/mu_b) + (krc/mu_c) );
 
-            // // Capillary pressure model
-            // Info<< "Using capillary pressure model: " << capPressModel->type() << nl << endl;
-            // capPressModel->correct(pc, dpcds, Sb);
+            // Capillary pressure model
+            Info<< "Using capillary pressure model: " << capPressModel->type() << nl << endl;
+            capPressModel->correct(pcow, pcgo,
+                                   dpcow_dsw, dpcow_dsg,
+                                   dpcgo_dsw, dpcgo_dsg,
+                                   Sa, Sb, zeroField);
 
-            // dpcdsf = fvc::interpolate(dpcds,"dpcds");
-            // phiPc = Mbf * dpcdsf * fvc::snGrad(Sb) * mesh.magSf();
+            dpcow_dsw_f = fvc::interpolate(dpcow_dsw,"dpcow_dsw");
+            dpcow_dsg_f = fvc::interpolate(dpcow_dsg,"dpcow_dsg");
+            dpcgo_dsw_f = fvc::interpolate(dpcgo_dsw,"dpcgo_dsw");
+            dpcgo_dsg_f = fvc::interpolate(dpcgo_dsg,"dpcgo_dsg");
+
+            phiPc_a = Maf * (dpcgo_dsw_f * fvc::snGrad(Sb) * mesh.magSf() + dpcgo_dsg_f * fvc::snGrad(Sa) * mesh.magSf());
+            phiPc_b = Mbf * (dpcow_dsw_f * fvc::snGrad(Sb) * mesh.magSf() + dpcow_dsg_f * fvc::snGrad(Sa) * mesh.magSf());
+            phiPc = phiPc_a - phiPc_b;
 
             forAll(mesh.boundary(),patchi)
             {   
@@ -115,7 +124,7 @@ int main(int argc, char *argv[])
 
             fvScalarMatrix pEqn
             (
-                fvm::laplacian(-Mf, p) + fvc::div(phiG) // + fvc::div(phiPc)
+                fvm::laplacian(-Mf, p) + fvc::div(phiG) + fvc::div(phiPc)
                 ==
                 qt
             );
@@ -132,10 +141,10 @@ int main(int argc, char *argv[])
                 }
             }
 
-            phi = phiP + phiG; // + phiPc;
+            phi = phiP + phiG + phiPc;
 
-            phia = Faf*phiP + (Laf/Lf)*phiG; // + phiPc;
-            phib = Fbf*phiP + (Lbf/Lf)*phiG; // + phiPc;
+            phia = Faf*phiP + (Laf/Lf)*phiG + phiPc_a;
+            phib = Fbf*phiP + (Lbf/Lf)*phiG - phiPc_b;
 
             phic = phi - phia - phib;
 

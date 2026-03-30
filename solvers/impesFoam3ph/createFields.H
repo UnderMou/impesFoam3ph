@@ -676,43 +676,130 @@ surfaceScalarField phiG("phiG",(Lf * g) & mesh.Sf());
 
 // CAPILLARY PRESSURE EFFECTS
 
-// Info<< "\nInitializing Pc" << endl;
-// volScalarField pc
-// (
-//     IOobject
-//     (
-//         "pc",
-//         runTime.timeName(),
-//         mesh,
-//         IOobject::NO_READ,
-//         IOobject::AUTO_WRITE
-//     ),
-//     mesh,
-//     0.0
-// );
+Info<< "\nInitializing pcow" << endl;
+volScalarField pcow
+(
+    IOobject
+    (
+        "pcow",
+        runTime.timeName(),
+        mesh,
+        IOobject::NO_READ,
+        IOobject::AUTO_WRITE
+    ),
+    mesh,
+    0.0
+);
 
-// Info<< "\nInitializing dpcds" << endl;
-// volScalarField dpcds
-// (
-//     IOobject
-//     (
-//         "dpcds",
-//         runTime.timeName(),
-//         mesh,
-//         IOobject::NO_READ,
-//         IOobject::AUTO_WRITE
-//     ),
-//     mesh,
-//     0.0
-// );
+Info<< "\nInitializing pcgo" << endl;
+volScalarField pcgo
+(
+    IOobject
+    (
+        "pcgo",
+        runTime.timeName(),
+        mesh,
+        IOobject::NO_READ,
+        IOobject::AUTO_WRITE
+    ),
+    mesh,
+    0.0
+);
 
-// // // Class capillary pressure model
-// autoPtr<capillaryPressureModel> capPressModel = capillaryPressureModel::New(transportProperties);
-// capPressModel->correct(pc, dpcds, Sb);
+Info<< "\nInitializing dpcow_dsw" << endl;
+volScalarField dpcow_dsw
+(
+    IOobject
+    (
+        "dpcow_dsw",
+        runTime.timeName(),
+        mesh,
+        IOobject::NO_READ,
+        IOobject::AUTO_WRITE
+    ),
+    mesh,
+    0.0
+);
 
-// surfaceScalarField dpcdsf ("dpcdsf",fvc::interpolate(dpcds,"dpcds"));
-// surfaceScalarField phiPc("phiPc",Mbf * dpcdsf * fvc::snGrad(Sb) * mesh.magSf());
+Info<< "\nInitializing dpcow_dsg" << endl;
+volScalarField dpcow_dsg
+(
+    IOobject
+    (
+        "dpcow_dsg",
+        runTime.timeName(),
+        mesh,
+        IOobject::NO_READ,
+        IOobject::AUTO_WRITE
+    ),
+    mesh,
+    0.0
+);
 
+Info<< "\nInitializing dpcgo_dsg" << endl;
+volScalarField dpcgo_dsg
+(
+    IOobject
+    (
+        "dpcgo_dsg",
+        runTime.timeName(),
+        mesh,
+        IOobject::NO_READ,
+        IOobject::AUTO_WRITE
+    ),
+    mesh,
+    0.0
+);
+
+Info<< "\nInitializing dpcgo_dsw" << endl;
+volScalarField dpcgo_dsw
+(
+    IOobject
+    (
+        "dpcgo_dsw",
+        runTime.timeName(),
+        mesh,
+        IOobject::NO_READ,
+        IOobject::AUTO_WRITE
+    ),
+    mesh,
+    0.0
+);
+
+volScalarField zeroField
+(
+    IOobject
+    (
+        "zeroField",
+        runTime.timeName(),
+        mesh,
+        IOobject::NO_READ,
+        IOobject::AUTO_WRITE
+    ),
+    mesh,
+    dimensionedScalar("zero", dimless, 0.0)
+);
+
+// Class capillary pressure model
+autoPtr<capillaryPressureModel> capPressModel = capillaryPressureModel::New(transportProperties);
+capPressModel->correct(pcow, pcgo,
+                       dpcow_dsw, dpcow_dsg,
+                       dpcgo_dsw, dpcgo_dsg,
+                       Sa, Sb, zeroField);
+
+surfaceScalarField dpcow_dsw_f ("dpcow_dsw_f",fvc::interpolate(dpcow_dsw,"dpcow_dsw"));
+surfaceScalarField dpcow_dsg_f ("dpcow_dsg_f",fvc::interpolate(dpcow_dsg,"dpcow_dsg"));
+surfaceScalarField dpcgo_dsw_f ("dpcgo_dsw_f",fvc::interpolate(dpcgo_dsw,"dpcgo_dsw"));
+surfaceScalarField dpcgo_dsg_f ("dpcgo_dsg_f",fvc::interpolate(dpcgo_dsg,"dpcgo_dsg"));
+
+Info<< "\nInitializing phiPc_a" << endl;
+surfaceScalarField phiPc_a("phiPc_a", Maf * (dpcgo_dsw_f * fvc::snGrad(Sb) * mesh.magSf() + dpcgo_dsg_f * fvc::snGrad(Sa) * mesh.magSf()));
+
+Info<< "\nInitializing phiPc_b" << endl;
+surfaceScalarField phiPc_b("phiPc_b", Mbf * (dpcow_dsw_f * fvc::snGrad(Sb) * mesh.magSf() + dpcow_dsg_f * fvc::snGrad(Sa) * mesh.magSf()));
+
+Info<< "\nInitializing phiPc" << endl;
+surfaceScalarField phiPc("phiPc", phiPc_a - phiPc_b);
 
 // SOURCE TERMS
 

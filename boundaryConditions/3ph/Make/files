@@ -1,4 +1,5 @@
 fractionalVelocity/fractionalVelocity.C
 prescribedFracFlowVelocity/prescribedFracFlowVelocity.C
+darcyGradPressure_GPC/darcyGradPressure_GPC.C
 
 LIB = $(FOAM_USER_LIBBIN)/libboundaryConditions_3ph

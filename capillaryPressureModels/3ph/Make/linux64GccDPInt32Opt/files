@@ -1,0 +1,5 @@
+SOURCE += capillaryPressureModel.C
+SOURCE += CoreyBrooksPC/CoreyBrooksPC.C
+SOURCE += noCapillaryPressure/noCapillaryPressure.C
+
+LIB = $(FOAM_USER_LIBBIN)/libcapillaryPressureModels_3ph

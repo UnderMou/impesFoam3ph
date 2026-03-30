@@ -6,6 +6,7 @@ $(WM_PROJECT_DIR)/src/finiteVolume/lnInclude/simpleControl.H \
 $(WM_PROJECT_DIR)/src/finiteVolume/lnInclude/fvConstraints.H \
 $(WM_PROJECT_DIR)/src/finiteVolume/lnInclude/wallFvPatch.H \
 ../../relativePermeabilityModels/3ph/relativePermeabilityModel.H \
+../../capillaryPressureModels/3ph/capillaryPressureModel.H \
 ../../foamModels/3ph/foamModel.H \
 ../../surfactantTransportModels/3ph/surfactantTransportModel.H \
 ../../isothermModels/3ph/isothermModel.H \
@@ -790,6 +791,7 @@ $(WM_PROJECT_DIR)/src/finiteVolume/lnInclude/simpleControl.H :
 $(WM_PROJECT_DIR)/src/finiteVolume/lnInclude/fvConstraints.H :
 $(WM_PROJECT_DIR)/src/finiteVolume/lnInclude/wallFvPatch.H :
 ../../relativePermeabilityModels/3ph/relativePermeabilityModel.H :
+../../capillaryPressureModels/3ph/capillaryPressureModel.H :
 ../../foamModels/3ph/foamModel.H :
 ../../surfactantTransportModels/3ph/surfactantTransportModel.H :
 ../../isothermModels/3ph/isothermModel.H :

@@ -131,13 +131,16 @@ if __name__ == '__main__':
     Sw_OF = Sw_OF[:nAvoid]
     Sg_OF = Sg_OF[:nAvoid]
     So_OF = So_OF[:nAvoid]
-    xD = np.linspace(0,1,len(Sw_OF))
 
     Swc = 0.1
     Sgr = 0
     Sor = 0.1
     Sg_OF = S_norm(Sg_OF,Sgr,Swc,Sgr,Sor)
     So_OF = S_norm(So_OF,Sor,Swc,Sgr,Sor)
+
+    Sg_OF = np.concatenate(([0.6875],Sg_OF))
+    So_OF = np.concatenate(([0.0],So_OF))
+    xD = np.linspace(0,1,len(Sg_OF))
     
     # Plotting the results
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(7, 5))
@@ -150,16 +153,16 @@ if __name__ == '__main__':
     # ax1.set_title(r'$S_g$ profile at $T_D=0.25$')
     ax1.grid()
     ax1.legend()
-    # ax1.set_ylim([-0.05,0.85])
+    ax1.set_ylim([0,0.75])
 
     # ax2.plot(xD_Fo, So_Fo, linestyle='--', color='b', label='FOSSIL')
     ax2.plot(xD, So_OF, lw=2,linestyle='--', color='k', label='ImpesFOAM')
     ax2.plot(data_Lyu_So.iloc[:,0], data_Lyu_So.iloc[:,1], color='g')
-    # ax2.set_xlabel(r'$x_D$')
+    ax2.set_xlabel(r'$x_D$')
     ax2.set_ylabel(r'$S_o$')
     # ax2.set_title(r'$S_o$ profile at $T_D=0.25$')
     ax2.grid()
-    # ax2.set_ylim([-0.05,0.85])
+    ax2.set_ylim([0,0.85])
 
     plt.tight_layout()
     plt.savefig('LyuC4.pdf', dpi=300)
