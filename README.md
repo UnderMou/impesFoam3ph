@@ -1,15 +1,12 @@
 # impesFoam3ph
 Computational implementation of the IMplicit-Pressure Explicit-Saturation (IMPES) method on the three-phase flow in porous media with foam using OpenFOAM framework.
 
-This solver was based on the work: 
-[An open-source toolbox for multiphase flow in porous media](https://www.sciencedirect.com/science/article/pii/S0010465514003403) P Horgue, C Soulaine, J Franc, R Guibert, G Debenest Computer Physics Communications 187, 217-226, 2015
-
-New features added:
+Main features:
 - Three-phase flow modeling
 - Foam modeling:
    - Implicit-texture foam model added [(STARS foam model)](https://www.sciencedirect.com/science/article/pii/S1875510018300878).
    - Mechanistic foam model added [(Ashoori foam model)](https://www.sciencedirect.com/science/article/pii/S0927775711000124).
-- Surfactant concentration transport in aqueous phase PDE. [(Surf.Conc. transp. in aq. phase)](https://epubs.siam.org/doi/10.1137/23M1566649) accounting with surfactant adsorption on solid phase.
+- Surfactant concentration transport in aqueous phase PDE. [(Surfactant Concentration transport in aqueous phase)](https://epubs.siam.org/doi/10.1137/23M1566649) accounting with surfactant adsorption on solid phase.
   
 ---
 **IMPORTANT**: This repository is part of an ongoing research associated with a scientific paper that is currently under preparation/submission. The contents are under active development and may change.
@@ -78,4 +75,8 @@ With OpenFOAM properly installed on your machine according to the tutorial above
    ```
 
    To view the results, open ParaView and load the `field.foam` file located in the case directory.
+
+## References
+This solver was based on the work: 
+[An open-source toolbox for multiphase flow in porous media](https://www.sciencedirect.com/science/article/pii/S0010465514003403) P Horgue, C Soulaine, J Franc, R Guibert, G Debenest Computer Physics Communications 187, 217-226, 2015
 
