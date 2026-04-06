@@ -107,7 +107,7 @@ With OpenFOAM properly installed on your machine according to the tutorial above
    ls $FOAM_USER_LIBBIN
    ```
    If all the following files are listed, the compilation was successfull:
-   `libboundaryConditions_2ph.so`, `libfoamModels_2ph.so`, `librelativePermeabilityModels_2ph.so`, `libwellModels_2ph.so`, `libboundaryConditions_3ph.so`, `libfoamModels_3ph.so`, `librelativePermeabilityModels_3ph.so`, `libwellModels_3ph.so`, `libcapillaryPressureModels_2ph.so`, `libisothermModels.so` and `libsurfactantTransportModels.s`.
+   `libboundaryConditions_2ph.so`, `libfoamModels_2ph.so`, `librelativePermeabilityModels_2ph.so`, `libwellModels_2ph.so`, `libboundaryConditions_3ph.so`, `libfoamModels_3ph.so`, `librelativePermeabilityModels_3ph.so`, `libwellModels_3ph.so`, `libcapillaryPressureModels_2ph.so`, `libcapillaryPressureModels_3ph.so`, `libisothermModels_2ph.so`, `libisothermModels_3ph.so`, `libsurfactantTransportModels_2ph.s` and `libsurfactantTransportModels_3ph.s`.
 
 ### 3. Running an Example
 
