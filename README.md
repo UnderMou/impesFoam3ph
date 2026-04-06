@@ -20,43 +20,6 @@ This repository provides a collection of example cases covering a wide range of 
 
 ### Folder Structure
 
-Examples/
-├── 2ph_CapillaryPressure
-│   └── capGrav_equi
-├── 2ph_Foam
-│   ├── 00_inPreparation
-│   ├── 2Layers_long
-│   ├── 2Layers_Seq
-│   ├── ashoori_diff_Kcs
-│   ├── ashoori_paper
-│   ├── ChessField
-│   ├── Core16_foamQualityScan
-│   ├── Core21
-│   ├── SPE10_L36
-│   └── SurfactantTransport
-├── 2ph_Gravity
-│   ├── 2D_homogeneous
-│   └── Durlofsky_Abreu
-├── 2ph_Well
-│   └── 5spot_panday
-├── 3ph_CapillaryPressure
-│   └── LeveretLewis_EduardoAbreu
-├── 3ph_Foam
-│   ├── 00_inPreparation
-│   ├── LozanoFoam
-│   ├── LyuTang_CTscan
-│   ├── LyuTang_fracFlow_verification
-│   ├── Mehrabi_surfTransp
-│   ├── Oil_bank
-│   └── TangC16_foamQualityScan
-├── 3ph_Gravity
-│   └── EduardoAbreu
-└── 3ph_Well
-    ├── 3D_homogeneous
-    └── 3D_SPE10field_10layers
-
----
-
 ### Two-Phase Flow
 
 - **2ph_CapillaryPressure**
