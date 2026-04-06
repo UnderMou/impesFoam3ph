@@ -25,7 +25,6 @@ boundaryField
     {
         type            fixedValue;
         value           uniform 0.664;
-        // type            zeroGradient;
     }
 
     outlet

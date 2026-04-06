@@ -68,6 +68,14 @@ MehrabiFoam
   MRF      10;
 }
 
+// Capillary pressure model
+
+capillaryPressureModel noCapillaryPressure;
+
+noCapillaryPressure
+{}
+
+
 // Surfactante concentration transport and adsorption isotherm
 
 surfactantTransportModel Csw;
@@ -76,7 +84,7 @@ Csw
 {
   rho_s 1;
 
-  isothermModel noAdsorption;
+  isothermModel Henry;
 
   // Adorption isotherms
   noAdsorption
@@ -88,6 +96,13 @@ Csw
   {
     Kd    0.05;
   }
+
+  Langmuir
+  {
+    qo    0.3;
+    KL    1.0;
+  }
+
 
 }
 

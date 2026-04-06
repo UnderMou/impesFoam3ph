@@ -25,8 +25,9 @@ Application
     impesFoam2ph
 
 Description
-    Solves two-phase flow in porous media accounting with foam and neglecting gravity
-    and capillary effects
+    Solves two-phase flow in porous media through darcy law (Gravity and capillary effects
+    included) incorporating foam effects (implicit and explicit texture), surfactant transport 
+    and adsorption, and well models. 
 
 \*---------------------------------------------------------------------------*/
 
@@ -42,8 +43,6 @@ Description
 #include "surfactantTransportModel.H"
 #include "isothermModel.H"
 #include "wellModel.H"
-
-// #include "wellModeling.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -63,35 +62,36 @@ int main(int argc, char *argv[])
 
         Info<< "Time = " << runTime.timeName() << nl << endl;
 
-        #include "CourantNo.H"
-        #include "GdEpsilon.H"
-
-        Info<< "\nCalculating p and Sb field\n" << endl;     
-
+        #include "CourantNo.H"  // CFL for each phase
+        #include "GdEpsilon.H"  // Gravity over convective effects
+    
         while (simple.correctNonOrthogonal())
         {   
             // Relative permeability model
             Info<< "Using relative permeability model: " << krModel->type() << nl << endl;
-            krModel->correct(kra, krb, Sb);
+            krModel->correct(kra, krb, Sb, *foamAux.Cs);
 
             // Foam model
             Info<< "Using foam model: " << foamModel->type() << nl << endl;
-            foamModel->correct(kra, U, Sa, Sb, phia, eps);
+            foamModel->correct(kra, U, Sa, Sb, phia, eps, K, fvc::grad(p));
 
+            // Total mobility (M_i) and fractional flux
             kraf = fvc::interpolate(kra,"kra");
             krbf = fvc::interpolate(krb,"krb");
             Maf = Kf*kraf/mu_a;	
             Mbf = Kf*krbf/mu_b;
             Mf = Maf+Mbf;
 
+            Faf = Maf/Mf;
+            Fbf = Mbf/Mf;
+            Fb = (krb/mu_b) / ( (kra/mu_a) + (krb/mu_b) );
+
+            // Gravitational effects (L_i)
             Laf = rho_a*Kf*kraf/mu_a;
             Lbf = rho_b*Kf*krbf/mu_b;	
             Lf = Laf+Lbf;
             phiG = (Lf * g) & mesh.Sf();
 
-            Fbf = Mbf/Mf;
-            Fb = (krb/mu_b) / ( (kra/mu_a) + (krb/mu_b) );
-            
             // Capillary pressure model
             Info<< "Using capillary pressure model: " << capPressModel->type() << nl << endl;
             capPressModel->correct(pc, dpcds, Sb);
@@ -99,6 +99,7 @@ int main(int argc, char *argv[])
             dpcdsf = fvc::interpolate(dpcds,"dpcds");
             phiPc = Mbf * dpcdsf * fvc::snGrad(Sb) * mesh.magSf();
 
+            // zero gravitational on walls
             forAll(mesh.boundary(),patchi)
             {   
                 if ( Ua.boundaryField()[patchi].type() == "slip" )
@@ -107,41 +108,38 @@ int main(int argc, char *argv[])
                 }
             }
 
+            // pressure equation
             fvScalarMatrix pEqn
             (
                 fvm::laplacian(-Mf, p) + fvc::div(phiG) + fvc::div(phiPc)
                 ==
-                // zeroRHS
                 qt
             );
-
             pEqn.solve();
-
             phiP = pEqn.flux();
 
-            forAll(mesh.boundary(),patchi)
-            {   
-                if ( Ua.boundaryField()[patchi].type() == "slip" )
-                {   
-                    phiP.boundaryFieldRef()[patchi] = 0.0;
-                }
-            }
+            // forAll(mesh.boundary(),patchi)
+            // {   
+            //     if ( Ua.boundaryField()[patchi].type() == "slip" )
+            //     {   
+            //         phiP.boundaryFieldRef()[patchi] = 0.0;
+            //     }
+            // }
 
+            // total flux at cell faces
             phi = phiP + phiG + phiPc;
 
+            // phase fluxe at cell faces
             phib = Fbf*phiP + (Lbf/Lf)*phiG + phiPc;
-
             phia = phi - phib;
 
+            // correct darcy velocities at boundaries
             U = fvc::reconstruct(phi);
             U.correctBoundaryConditions();
-
             Ub = fvc::reconstruct(phib);
             Ua = U-Ub;
-
             Ub.correctBoundaryConditions();  
             Ua.correctBoundaryConditions();
-
             forAll(mesh.boundary(),patchi)
             {
                 if (isA< fixedValueFvPatchField<vector> >(Ua.boundaryField()[patchi]))
@@ -154,18 +152,20 @@ int main(int argc, char *argv[])
                 }
             }
 
-            // well correction
-            wellModel->correct(qb,Fb,qt_inj,qt_prod);
+            // well model correction
+            wellModel->correct(qb,Fb,qt_inj,qt_prod,runTime.timeOutputValue());
 
+            // phase saturation equation
             fvScalarMatrix SbEqn
             (
                 eps*fvm::ddt(Sb) + fvc::div(phib) 
                 ==
-                // zeroRHS
                 qb
             );
-
             SbEqn.solve();
+
+            Sb.correctBoundaryConditions();  
+            Sa.correctBoundaryConditions();
 
             Sa = scalar(1.0) - Sb;
 
@@ -173,8 +173,6 @@ int main(int argc, char *argv[])
             Info << "Saturation b: " << " Min(Sb) = " << gMin(Sb) << " Max(Sb) = " << gMax(Sb) << endl;
 
             // Surfactant transport model
-            // Info<< "Using isotherm model: " << isothermModel->type() << nl << endl;
-            // isothermModel->correct();
             Info<< "Using surfactant transport model: " << surfTranspModel->type() << nl << endl;
             surfTranspModel->correct(Sb, phib, eps);
 

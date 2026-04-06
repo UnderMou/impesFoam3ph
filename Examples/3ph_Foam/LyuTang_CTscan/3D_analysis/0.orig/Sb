@@ -17,30 +17,18 @@ FoamFile
 
 dimensions      [0 0 0 0 0 0 0];
 
-internalField   uniform 0.5679799999999999;
+internalField   uniform 0.527;
 
 boundaryField
 {
     inlet
     {
-
-        // type            fixedValue;
-        // value           uniform 0.197;
-
         type            zeroGradient;
-
-        // type            calculated;
-        // value           uniform 0.5076100712896668;
     }
 
     outlet
     {
         type            zeroGradient;
-        // type               advective;
-        // type            fixedInternalValue;
-        // value           internalField;
-        // type extrapolatedCalculated;
-        // value uniform 0;
     }
 
     walls

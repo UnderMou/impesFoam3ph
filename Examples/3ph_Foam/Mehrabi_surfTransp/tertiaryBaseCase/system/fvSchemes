@@ -80,8 +80,10 @@ interpolationSchemes
     flux(Ua)        linear;
     flux(U)         linear;
 
-    // Dpcwo_DSw       linear;       
-    // Dpcgo_DSg       linear;
+    dpcow_dsw       linear;
+    dpcow_dsg       linear;       
+    dpcgo_dsg       linear;
+    dpcgo_dsw       linear;
 
 }
 

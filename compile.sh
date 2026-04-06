@@ -2,42 +2,21 @@
 
 echo "Starting compilation..."
 
-# Find all directories containing a Make folder,
-# but skip solvers and Examples
-# find . \
-#     -path "./solvers" -prune -o \
-#     -path "./Examples" -prune -o \
-#     -type d -name Make -print | while read dir; do
-
-#     module_dir=$(dirname "$dir")
-
-#     echo "--------------------------------"
-#     echo ""
-#     cd "$module_dir" || exit
-
-#     # Print current directory
-#     pwd
-#     echo ""
-
-#     # Compile
-#     wclean
-#     wmake libso .
-
-#     cd - > /dev/null
-# done
-
 set -e
 
 dirs=(
     "./boundaryConditions/2ph"
     "./boundaryConditions/3ph"
     "./capillaryPressureModels/2ph"
+    "./capillaryPressureModels/3ph"
     "./foamModels/2ph"
     "./foamModels/3ph"
-    "./isothermModels"
+    "./isothermModels/2ph"
+    "./isothermModels/3ph"
     "./relativePermeabilityModels/2ph"
     "./relativePermeabilityModels/3ph"
-    "./surfactantTransportModels"
+    "./surfactantTransportModels/2ph"
+    "./surfactantTransportModels/3ph"
     "./wellModels/2ph"
     "./wellModels/3ph"
 )
@@ -64,6 +43,8 @@ echo "--------------------------------"
 
 for dir in solvers/*; do
     if [ -d "$dir" ]; then
+        echo ""
+        
         cd "$dir" || exit
 
         pwd

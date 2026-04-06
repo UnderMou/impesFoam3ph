@@ -14,7 +14,7 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-// a: oil
+// a: gas
 // b: water
 
 mu_a              mu_a [0 0 0 0 0 0 0] 2.0e-5;      // Pa.s
@@ -47,6 +47,7 @@ CoreyBrooksExtd
 // Foam model 
 
 foamModel STARS;
+FshearActive false;
 FsurfActive false;
 
 STARS

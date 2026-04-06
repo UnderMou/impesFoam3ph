@@ -30,7 +30,7 @@ boundaryField
     inlet
     {
 
-        type               darcyGradPressure_G;
+        type               darcyGradPressure_GPC;
         value              uniform 0.0;
     }
 

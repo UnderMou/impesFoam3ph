@@ -68,6 +68,11 @@ interpolationSchemes
     krb             limitedLinear phib 0.333;
     krc             limitedLinear phic 0.333;
 
+    dpcow_dsw       linear;
+    dpcow_dsg       linear;       
+    dpcgo_dsg       linear;
+    dpcgo_dsw       linear;
+    
     flux(Ub)        linear;
     flux(Ua)        linear;
     flux(Uc)        linear;

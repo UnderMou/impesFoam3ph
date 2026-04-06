@@ -7,10 +7,10 @@ EXE_INC = \
     -I../../foamModels/2ph/lnInclude \
     -I../../capillaryPressureModels/2ph \
     -I../../capillaryPressureModels/2ph/lnInclude \
-    -I../../surfactantTransportModels \
-    -I../../surfactantTransportModels/lnInclude \
-    -I../../isothermModels \
-    -I../../isothermModels/lnInclude \
+    -I../../surfactantTransportModels/2ph \
+    -I../../surfactantTransportModels/2ph/lnInclude \
+    -I../../isothermModels/2ph \
+    -I../../isothermModels/2ph/lnInclude \
     -I../../wellModels/2ph \
     -I../../wellModels/2ph/lnInclude
 
@@ -18,9 +18,9 @@ EXE_LIBS = \
     -L$(FOAM_USER_LIBBIN) \
     -lrelativePermeabilityModels_2ph \
     -lcapillaryPressureModels_2ph \
-    -lsurfactantTransportModels \
+    -lsurfactantTransportModels_2ph \
     -lwellModels_2ph \
-    -lisothermModels \
+    -lisothermModels_2ph \
     -lfoamModels_2ph \
     -lfiniteVolume \
     -lfvModels \

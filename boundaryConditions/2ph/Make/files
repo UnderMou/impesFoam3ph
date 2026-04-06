@@ -1,3 +1,5 @@
+fractionalVelocity/fractionalVelocity.C
+prescribedFracFlowVelocity/prescribedFracFlowVelocity.C
 darcyGradPressure/darcyGradPressure.C
 darcyGradPressure_G/darcyGradPressure_G.C
 darcyGradPressure_GPC/darcyGradPressure_GPC.C

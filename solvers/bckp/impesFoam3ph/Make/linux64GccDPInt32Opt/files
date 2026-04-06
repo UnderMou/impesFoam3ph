@@ -1,3 +1,0 @@
-SOURCE += impesFoam3ph.C
-
-EXE = $(FOAM_USER_APPBIN)/impesFoam3ph

@@ -29,19 +29,12 @@ boundaryField
 
     outlet
     {
-        // type            fixedValue;
-        // value           $internalField;
-
         type            zeroGradient;
     }
 
     walls
     {
-        // type            zeroGradient;
         type            slip;
-
-        // type            fixedNormalSlip;
-        // value           uniform (0 0 0); // Optional initial value
     }
 
     emptyWalls

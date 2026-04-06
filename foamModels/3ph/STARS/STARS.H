@@ -1,3 +1,69 @@
+/*---------------------------------------------------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Copyright (C) 2011-2020 OpenFOAM Foundation
+     \\/     M anipulation  |
+-------------------------------------------------------------------------------
+License
+    This file is part of OpenFOAM.
+
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
+    ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+    FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+    for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
+
+Class
+    Foam::foamModel::STARS
+
+Description
+    STARS foam model for three-phase flow.
+
+    Reference:
+    \verbatim
+        Lyu, X., Voskov, D., Tang, J., & Rossen, W. R. (2021). 
+        Simulation of foam enhanced-oil-recovery processes using operator-based linearization approach.
+        SPE Journal, 26(04), 2287-2304.
+    \endverbatim
+
+    The default model coefficients are
+    \verbatim
+
+        foamModel STARS;
+        FsurfActive false;
+        FshearActive false;
+        FoilActive true;
+
+        STARS
+        {
+        fmmob     2000.0;
+        SF        0.3;
+        sfbet     32000.0;
+        fmcap     1.0;
+        epcap     0.0;
+        sigma_ba  1.0;
+        fmsurf    1.0;
+        epsurf    0.0;
+        fmoil     0.3;
+        floil     0.1;
+        epoil     3.0;
+        }
+
+    \endverbatim
+
+SourceFiles
+    STARS.C
+
+\*---------------------------------------------------------------------------*/
+
 #ifndef STARS_H
 #define STARS_H
 

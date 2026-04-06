@@ -1,3 +1,28 @@
+/*---------------------------------------------------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Copyright (C) 2011-2020 OpenFOAM Foundation
+     \\/     M anipulation  |
+-------------------------------------------------------------------------------
+License
+    This file is part of OpenFOAM.
+
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
+    ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+    FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+    for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
+
+\*---------------------------------------------------------------------------*/
+
 #include "ashoori.H"
 #include "addToRunTimeSelectionTable.H"
 
@@ -83,11 +108,11 @@ void ashoori::correct
     const volScalarField& Sa,
     const volScalarField& Sb,
     const surfaceScalarField& phia,
-    const volScalarField& eps
+    const volScalarField& eps,
+    const volScalarField& K,
+    const volVectorField& gradP
 ) const
 {
-    // Info << "fmmob = " << fmmob_ << endl;
-    // Info << "mu_w = " << mu_b_.value() << endl;
 
     if (!aux_ || !aux_->rgrc)
     {
@@ -103,18 +128,16 @@ void ashoori::correct
     volScalarField& nDLE      = *aux_->nDLE;
     volScalarField& MRF       = *aux_->MRF;
 
-    F = -fvc::div(phia); // + qa
+    F = -fvc::div(phia); // + qa    // TODO
     AcumCoeff = eps*(Sa + VSMALL);
     correct_rgrc(rgrc, nDLE, Sb, nD);
 
-    Info << "rgrc OK" << endl;
-    // printField(rgrc);
-    
+    // nD equation
     fvScalarMatrix nDEqn
     (
         AcumCoeff*fvm::ddt(nD) + fvc::div(phia, nD) 
         ==
-        (eps*(Sa + VSMALL)/nMAX_)*rgrc + fvc::Sp(-F, nD) // + qf
+        (eps*(Sa + VSMALL)/nMAX_)*rgrc + fvc::Sp(-F, nD) // + qf    // TODO
     );
 
     nDEqn.solve();

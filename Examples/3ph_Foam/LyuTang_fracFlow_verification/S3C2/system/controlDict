@@ -47,7 +47,6 @@ runTimeModifiable true;
 libs
 (
     "libboundaryConditions_2ph.so"
-    "libboundaryConditions_3ph.so"
 );
 
 // ************************************************************************* //

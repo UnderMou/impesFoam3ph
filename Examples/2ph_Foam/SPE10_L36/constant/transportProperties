@@ -33,19 +33,9 @@ g_vector        g_vector [0 0 0 0 0 0 0] (0 0 0);
 
 // Relative permeability model
 
-relativePermeabilityModel CoreyBrooksExtd;
+relativePermeabilityModel CoreyBrooks;
 
 CoreyBrooks
-{
-  Sa_min    0.293;
-  Sb_min    0.4;
-  a_exp     0.96;
-  b_exp     2.98;
-  kra_max   0.04;
-  krb_max   0.302;
-}
-
-CoreyBrooksExtd
 {
   Sa_min    0.293;
   Sb_min    0.4;
@@ -58,6 +48,7 @@ CoreyBrooksExtd
 // Foam model 
 
 foamModel STARS;
+FshearActive true;  // false to disable shear effects on foam
 FsurfActive false;
 
 STARS
@@ -69,12 +60,8 @@ STARS
   // With Fshear
   fmcap     8.4e-8;
   epcap     0.52463;
-
-  //Without Fshear
-  // fmcap     1.0;      // could be any value
-  // epcap     0; 
-
   sigma_ba  0.033;
+
   fmsurf    1.0;
   epsurf    0.0;
 }

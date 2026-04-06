@@ -78,6 +78,12 @@ interpolationSchemes
     // krb             CUBICK phib;
     // krc             CUBICK phic;
 
+    dpcow_dsw       linear;
+    dpcow_dsg       linear;       
+    dpcgo_dsg       linear;
+    dpcgo_dsw       linear;
+
+
     flux(Ub)        linear;
     flux(Ua)        linear;
     flux(Uc)        linear;

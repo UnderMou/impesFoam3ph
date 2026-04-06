@@ -14,11 +14,11 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-mu_a              mu_a [0 0 0 0 0 0 0] 2.0e-5;       // Pa.s  Gas
+mu_a              mu_a [0 0 0 0 0 0 0] 2.0e-5;      // Pa.s  Gas
 
-mu_b              mu_b [0 0 0 0 0 0 0] 0.7e-3;       // Pa.s  Water 
+mu_b              mu_b [0 0 0 0 0 0 0] 0.7e-3;      // Pa.s  Water 
 
-mu_c              mu_c [0 0 0 0 0 0 0] 5.0e-3; // 9.0e-2;       // 5.0e-3;       // Pa.s  Oil
+mu_c              mu_c [0 0 0 0 0 0 0] 5.0e-3;      // Pa.s  Oil
 
 rho_a              rho_a [0 0 0 0 0 0 0] 1000.0;    // kg/m3
 
@@ -33,9 +33,9 @@ g_vector        g_vector [0 0 0 0 0 0 0] (0 0 0);
 
 // Relative permeability model
 
-relativePermeabilityModel CoreyBrooksExtd;
+relativePermeabilityModel CoreyBrooks;
 
-CoreyBrooksExtd
+CoreyBrooks
 {
   Sa_min    0.013;
   Sb_min    0.197;
@@ -51,9 +51,14 @@ CoreyBrooksExtd
 // Foam model 
 
 foamModel STARS;
-FshearActive false;
+
+FshearActive true;
+ncaModel boeije;
+
 FsurfActive false;
 FoilActive true;
+
+
 
 STARS
 {
@@ -68,6 +73,27 @@ STARS
   fmoil     0.823;
   floil     0.295;
   epoil     3.827;
+}
+
+// Surfactante concentration transport and adsorption isotherm
+
+surfactantTransportModel noSurfTransp;
+
+noSurfTransp
+{
+  isothermModel noAdsorption;
+  noAdsorption
+  {
+  }
+}
+
+// Capillary pressure model
+
+capillaryPressureModel noCapillaryPressure;
+
+noCapillaryPressure
+{
+  
 }
 
 // ************************************************************************* // 

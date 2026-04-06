@@ -78,6 +78,12 @@ interpolationSchemes
     // krb             TOPUS phib 0.1;
     // krc             TOPUS phic 0.1;
 
+    dpcow_dsw       linear;
+    dpcow_dsg       linear;       
+    dpcgo_dsg       linear;
+    dpcgo_dsw       linear;
+
+
     flux(Ub)        linear;
     flux(Ua)        linear;
     flux(Uc)        linear;

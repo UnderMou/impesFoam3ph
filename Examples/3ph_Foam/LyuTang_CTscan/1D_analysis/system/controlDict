@@ -22,7 +22,7 @@ startTime       0;
 
 stopAt          endTime;
 
-endTime         150000;
+endTime         10000;
 
 deltaT          1.0e-2;
 
@@ -46,7 +46,6 @@ runTimeModifiable true;
 
 libs
 (
-    "libboundaryConditions_2ph.so"
     "libboundaryConditions_3ph.so"
 );
 

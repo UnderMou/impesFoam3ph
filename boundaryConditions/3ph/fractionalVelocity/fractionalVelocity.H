@@ -41,8 +41,8 @@ Usage
     <patchName>
     {
         type            fractionalVelocity;
-        U               1e-4;
-        fractionalFlow  fa; // phase a fractional flow
+        U               (1e-4 0 0);
+        fractionalFlow  fi; // i-th phase fractional flow; i = a,b,c
         value           uniform (0 0 0); // placeholder
     }
     \endverbatim

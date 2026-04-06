@@ -1,3 +1,28 @@
+/*---------------------------------------------------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Copyright (C) 2011-2020 OpenFOAM Foundation
+     \\/     M anipulation  |
+-------------------------------------------------------------------------------
+License
+    This file is part of OpenFOAM.
+
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
+    ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+    FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+    for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
+
+\*---------------------------------------------------------------------------*/
+
 #include "Csw.H"
 #include "addToRunTimeSelectionTable.H"
 
@@ -49,16 +74,16 @@ void Csw::correct
     Info<< "Using isotherm model: " << isothermModel_->type() << nl << endl;
     isothermModel_->correct();
 
-    Fcsw = -fvc::div(phib); // + qb
+    Fcsw = -fvc::div(phib); // + qb  // TODO
     AcumCoeff = eps*Sb + (scalar(1.0) - eps)*rho_sw_*dCsEqdCs;
 
+    // solve Cs equation
     fvScalarMatrix CsEqn
     (
         AcumCoeff*fvm::ddt(Cs) + fvc::div(phib,Cs) 
         ==
         fvc::Sp(-Fcsw,Cs)
     );
-
     CsEqn.solve();
 
     Info << "Surfactant concentration: " << " Min(Cs) = " << gMin(Cs) << " Max(Cs) = " << gMax(Cs) << endl;

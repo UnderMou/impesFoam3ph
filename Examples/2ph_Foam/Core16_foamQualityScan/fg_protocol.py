@@ -87,7 +87,7 @@ if __name__ == '__main__':
     # Run the first simulation as a starting point, initial conditions should be already set
     first_folder = "fg50.0"
     result = subprocess.run(
-        ["bash", "run_solver.sh", first_folder, "> log.txt"],
+        ["bash", "call_sim.sh", first_folder, "> log.txt"],
         check=True, capture_output=True, text=True
     )
 
@@ -134,7 +134,7 @@ if __name__ == '__main__':
         create_next_state(old_folder, new_folder, utt, deltaT, endTime)
 
         result = subprocess.run(
-            ["bash", "run_solver.sh", new_folder, "> log.txt"],
+            ["bash", "call_sim.sh", new_folder, "> log.txt"],
             check=True, capture_output=True, text=True
         )
     # ======================================================================================

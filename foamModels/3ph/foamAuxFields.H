@@ -50,28 +50,7 @@ struct foamAuxFields
         dCsEqdCs(nullptr),
         oneField(nullptr)   // isotherm
     {}
-
-    void printStatus() const
-    {
-        Info<< "foamAuxFields status:" << nl;
-        Info<< "  MRF: " << (MRF ? "initialized" : "null") << nl;
-        Info<< "  Nca: " << (Nca ? "initialized" : "null") << nl;
-        Info<< "  Fdry: " << (Fdry ? "initialized" : "null") << nl;
-        Info<< "  Fshear: " << (Fshear ? "initialized" : "null") << nl;
-        Info<< "  Fsurf: " << (Fsurf ? "initialized" : "null") << nl;
-        Info<< "  Foil: " << (Foil ? "initialized" : "null") << nl;
-        Info<< "  nD: " << (nD ? "initialized" : "null") << nl;
-        Info<< "  rgrc: " << (rgrc ? "initialized" : "null") << nl;
-        Info<< "  F: " << (F ? "initialized" : "null") << nl;
-        Info<< "  AcumCoeff_nD: " << (AcumCoeff_nD ? "initialized" : "null") << nl;
-        Info<< "  nDLE: " << (nDLE ? "initialized" : "null") << nl;
-        Info<< "  Cs: " << (Cs ? "initialized" : "null") << nl;
-        Info<< "  Fcsw: " << (Fcsw ? "initialized" : "null") << nl;
-        Info<< "  AcumCoeff_csw: " << (AcumCoeff_csw ? "initialized" : "null") << nl;
-        Info<< "  CsEq: " << (CsEq ? "initialized" : "null") << nl;
-        Info<< "  dCsEqdCs: " << (dCsEqdCs ? "initialized" : "null") << nl;
-        Info<< "  oneField: " << (oneField ? "initialized" : "null") << nl;
-    }
+    
 };
 
 } // End namespace Foam

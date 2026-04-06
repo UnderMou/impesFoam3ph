@@ -29,8 +29,8 @@ $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/timeSelector.H \
 $(WM_PROJECT_DIR)/src/finiteVolume/lnInclude/volFields.H \
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/dictionary.H \
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/runTimeSelectionTables.H \
-/home/anderson/OpenFOAM/anderson-9/run/struct_impesFoam/impesFoam3ph_v2/surfactantTransportModels/../foamModels/2ph/foamAuxFields.H \
-/home/anderson/OpenFOAM/anderson-9/run/struct_impesFoam/impesFoam3ph_v2/surfactantTransportModels/../isothermModels/isothermModel.H \
+/home/anderson/OpenFOAM/anderson-9/run/struct_impesFoam/impesFoam3ph_v3/surfactantTransportModels/2ph/../../foamModels/2ph/foamAuxFields.H \
+/home/anderson/OpenFOAM/anderson-9/run/struct_impesFoam/impesFoam3ph_v3/surfactantTransportModels/2ph/../../isothermModels/2ph/isothermModel.H \
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/Pstream.H \
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/IOstreams.H \
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/TimePaths.H \
@@ -772,8 +772,8 @@ $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/timeSelector.H :
 $(WM_PROJECT_DIR)/src/finiteVolume/lnInclude/volFields.H :
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/dictionary.H :
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/runTimeSelectionTables.H :
-/home/anderson/OpenFOAM/anderson-9/run/struct_impesFoam/impesFoam3ph_v2/surfactantTransportModels/../foamModels/2ph/foamAuxFields.H :
-/home/anderson/OpenFOAM/anderson-9/run/struct_impesFoam/impesFoam3ph_v2/surfactantTransportModels/../isothermModels/isothermModel.H :
+/home/anderson/OpenFOAM/anderson-9/run/struct_impesFoam/impesFoam3ph_v3/surfactantTransportModels/2ph/../../foamModels/2ph/foamAuxFields.H :
+/home/anderson/OpenFOAM/anderson-9/run/struct_impesFoam/impesFoam3ph_v3/surfactantTransportModels/2ph/../../isothermModels/2ph/isothermModel.H :
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/Pstream.H :
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/IOstreams.H :
 $(WM_PROJECT_DIR)/src/OpenFOAM/lnInclude/TimePaths.H :

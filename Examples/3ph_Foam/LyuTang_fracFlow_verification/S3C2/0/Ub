@@ -23,9 +23,6 @@ boundaryField
 {
     inlet
     {
-        // type            fixedValue;
-        // value           uniform (1.1362179991715267e-05 0 0);
-
         type            fractionalVelocity;
         U               uniform (1.4111e-5 0 0);
         fractionalFlow  Fb;
@@ -34,9 +31,6 @@ boundaryField
 
     outlet
     {
-        // type            fixedValue;
-        // value           $internalField;
-
         type            zeroGradient;
     }
 

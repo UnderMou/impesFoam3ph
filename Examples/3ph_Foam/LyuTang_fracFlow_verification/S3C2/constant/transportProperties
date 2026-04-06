@@ -81,4 +81,14 @@ noSurfTransp
   }
 }
 
+// Capillary pressure model
+
+capillaryPressureModel noCapillaryPressure;
+
+noCapillaryPressure
+{
+
+}
+
+
 // ************************************************************************* //

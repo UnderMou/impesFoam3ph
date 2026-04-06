@@ -1,21 +1,105 @@
 # impesFoam3ph
 Computational implementation of the IMplicit-Pressure Explicit-Saturation (IMPES) method on the three-phase flow in porous media with foam using OpenFOAM framework.
 
-This solver was based on the work: 
-[An open-source toolbox for multiphase flow in porous media](https://www.sciencedirect.com/science/article/pii/S0010465514003403) P Horgue, C Soulaine, J Franc, R Guibert, G Debenest Computer Physics Communications 187, 217-226, 2015
-
-New features added:
+Main features:
 - Three-phase flow modeling
 - Foam modeling:
    - Implicit-texture foam model added [(STARS foam model)](https://www.sciencedirect.com/science/article/pii/S1875510018300878).
    - Mechanistic foam model added [(Ashoori foam model)](https://www.sciencedirect.com/science/article/pii/S0927775711000124).
-- Surfactant concentration transport in aqueous phase PDE. [(Surf.Conc. transp. in aq. phase)](https://epubs.siam.org/doi/10.1137/23M1566649) accounting with surfactant adsorption on solid phase.
+- Surfactant concentration transport in aqueous phase PDE. [(Surfactant Concentration transport in aqueous phase)](https://epubs.siam.org/doi/10.1137/23M1566649) accounting with surfactant adsorption on solid phase.
   
 ---
 **IMPORTANT**: This repository is part of an ongoing research associated with a scientific paper that is currently under preparation/submission. The contents are under active development and may change.
 
 ![Under Development](https://img.shields.io/badge/status-under%20development-orange)
 ___
+
+## Examples
+
+This repository provides a collection of example cases covering a wide range of multiphase flow scenarios in porous media, including capillary effects, gravity, foam, and well-driven flows.
+
+### Folder Structure
+
+Examples/
+├── 2ph_CapillaryPressure
+│   └── capGrav_equi
+├── 2ph_Foam
+│   ├── 00_inPreparation
+│   ├── 2Layers_long
+│   ├── 2Layers_Seq
+│   ├── ashoori_diff_Kcs
+│   ├── ashoori_paper
+│   ├── ChessField
+│   ├── Core16_foamQualityScan
+│   ├── Core21
+│   ├── SPE10_L36
+│   └── SurfactantTransport
+├── 2ph_Gravity
+│   ├── 2D_homogeneous
+│   └── Durlofsky_Abreu
+├── 2ph_Well
+│   └── 5spot_panday
+├── 3ph_CapillaryPressure
+│   └── LeveretLewis_EduardoAbreu
+├── 3ph_Foam
+│   ├── 00_inPreparation
+│   ├── LozanoFoam
+│   ├── LyuTang_CTscan
+│   ├── LyuTang_fracFlow_verification
+│   ├── Mehrabi_surfTransp
+│   ├── Oil_bank
+│   └── TangC16_foamQualityScan
+├── 3ph_Gravity
+│   └── EduardoAbreu
+└── 3ph_Well
+    ├── 3D_homogeneous
+    └── 3D_SPE10field_10layers
+
+---
+
+### Two-Phase Flow
+
+- **2ph_CapillaryPressure**
+  - `capGrav_equi`: Vertical gas–water column reaching capillary–gravity equilibrium.
+
+- **2ph_Foam**
+  - `2Layers_long`: Co-injection in horizontally layered heterogeneous medium.
+  - `2Layers_Seq`: Sequential (flow-aligned) heterogeneity with vertical zones.
+  - `ashoori_diff_Kcs`: Sensitivity study on foam generation rate ($K_c$).
+  - `ashoori_paper`: Base case inspired by Ashoori et al. foam model.
+  - `ChessField`: Checkerboard permeability field with strong heterogeneity.
+  - `Core16_foamQualityScan`: Foam quality scan with experimental parameter fitting.
+  - `Core21`: Core-scale foam simulation case.
+  - `SPE10_L36`: Full heterogeneous field from SPE10 Layer 36.
+  - `SurfactantTransport`: Foam with surfactant transport and adsorption effects.
+
+- **2ph_Gravity**
+  - `2D_homogeneous`: Vertical homogeneous domain with gravity and weak foam.
+  - `Durlofsky_Abreu`: 1D counter-gravity injection benchmark.
+
+- **2ph_Well**
+  - `5spot_panday`: Five-spot pattern water injection for oil displacement.
+
+---
+
+### Three-Phase Flow
+
+- **3ph_CapillaryPressure**
+  - `LeveretLewis_EduardoAbreu`: Riemann problems with capillary diffusion (Leverett–Lewis model).
+
+- **3ph_Foam**
+  - `LozanoFoam`: Three-phase foam model based on Riemann problem formulation.
+  - `LyuTang_CTscan`: Foam simulation inspired by CT-scan experiments.
+  - `LyuTang_fracFlow_verification`: Fractional flow validation case for the three-phase flow.
+  - `Mehrabi_surfTransp`: Secondary and tertiary recovery with surfactant transport.
+
+- **3ph_Gravity**
+  - `EduardoAbreu`: 1D counter-gravity injection three-phase flow benchmark.
+
+- **3ph_Well**
+  - `3D_homogeneous`: Three-phase flow in homogeneous reservoir with wells.
+  - `3D_SPE10field_10layers`: Multilayer SPE10-based heterogeneous reservoir simulation.
+
 
 ## Instructions
 
@@ -79,3 +163,7 @@ With OpenFOAM properly installed on your machine according to the tutorial above
 
    To view the results, open ParaView and load the `field.foam` file located in the case directory.
 
+## References
+This solver was based on the work: 
+
+[An open-source toolbox for multiphase flow in porous media](https://www.sciencedirect.com/science/article/pii/S0010465514003403) P Horgue, C Soulaine, J Franc, R Guibert, G Debenest Computer Physics Communications 187, 217-226, 2015

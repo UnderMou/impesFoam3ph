@@ -67,6 +67,9 @@ vanGenuchten
 // Foam model 
 
 foamModel STARS;
+FshearActive true;
+nca_model zeng;
+
 FsurfActive false;
 
 STARS

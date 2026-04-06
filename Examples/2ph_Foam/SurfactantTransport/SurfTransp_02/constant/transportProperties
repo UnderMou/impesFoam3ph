@@ -47,6 +47,7 @@ CoreyBrooks
 // Foam model 
 
 foamModel STARS;
+FshearActive false;
 FsurfActive true;
 
 STARS

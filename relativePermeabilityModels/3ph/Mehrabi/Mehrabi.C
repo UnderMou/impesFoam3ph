@@ -1,3 +1,28 @@
+/*---------------------------------------------------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Copyright (C) 2011-2020 OpenFOAM Foundation
+     \\/     M anipulation  |
+-------------------------------------------------------------------------------
+License
+    This file is part of OpenFOAM.
+
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
+    ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+    FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+    for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
+
+\*---------------------------------------------------------------------------*/
+
 #include "Mehrabi.H"
 #include "addToRunTimeSelectionTable.H"
 
@@ -71,11 +96,14 @@ void Mehrabi::correct
 ) const
 {
 
+    // Evaluate oil saturation
     volScalarField Sc = scalar(1.0) - Sa - Sb;
 
+    // Initialize the corrected residual oil saturation and water endpoint
     scalar Sc_min_corr = Sc_min_2_;
     scalar krb_max_corr = krb_max_2_;
 
+    // Effective saturations (normalization)
     scalar Se_a = (Sa[0] - Sa_min_) / (1.0 - Sa_min_ - Sb_min_ - Sc_min_corr);
     scalar Se_b = (Sb[0] - Sb_min_) / (1.0 - Sa_min_ - Sb_min_ - Sc_min_corr);
     scalar Se_c = (Sc[0] - Sc_min_corr) / (1.0 - Sa_min_ - Sb_min_ - Sc_min_corr);
@@ -84,7 +112,7 @@ void Mehrabi::correct
     // cell centered values
     forAll(kra,i){
 
-        Sc_min_corr = correctSor(Csw[i]);
+        Sc_min_corr = correctSor(Csw[i]);   // Corrected residual oil saturation based on Csw
 
         if (Sa[i]<=Sa_min_ + SMALL){
             kra[i]=0.0;
@@ -106,7 +134,7 @@ void Mehrabi::correct
 
         forAll(kraPatch, facei)
         {
-            Sc_min_corr = correctSor(CswPatch[facei]);
+            Sc_min_corr = correctSor(CswPatch[facei]);  // Corrected residual oil saturation based on Csw
 
             if (SaPatch[facei]<=Sa_min_ + SMALL){
                 kraPatch[facei]=0.0;
@@ -125,8 +153,8 @@ void Mehrabi::correct
     // cell centered values
     forAll(krb,i){
 
-        Sc_min_corr = correctSor(Csw[i]);
-        krb_max_corr = correctKrw0(Csw[i]);
+        Sc_min_corr = correctSor(Csw[i]);       // Corrected residual oil saturation based on Csw
+        krb_max_corr = correctKrw0(Csw[i]);     // Corrected water endpoint based on Csw
 
         if (Sb[i]<=Sb_min_ + SMALL){
             krb[i]=0.0;
@@ -148,8 +176,8 @@ void Mehrabi::correct
 
         forAll(krbPatch, facei)
         {
-            Sc_min_corr = correctSor(CswPatch[facei]);
-            krb_max_corr = correctKrw0(CswPatch[facei]);
+            Sc_min_corr = correctSor(CswPatch[facei]);      // Corrected residual oil saturation based on Csw
+            krb_max_corr = correctKrw0(CswPatch[facei]);    // Corrected water endpoint based on Csw
 
             if (SbPatch[facei]<=Sb_min_ + SMALL){
                 krbPatch[facei]=0.0;
@@ -168,7 +196,7 @@ void Mehrabi::correct
     // cell centered values
     forAll(krc,i){
 
-        Sc_min_corr = correctSor(Csw[i]);
+        Sc_min_corr = correctSor(Csw[i]);   // Corrected residual oil saturation based on Csw
 
         if (Sc[i]<=Sc_min_corr + SMALL){
             krc[i]=0.0;
@@ -190,7 +218,7 @@ void Mehrabi::correct
 
         forAll(krcPatch, facei)
         {
-            Sc_min_corr = correctSor(CswPatch[facei]);
+            Sc_min_corr = correctSor(CswPatch[facei]);      // Corrected residual oil saturation based on Csw
 
             if (ScPatch[facei]<=Sc_min_corr + SMALL){
                 krcPatch[facei]=0.0;

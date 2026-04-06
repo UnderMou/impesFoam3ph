@@ -1,3 +1,29 @@
+/*---------------------------------------------------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Copyright (C) 2011-2020 OpenFOAM Foundation
+     \\/     M anipulation  |
+-------------------------------------------------------------------------------
+License
+    This file is part of OpenFOAM.
+
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
+    ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+    FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+    for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
+
+\*---------------------------------------------------------------------------*/
+
+#include <cmath>
 #include "STARS.H"
 #include "addToRunTimeSelectionTable.H"
 
@@ -29,7 +55,8 @@ STARS::STARS(const dictionary& dict, foamAuxFields* aux)
     fmsurf_(readScalar(dict.lookup("fmsurf"))),
     epsurf_(readScalar(dict.lookup("epsurf"))),
     FshearActive_(dict.parent().lookupOrDefault<Switch>("FshearActive",false)),
-    FsurfActive_(dict.parent().lookupOrDefault<Switch>("FsurfActive",false))
+    FsurfActive_(dict.parent().lookupOrDefault<Switch>("FsurfActive",false)),
+    ncaModel_(dict.parent().lookupOrDefault<word>("ncaModel","zeng"))
 {}
 
 void STARS::correct_Fdry
@@ -38,17 +65,28 @@ void STARS::correct_Fdry
     const volScalarField Sb
 ) const
 {
-    const double pi = 3.141592653589793; 
-    Fdry = 0.5 + (1.0 / pi) * Foam::atan(sfbet_ * (Sb - SF_));
+    Fdry = 0.5 + (1.0 / M_PI) * Foam::atan(sfbet_ * (Sb - SF_));
 }
 
 void STARS::correct_Nca
 (
     volScalarField& Nca,
-    const volVectorField U
+    const volVectorField U,
+    const volScalarField& K,
+    const volVectorField& gradP
 ) const
 {
-    Nca = (mu_b_.value() * mag(U)) / sigma_ba_;
+    if (ncaModel_ == "zeng") {
+        Nca = (mu_b_.value() * mag(U)) / sigma_ba_;
+    } else if (ncaModel_ == "boeije"){
+        Nca = (K * mag(gradP)) / sigma_ba_; 
+    } else {
+        FatalErrorInFunction
+            << "Unknown Nca model "
+            << ncaModel_ << nl
+            << exit(FatalError);
+    }
+    Info << "Nca model: " << ncaModel_ << endl;
 }
 
 void STARS::correct_Fshear
@@ -133,11 +171,11 @@ void STARS::correct
     const volScalarField& Sa,
     const volScalarField& Sb,
     const surfaceScalarField& phia,
-    const volScalarField& eps
+    const volScalarField& eps,
+    const volScalarField& K,
+    const volVectorField& gradP
 ) const
 {
-    // Info << "fmmob = " << fmmob_ << endl;
-    // Info << "mu_w = " << mu_b_.value() << endl;
 
     if (!aux_ || !aux_->Fdry)
     {
@@ -156,7 +194,7 @@ void STARS::correct
     correct_Fdry(Fdry, Sb);
     if (FshearActive_)
     {
-        correct_Nca(Nca, U);
+        correct_Nca(Nca, U, K, gradP);
         correct_Fshear(Fshear, Nca);
     }
     if (FsurfActive_)

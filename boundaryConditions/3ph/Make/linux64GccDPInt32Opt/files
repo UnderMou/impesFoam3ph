@@ -1,5 +1,7 @@
 SOURCE += fractionalVelocity/fractionalVelocity.C
 SOURCE += prescribedFracFlowVelocity/prescribedFracFlowVelocity.C
+SOURCE += darcyGradPressure/darcyGradPressure.C
+SOURCE += darcyGradPressure_G/darcyGradPressure_G.C
 SOURCE += darcyGradPressure_GPC/darcyGradPressure_GPC.C
 
 LIB = $(FOAM_USER_LIBBIN)/libboundaryConditions_3ph

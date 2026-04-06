@@ -51,6 +51,7 @@ CoreyBrooks
 // Foam model 
 
 foamModel STARS;
+FshearActive false;
 FsurfActive false;
 FoilActive true;
 
@@ -80,5 +81,15 @@ noSurfTransp
   {
   }
 }
+
+// Capillary pressure model
+
+capillaryPressureModel noCapillaryPressure;
+
+noCapillaryPressure
+{
+  
+}
+
 
 // ************************************************************************* //

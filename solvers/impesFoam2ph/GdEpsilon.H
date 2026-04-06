@@ -1,7 +1,7 @@
 scalar Gd = 0.0;
 scalar meanGd = 0.0;
-scalar Epsilon = 0.0;
-scalar meanEpsilon = 0.0;
+// scalar Epsilon = 0.0;
+// scalar meanEpsilon = 0.0;
 
 if (mesh.nInternalFaces())
 {

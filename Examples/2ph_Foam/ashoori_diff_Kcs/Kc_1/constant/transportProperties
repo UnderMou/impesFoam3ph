@@ -50,7 +50,7 @@ foamModel ashoori;
 
 ashoori
 {
-  Kc      1; // 0, 0.1, 1, 200
+  Kc      1.0; // 0, 0.1, 1, 200
   A       400;
   Cmrf    18500;
   Sw_ast  0.37;

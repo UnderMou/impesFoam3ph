@@ -33,9 +33,22 @@ g_vector        g_vector [0 0 0 0 0 0 0] (0 0 0);
 
 // Relative permeability model
 
-relativePermeabilityModel CoreyBrooksExtd;
+relativePermeabilityModel CoreyBrooks;
 
 CoreyBrooksExtd
+{
+  Sa_min    0.2;
+  Sb_min    0.135;
+  Sc_min    0.1;
+  a_exp     1.3;
+  b_exp     2.46;
+  c_exp     2.0;
+  kra_max   0.94;
+  krb_max   0.713;
+  krc_max   0.5;
+}
+
+CoreyBrooks
 {
   Sa_min    0.2;
   Sb_min    0.135;
@@ -69,6 +82,28 @@ STARS
   fmoil     0.7534338586150372;
   floil     0.016283996624632837;
   epoil     11.336244263481525;
+}
+
+// Surfactante concentration transport and adsorption isotherm
+
+surfactantTransportModel noSurfTransp;
+
+noSurfTransp
+{
+  rho_s 1.0;
+  isothermModel noAdsorption;
+  noAdsorption
+  {
+  }
+}
+
+// Capillary pressure model
+
+capillaryPressureModel noCapillaryPressure;
+
+noCapillaryPressure
+{
+  
 }
 
 // ************************************************************************* //

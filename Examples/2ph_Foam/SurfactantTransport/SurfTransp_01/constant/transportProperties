@@ -47,6 +47,7 @@ CoreyBrooks
 // Foam model 
 
 foamModel STARS;
+FshearActive false;
 FsurfActive true;
 
 STARS
@@ -60,9 +61,6 @@ STARS
   fmsurf    2.0;
   epsurf    1.0;
 }
-
-noFoam
-{}
 
 // Capillary pressure model
 

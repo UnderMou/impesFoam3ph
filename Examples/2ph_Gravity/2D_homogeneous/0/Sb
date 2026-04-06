@@ -23,14 +23,7 @@ boundaryField
 {
     inlet
     {
-
-        // type            fixedValue;
-        // value           uniform 0.5076100712896668;
-
         type            zeroGradient;
-
-        // type            calculated;
-        // value           uniform 0.5076100712896668;
     }
 
     outlet
@@ -41,9 +34,6 @@ boundaryField
     walls
     {
         type            zeroGradient;
-
-        // type            fixedValue;
-        // value           uniform 0.0;
     }
 
     emptyWalls

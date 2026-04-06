@@ -1,3 +1,28 @@
+/*---------------------------------------------------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Copyright (C) 2011-2020 OpenFOAM Foundation
+     \\/     M anipulation  |
+-------------------------------------------------------------------------------
+License
+    This file is part of OpenFOAM.
+
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
+    ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+    FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+    for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
+
+\*---------------------------------------------------------------------------*/
+
 #include "CoreyBrooks.H"
 #include "addToRunTimeSelectionTable.H"
 
@@ -32,12 +57,15 @@ void CoreyBrooks::correct
 (
     volScalarField& kra,
     volScalarField& krb,
-    volScalarField& Sb
+    volScalarField& Sb,
+    volScalarField& Csw
 ) const
 {
 
+    // Effective saturations (normalization)
     volScalarField Se = (Sb - Sb_min_) / (1.0 - Sa_min_ - Sb_min_);
 
+    // Corey-type relative permeabilities
     kra = kra_max_ * Foam::pow(scalar(1.0) - Se, a_exp_);
     krb = krb_max_ * Foam::pow(Se, b_exp_); 
 

@@ -25,7 +25,7 @@ rho_a              rho_a [0 0 0 0 0 0 0] 0.7;       // kg/m3
 
 rho_b              rho_b [0 0 0 0 0 0 0] 1.0;       // kg/m3
 
-prst            prst [0 0 0 0 0 0 0] 0.25;           // []
+prst            prst [0 0 0 0 0 0 0] 0.25;          // []
 
 // Gravity
 // g_vector        g_vector [0 0 0 0 0 0 0] (-9.81 0 0);
@@ -51,7 +51,28 @@ foamModel noFoam;
 
 noFoam
 {
-  
+}
+
+// Capillary pressure model
+
+capillaryPressureModel noCapillaryPressure;
+
+noCapillaryPressure
+{
+}
+
+// Surfactante concentration transport
+
+surfactantTransportModel noSurfTransp;
+
+noSurfTransp
+{
+  isothermModel noAdsorption;
+
+  // Adorption isotherms
+  noAdsorption
+  {
+  }
 }
 
 // ************************************************************************* //

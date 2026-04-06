@@ -58,22 +58,21 @@ interpolationSchemes
     default         none;
     K               harmonic;
 
-    // kra	            upwind phia;
+    // kra	        upwind phia;
     // krb         	upwind phib;
-    // krc         	upwind phic;
 
     // kra             QUICK phia;
     // krb             QUICK phib;
-    // krc             QUICK phic;
 
-    kra             limitedLinear phia 0.5;
-    krb             limitedLinear phib 0.5;
-    krc             limitedLinear phic 0.5;
+    kra             limitedLinear phia 0.333;
+    krb             limitedLinear phib 0.333;
+    krc             limitedLinear phic 0.333;
 
-    // kra             TOPUS phia 0.1;
-    // krb             TOPUS phib 0.1;
-    // krc             TOPUS phic 0.1;
-
+    dpcow_dsw       linear;
+    dpcow_dsg       linear;       
+    dpcgo_dsg       linear;
+    dpcgo_dsw       linear;
+    
     flux(Ub)        linear;
     flux(Ua)        linear;
     flux(Uc)        linear;

@@ -24,7 +24,7 @@ stopAt          endTime;
 
 endTime         40000;
 
-deltaT          0.075;
+deltaT          0.05;
 
 writeControl    runTime;
 
@@ -46,7 +46,7 @@ runTimeModifiable true;
 
 libs
 (
-    "libboundaryConditions_2ph.so"
+    "libboundaryConditions_3ph.so"
 );
 
 // ************************************************************************* //

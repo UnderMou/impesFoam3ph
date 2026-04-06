@@ -25,27 +25,16 @@ boundaryField
     {
         type            fixedValue;
         value           uniform (0 0 0);
-
-        // type            calculated;
-        // value           uniform (0 0 0);
-
-        // type            zeroGradient;
     }
 
     outlet
     {
-        // type            fixedValue;
-        // value           $internalField;
-
         type            zeroGradient;
-
-        // type            fixedInternalValue;
-        // value           internalField;
     }
 
     walls
     {
-        type            noSlip;
+        type            slip;
     }
 }
 

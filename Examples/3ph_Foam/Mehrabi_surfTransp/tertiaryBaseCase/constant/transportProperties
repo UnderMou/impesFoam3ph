@@ -68,6 +68,13 @@ MehrabiFoam
   MRF      10;
 }
 
+// Capillary pressure model
+
+capillaryPressureModel noCapillaryPressure;
+
+noCapillaryPressure
+{}
+
 // Surfactante concentration transport and adsorption isotherm
 
 surfactantTransportModel Csw;

@@ -35,16 +35,6 @@ g_vector        g_vector [0 0 0 0 0 0 0] (0 0 0);
 
 relativePermeabilityModel CoreyBrooksExtd;
 
-CoreyBrooks
-{
-  Sa_min    0.293;
-  Sb_min    0.4;
-  a_exp     0.96;
-  b_exp     2.98;
-  kra_max   0.04;
-  krb_max   0.302;
-}
-
 CoreyBrooksExtd
 {
   Sa_min    0.293;
@@ -59,13 +49,14 @@ CoreyBrooksExtd
 
 foamModel STARS;
 FsurfActive false;
+FshearActive false;
 
 STARS
 {
   fmmob     170.113;
   SF        0.45656;
   sfbet     504.143;
-  fmcap     8.4e-8;
+  fmcap     1.0;
   epcap     0;
   sigma_ba  0.033;
   fmsurf    1.0;
@@ -74,7 +65,7 @@ STARS
 
 noFoam
 {
-}
+} 
 
 // Capillary pressure model
 

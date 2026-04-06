@@ -27,11 +27,6 @@ boundaryField
         U               uniform (1 0 0);
         fractionalFlow  Fa;
         value           uniform (0 0 0);
-
-        // type            prescribedFracFlowVelocity;
-        // U               uniform (1 0 0);
-        // fractionalFlow  0.7;
-        // value           uniform (0 0 0);
     }
 
     outlet
