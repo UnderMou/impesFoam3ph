@@ -46,10 +46,9 @@ SlugInjection::SlugInjection(const dictionary& dict)
 :
     wellModel(dict),
     slugTime_w_(readScalar(dict.lookup("slugTime_w"))),
-    Fb_inj_(readScalar(dict.lookup("Fb_inj")))
+    slugTime_g_(readScalar(dict.lookup("slugTime_g")))
 {
-    scalar cycleTime_ = slugTime_w_ + slugTime_g_;
-    scalar t_cycle_ = std::fmod(0, cycleTime_);
+    cycleTime_ = slugTime_w_ + slugTime_g_;
 }
 
 void SlugInjection::correct
@@ -64,22 +63,22 @@ void SlugInjection::correct
 ) const
 {
 
-    // Map time into cycle
-    t_cycle_ = std::fmod(t, cycleTime_);
+    scalar t_cycle = std::fmod(t, cycleTime_);
 
-    // Check which slug we are in
-    bool inWater = (t_cycle_ >= 0.0 && t_cycle_ < slugTime_w_);
-    bool inGas   = (t_cycle_ >= slugTime_w_  && t_cycle_ < cycleTime_);
+    bool inWater = (t_cycle >= 0.0 && t_cycle < slugTime_w_);
+    bool inGas   = (t_cycle >= slugTime_w_ && t_cycle < cycleTime_);
 
-    if inWater
+    Info << "Time: " << t << " - In water slug: " << inWater << " - In gas slug: " << inGas << endl;
+
+    if(inWater)
     {
         qb = qt_inj - Fb * qt_prod; 
-        qa = - Fa * qt_prod;
+        qa = -Fa * qt_prod;
     }
     
-    if inGas
+    if(inGas)
     {
-        qb = - Fb * qt_prod; 
+        qb = -Fb * qt_prod; 
         qa = qt_inj - Fa * qt_prod;
     }
 

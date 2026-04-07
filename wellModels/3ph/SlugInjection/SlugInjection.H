@@ -59,6 +59,10 @@ class SlugInjection
 {
     scalar slugTime_w_;
     scalar slugTime_g_;
+    scalar cycleTime_;
+    scalar t_cycle_;
+    bool inWater_; 
+    bool inGas_; 
 
 public:
     TypeName("SlugInjection");

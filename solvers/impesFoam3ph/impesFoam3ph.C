@@ -175,6 +175,7 @@ int main(int argc, char *argv[])
             }
 
             // well model correction
+            Info<< "Using well model: " << wellModel->type() << nl << endl;
             wellModel->correct(qa,qb,Fa,Fb,qt_inj,qt_prod,runTime.timeOutputValue());
 
             // phase saturation equation
