@@ -1,0 +1,83 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  9
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      transportProperties;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+mu_a              mu_a [0 0 0 0 0 0 0] 0.02;      // Pa.s
+
+mu_b              mu_b [0 0 0 0 0 0 0] 1.0;       // Pa.s
+
+mu_c              mu_c [0 0 0 0 0 0 0] 4.0;       // Pa.s
+
+rho_a              rho_a [0 0 0 0 0 0 0] 1000.0;    // kg/m3
+
+rho_b              rho_b [0 0 0 0 0 0 0] 1000.0;    // kg/m3
+
+rho_c              rho_c [0 0 0 0 0 0 0] 1000.0;    // kg/m3
+
+prst            prst [0 0 0 0 0 0 0] 1.0;          // []
+
+// Gravity
+g_vector        g_vector [0 0 0 0 0 0 0] (0 0 0);
+
+// Relative permeability model
+
+relativePermeabilityModel CoreyBrooks;
+
+CoreyBrooks
+{
+  Sa_min    0.0;
+  Sb_min    0.0;
+  Sc_min    0.0;
+  a_exp     2.0;
+  b_exp     2.0;
+  c_exp     2.0;
+  kra_max   1.0;
+  krb_max   1.0;
+  krc_max   1.0;
+}
+
+// Foam model 
+
+foamModel Lozano;
+
+Lozano
+{
+  MRF     1750.0;
+  // MRF     3500.0;
+  // MRF        875.0; 
+}
+
+// Surfactant concentration transport and adsorption isotherm
+
+surfactantTransportModel noSurfTransp;
+
+noSurfTransp
+{
+  isothermModel noAdsorption;
+  noAdsorption
+  {
+  }
+}
+
+// Capillary pressure model
+
+capillaryPressureModel noCapillaryPressure;
+
+noCapillaryPressure
+{
+  
+}
+
+// ************************************************************************* //
