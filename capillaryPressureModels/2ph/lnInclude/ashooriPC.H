@@ -1,1 +1,0 @@
-../ashooriPC/ashooriPC.H

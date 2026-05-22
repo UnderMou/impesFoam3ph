@@ -1,5 +1,0 @@
-capillaryPressureModel.C
-LeverettLewis/LeverettLewis.C
-noCapillaryPressure/noCapillaryPressure.C
-
-LIB = $(FOAM_USER_LIBBIN)/libcapillaryPressureModels_3ph

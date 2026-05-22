@@ -1,6 +1,0 @@
-capillaryPressureModel.C
-CoreyBrooksPC/CoreyBrooksPC.C
-noCapillaryPressure/noCapillaryPressure.C
-ashooriPC/ashooriPC.C
-
-LIB = $(FOAM_USER_LIBBIN)/libcapillaryPressureModels_2ph

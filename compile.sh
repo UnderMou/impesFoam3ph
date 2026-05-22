@@ -5,20 +5,7 @@ echo "Starting compilation..."
 set -e
 
 dirs=(
-    "./boundaryConditions/2ph"
-    "./boundaryConditions/3ph"
-    "./capillaryPressureModels/2ph"
-    "./capillaryPressureModels/3ph"
-    "./foamModels/2ph"
-    "./foamModels/3ph"
-    "./isothermModels/2ph"
-    "./isothermModels/3ph"
-    "./relativePermeabilityModels/2ph"
-    "./relativePermeabilityModels/3ph"
-    "./surfactantTransportModels/2ph"
-    "./surfactantTransportModels/3ph"
-    "./wellModels/2ph"
-    "./wellModels/3ph"
+    "./boundaryConditions/"
 )
 
 for module_dir in "${dirs[@]}"; do

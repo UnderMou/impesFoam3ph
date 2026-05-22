@@ -1,6 +1,0 @@
-relativePermeabilityModel.C
-CoreyBrooks/CoreyBrooks.C
-CoreyBrooksExtd/CoreyBrooksExtd.C
-Mehrabi/Mehrabi.C
-
-LIB = $(FOAM_USER_LIBBIN)/librelativePermeabilityModels_3ph

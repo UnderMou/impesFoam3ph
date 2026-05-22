@@ -1,1 +1,0 @@
-../STARS/STARS.C
