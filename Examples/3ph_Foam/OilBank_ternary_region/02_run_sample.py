@@ -26,7 +26,7 @@ def run_case(i, X_row, exp_config_base):
 if __name__ == "__main__":
 
     # User defined ===========
-    exp_name = "CTscan_moreInj"
+    exp_name = "Lyu_floilL"
     # ========================
 
     pathCasePrep = f"casesPrep/{exp_name}"

@@ -18,6 +18,26 @@
       "Sg_min": 0.3,
       "Sg_max": 1.0
     },
+
+    "Lyu_floilH": {
+      "k"     : 10,
+      "Sw_min": 0.0,
+      "Sw_max": 0.7,
+      "So_min": 0.0,
+      "So_max": 0.0,
+      "Sg_min": 0.3,
+      "Sg_max": 1.0
+    },
+
+    "Lyu_floilL": {
+      "k"     : 10,
+      "Sw_min": 0.0,
+      "Sw_max": 0.7,
+      "So_min": 0.0,
+      "So_max": 0.0,
+      "Sg_min": 0.3,
+      "Sg_max": 1.0
+    },
   
     "CTscan": {
       "k"     : 20, 

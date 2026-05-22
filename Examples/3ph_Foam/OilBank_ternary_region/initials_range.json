@@ -18,6 +18,26 @@
       "Sg_min": 0.0,
       "Sg_max": 1.0
     },
+
+    "Lyu_floilH": {
+      "k"     : 25,
+      "Sw_min": 0.05,
+      "Sw_max": 1.0,
+      "So_min": 0.002,
+      "So_max": 1.0,
+      "Sg_min": 0.0,
+      "Sg_max": 1.0
+    },
+
+    "Lyu_floilL": {
+      "k"     : 25,
+      "Sw_min": 0.05,
+      "Sw_max": 1.0,
+      "So_min": 0.002,
+      "So_max": 1.0,
+      "Sg_min": 0.0,
+      "Sg_max": 1.0
+    },
   
     "Tang": {
       "k"     : 25,

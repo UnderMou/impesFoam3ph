@@ -50,7 +50,7 @@ def oilBank_criteria(
 
     return True 
 
-def checkCase_OBcondition(Sc, Soi, i, exp_name):
+def checkCase_OBcondition(Sc, Soi, Swi, Sgi, i, exp_name):
     """
         This function marks the simulation samples that has lead to oscilations 
         in the numerical results. So we ignore them by applying the exclusions
@@ -74,6 +74,10 @@ def checkCase_OBcondition(Sc, Soi, i, exp_name):
         return oilBank_criteria(Sc, Soi) and X[i, 0]>0.1
     elif exp_name == "Lyu_fmoil_xhalf":
         return oilBank_criteria(Sc, Soi) and X[i, 0]>0.1 and Soi<=0.2 and i not in [221, 223, 885, 887, 1027, 1291, 1515]
+    elif exp_name == "Lyu_floilH":
+        return oilBank_criteria(Sc, Soi) and Swi > 0.1 
+    elif exp_name == "Lyu_floilL":
+        return oilBank_criteria(Sc, Soi) and Swi > 0.1 
     
     else:
         raise Exception("'checkOil_bank' condition not defined for this 'exp_name'!")
@@ -82,7 +86,7 @@ def checkCase_OBcondition(Sc, Soi, i, exp_name):
 if __name__ == "__main__":
 
     # User defined ===========
-    exp_name = "CTscan_moreInj"
+    exp_name = "Lyu_floilL"
     # ========================
 
     pathCasePrep = f"casesPrep/{exp_name}"
@@ -124,6 +128,7 @@ if __name__ == "__main__":
 
         Soi = 1 - X[i, 0] - X[i, 1]
         Sgi = X[i, 1]
+        Swi = X[i, 0]
 
         Fa = np.asarray(data_single.Fa[-1,:])
         fg_inj.append(Fa[0])
@@ -133,7 +138,7 @@ if __name__ == "__main__":
         for j in range(len(data_single.time)):
             Sc = data_single.Sc[j,:]
 
-            if checkCase_OBcondition(Sc, Soi, i, exp_name):
+            if checkCase_OBcondition(Sc, Soi, Swi, Sgi, i, exp_name):
 
                 temp_check.append(True)
                 

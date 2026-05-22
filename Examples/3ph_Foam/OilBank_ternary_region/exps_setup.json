@@ -49,5 +49,32 @@
         "end":  200000,
         "step": 10000
       }
+    },
+
+    "Lyu_floilH": {
+      "solver": "Allrun",
+      "input_path": "templates/Lyu",
+      "output_path": "experiments/Lyu_floilH",
+      "parameter_ranges": {},
+      "nthreads": 20,
+      "postProcTime":{
+        "start": 10000,
+        "end":  200000,
+        "step": 10000
+      }
+    },
+
+    "Lyu_floilL": {
+      "solver": "Allrun",
+      "input_path": "templates/Lyu",
+      "output_path": "experiments/Lyu_floilL",
+      "parameter_ranges": {},
+      "nthreads": 20,
+      "postProcTime":{
+        "start": 10000,
+        "end":  200000,
+        "step": 10000
+      }
     }
+
   }

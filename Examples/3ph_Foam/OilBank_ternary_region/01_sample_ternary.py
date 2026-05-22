@@ -80,7 +80,7 @@ def injection_points(
 if __name__ == "__main__":
 
     # User defined ===========
-    case_name = "CTscan_moreInj"
+    case_name = "Lyu_floilL"
     # ========================
 
     path2save = f"casesPrep/{case_name}/"
@@ -139,5 +139,5 @@ if __name__ == "__main__":
     tax.left_corner_label("G", fontsize=fontsize)
     
     tax.legend()
-    tax.savefig(f"{path2save}/samples_{case_name}.png", dpi=300)
+    tax.savefig(f"{path2save}/samples_{case_name}.pdf", dpi=300)
     tax.show()
