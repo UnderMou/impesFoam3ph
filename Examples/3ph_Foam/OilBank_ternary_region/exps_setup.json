@@ -75,6 +75,58 @@
         "end":  200000,
         "step": 10000
       }
+    },
+
+    "Lyu_SFH": {
+      "solver": "Allrun",
+      "input_path": "templates/Lyu",
+      "output_path": "experiments/Lyu_SFH",
+      "parameter_ranges": {},
+      "nthreads": 20,
+      "postProcTime":{
+        "start": 10000,
+        "end":  200000,
+        "step": 10000
+      }
+    },
+
+    "Lyu_SFL": {
+      "solver": "Allrun",
+      "input_path": "templates/Lyu",
+      "output_path": "experiments/Lyu_SFL",
+      "parameter_ranges": {},
+      "nthreads": 20,
+      "postProcTime":{
+        "start": 10000,
+        "end":  200000,
+        "step": 10000
+      }
+    },
+
+    "Lyu_fmmobL": {
+      "solver": "Allrun",
+      "input_path": "templates/Lyu",
+      "output_path": "experiments/Lyu_fmmobL",
+      "parameter_ranges": {},
+      "nthreads": 20,
+      "postProcTime":{
+        "start": 10000,
+        "end":  200000,
+        "step": 10000
+      }
+    },
+
+    "Lyu_fmmobH": {
+      "solver": "Allrun",
+      "input_path": "templates/Lyu",
+      "output_path": "experiments/Lyu_fmmobH",
+      "parameter_ranges": {},
+      "nthreads": 20,
+      "postProcTime":{
+        "start": 10000,
+        "end":  200000,
+        "step": 10000
+      }
     }
 
   }

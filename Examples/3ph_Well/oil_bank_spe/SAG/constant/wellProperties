@@ -1,0 +1,35 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  9
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      wellProperties;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+// a: gas
+// b: water
+
+wellModel SlugInjection;
+
+ConstantInjection
+{
+  // co-injection
+  Fa_inj    0.3;
+  Fb_inj    0.7;
+}
+
+SlugInjection
+{
+  slugTime_w  1.0e7;
+  slugTime_g  1.0e7;  
+}
+
+// ************************************************************************* //

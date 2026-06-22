@@ -1,6 +1,2 @@
-backup
-notebooks
-simulator
-Examples/3ph_Foam/Oil_bank
-Examples/3ph_Foam/LozanoFoam/numericalOilBankTheorem/experiments
-Examples/3ph_Foam/LozanoFoam/numericalOilBankTheorem/checks
+Examples/3ph_Foam/OilBank_ternary_region/experiments/
+Examples/3ph_Foam/CTscan_SA/experiments/    *.avi

@@ -61,7 +61,10 @@ STARS
   fmmob     1749.0;
   //fmmob     874.5;
 
-  SF        0.3;
+  SF        0.2; // SFL
+  // SF        0.3;
+  // SF        0.4; // SFH
+
   sfbet     32000.0;
   fmcap     1.0;
   epcap     0.0;
@@ -69,12 +72,12 @@ STARS
   fmsurf    1.0;
   epsurf    0.0;
 
-  fmoil     0.3;
-  // fmoil     0.5;
+  // fmoil     0.3;
+  fmoil     0.5;
   // fmoil     0.8;
 
-  floil     0.0;  // com fmoil = 0.3
-  // floil     0.1;
+  // floil     0.0;  // com fmoil = 0.3
+  floil     0.1;
   // floil     0.4;  // com fmoil = 0.8
 
   epoil     3.0;

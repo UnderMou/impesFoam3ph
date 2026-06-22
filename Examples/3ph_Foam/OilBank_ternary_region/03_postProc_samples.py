@@ -11,8 +11,8 @@ import json
 def oilBank_criteria(
     Sc,
     Soi,
-    grad_min_threshold = -0.01, 
-    grad_max_threshold =  0.01  
+    grad_min_threshold = -0.01,  #-0.01, 
+    grad_max_threshold =  0.01   # 0.01  
 ):
     Sc = np.asarray(Sc)
 
@@ -38,16 +38,6 @@ def oilBank_criteria(
     if not np.all(Sc_segment > Soi):
         return False
 
-    # Condition 3: saturation in between must exceed Soi, in at least one position
-    # if np.max(Sc_segment) < Soi:
-       #return False
-    
-    # Condition 4: saturations at oil bank segment should be a plateau
-    # Sc_segment = np.asarray(Sc_segment)
-    # tol = 1e-6 * np.max(Sc_segment)
-    # if not np.allclose(Sc_segment, Sc_segment[0], atol=tol):
-    #     return False
-
     return True 
 
 def checkCase_OBcondition(Sc, Soi, Swi, Sgi, i, exp_name):
@@ -66,9 +56,9 @@ def checkCase_OBcondition(Sc, Soi, Swi, Sgi, i, exp_name):
     
     elif exp_name == "Lyu":
         return oilBank_criteria(Sc, Soi) and i not in [94, 95, 119, 127, 1071] 
-    elif exp_name == "Lyu_fmmob_x2":
-        return oilBank_criteria(Sc, Soi) and i not in [95,103,111,119,127,596,598,599,918,919,1071]
-    elif exp_name == "Lyu_fmmob_xhalf":
+    elif exp_name == "Lyu_fmmobH":
+        return oilBank_criteria(Sc, Soi) and i not in [95,103,111,119,127,596,598,599,918,919,1071] and Soi < 0.3
+    elif exp_name == "Lyu_fmmobL":
         return oilBank_criteria(Sc, Soi) and i not in [95]
     elif exp_name == "Lyu_fmoil_High":
         return oilBank_criteria(Sc, Soi) and X[i, 0]>0.1
@@ -78,6 +68,10 @@ def checkCase_OBcondition(Sc, Soi, Swi, Sgi, i, exp_name):
         return oilBank_criteria(Sc, Soi) and Swi > 0.1 
     elif exp_name == "Lyu_floilL":
         return oilBank_criteria(Sc, Soi) and Swi > 0.1 
+    elif exp_name == "Lyu_SFH":
+        return oilBank_criteria(Sc, Soi) and Swi > 0.1 
+    elif exp_name == "Lyu_SFL":
+        return oilBank_criteria(Sc, Soi) and ((Swi > 0.3) and (Soi < 0.35))
     
     else:
         raise Exception("'checkOil_bank' condition not defined for this 'exp_name'!")
@@ -86,7 +80,7 @@ def checkCase_OBcondition(Sc, Soi, Swi, Sgi, i, exp_name):
 if __name__ == "__main__":
 
     # User defined ===========
-    exp_name = "Lyu_floilL"
+    exp_name = "Lyu_fmmobH"
     # ========================
 
     pathCasePrep = f"casesPrep/{exp_name}"

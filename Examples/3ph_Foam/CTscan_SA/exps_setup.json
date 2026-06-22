@@ -1,0 +1,14 @@
+{
+    "CTscanSA": {
+      "solver": "Allrun",
+      "input_path": "templates/CTscan",
+      "output_path": "experiments/CTscanSA",
+      "parameter_ranges": {},
+      "nthreads": 20,
+      "postProcTime":{
+        "start": 50,
+        "end":  10000,
+        "step": 50
+      }
+    }
+  }

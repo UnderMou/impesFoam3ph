@@ -80,7 +80,7 @@ def injection_points(
 if __name__ == "__main__":
 
     # User defined ===========
-    case_name = "Lyu_floilL"
+    case_name = "Lyu_SFL"
     # ========================
 
     path2save = f"casesPrep/{case_name}/"

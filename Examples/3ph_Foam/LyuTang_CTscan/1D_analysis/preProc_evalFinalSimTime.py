@@ -25,8 +25,8 @@ Sor = 0.103
 L = 0.4
 phi = 0.22
 
-# tD = (u*t) / ((1.0-Swc-Sgr-Sor)*L*phi)
-tD = (u*t) / (L*phi)
+tD = (u*t) / ((1.0-Swc-Sgr-Sor)*L*phi)
+# tD = (u*t) / (L*phi)
 
 print(tD)
 
