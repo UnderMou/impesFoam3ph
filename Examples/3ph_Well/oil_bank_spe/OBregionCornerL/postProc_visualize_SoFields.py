@@ -117,7 +117,7 @@ if __name__ == '__main__':
     dz = 10.0
     dv = dx*dy*dz
     qt = 4.883307965499746e-08
-    Qt = nx * qt * dv
+    Qt = ny * qt * dv
 
     phi = 0.07
     PV = lx * ly * 10.0 * phi

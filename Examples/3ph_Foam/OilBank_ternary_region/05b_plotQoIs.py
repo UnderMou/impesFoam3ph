@@ -42,13 +42,13 @@ if __name__ == "__main__":
     # Get R and L states as criteria bellow:
     
     # tolerance
-    tol = 1e-6
+    tol = 1e-2
 
     # condition
-    # SoR = 0.4 and SwL = 0.25
+    # SoR = 0.4 and SgR = 0.013
     so = 1 - df["sw"] - df["sg"]
     mask = (
-        np.isclose(df["sw_inj"], 0.25, atol=tol) &
+        np.isclose(df["sg"], 0.03, atol=tol) &
         np.isclose(so, 0.4, atol=tol)
     )
 
@@ -64,7 +64,7 @@ if __name__ == "__main__":
     start, end, step = ppt['start'], 50000, ppt['step'] # TODO
 
     # plot oil saturation profiles at desired time
-    t_des = 2000 # 9000
+    t_des = 15000 # 9000
     tempMesh = exp_config['input_path']
 
     x, y, z = readmesh(tempMesh, structured=True)
@@ -73,7 +73,7 @@ if __name__ == "__main__":
     L = z[-1]
     
     Scs = np.zeros((indexes.shape[0], nx))
-    swR_s = np.zeros((indexes.shape[0], 1))
+    swL_s = np.zeros((indexes.shape[0], 1))
 
     for ind,i in enumerate(indexes):
         print(i,ind)
@@ -91,7 +91,7 @@ if __name__ == "__main__":
             if data_single.time[j] == t_des:
 
                 Scs[ind,:] = np.asarray(data_single.Sc[j,:])
-                swR_s[ind] = df["sw"][indexes[ind]]
+                swL_s[ind] = df["sw_inj"][indexes[ind]]
     
 
     # PLOT OIL SATURATION PROFILES  =========================================
@@ -105,12 +105,12 @@ if __name__ == "__main__":
                            gridspec_kw={'width_ratios': [1.25]})
 
     # Normalize swR_s values to the colormap range
-    norm = mcolors.Normalize(vmin=min(swR_s), vmax=max(swR_s))
+    norm = mcolors.Normalize(vmin=min(swL_s), vmax=max(swL_s))
     cmap = cm.viridis  # choose any colormap you like
 
 
     for i in range(len(indexes)):
-        color = cmap(norm(swR_s[i]))
+        color = cmap(norm(swL_s[i]))
         ax.plot(xD, Scs[i, :], color=color, linewidth=3)
     
     ax.axhline(fmoil, color='k', linestyle='--', linewidth=1.0)
@@ -194,7 +194,7 @@ if __name__ == "__main__":
                            gridspec_kw={'width_ratios': [1, 1.25]})
 
     # Normalize swR_s values to the colormap range
-    norm = mcolors.Normalize(vmin=min(swR_s), vmax=max(swR_s))
+    norm = mcolors.Normalize(vmin=min(swL_s), vmax=max(swL_s))
     cmap = cm.viridis  # choose any colormap you like
 
     for i in range(Qoil.shape[0]):
@@ -203,7 +203,7 @@ if __name__ == "__main__":
             Qwater[i,j] = np.sum(qw[i,:j]*dt[:j])
             Qgas[i,j] = np.sum(qg[i,:j]*dt[:j])
 
-        color = cmap(norm(swR_s[i]))
+        color = cmap(norm(swL_s[i]))
 
         ax[0].plot(PVI[1:],(Qoil[i,:]/PV),color=color, linewidth=3)
         ax[1].plot(PVI[1:],(Qgas[i,:]/PV),color=color, linewidth=3)
@@ -234,12 +234,12 @@ if __name__ == "__main__":
                            gridspec_kw={'width_ratios': [1, 1.25]})
 
     # Normalize swR_s values to the colormap range
-    norm = mcolors.Normalize(vmin=min(swR_s), vmax=max(swR_s))
+    norm = mcolors.Normalize(vmin=min(swL_s), vmax=max(swL_s))
     cmap = cm.viridis  # choose any colormap you like
 
     for i in range(Qoil.shape[0]):
 
-        color = cmap(norm(swR_s[i]))
+        color = cmap(norm(swL_s[i]))
 
         ax[0].plot(t, qo[i,:]/PV,color=color, linewidth=3)
         ax[1].plot(t, qg[i,:]/PV,color=color, linewidth=3)
@@ -276,12 +276,12 @@ if __name__ == "__main__":
                            gridspec_kw={'width_ratios': [1, 1.25]})
 
     # Normalize swR_s values to the colormap range
-    norm = mcolors.Normalize(vmin=min(swR_s), vmax=max(swR_s))
+    norm = mcolors.Normalize(vmin=min(swL_s), vmax=max(swL_s))
     cmap = cm.viridis  # choose any colormap you like
 
     for i in range(Qoil.shape[0]):
 
-        color = cmap(norm(swR_s[i]))
+        color = cmap(norm(swL_s[i]))
 
         ax[0].plot(PVI[1:],((Qoil[i,:]/PV)/OOIP)*100,color=color, linewidth=3)
         ax[1].plot(PVI[1:],qg[i,1:]/qo[i,1:],color=color, linewidth=3)
