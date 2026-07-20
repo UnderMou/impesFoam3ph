@@ -9,10 +9,10 @@ Main features:
 - Surfactant concentration transport in aqueous phase PDE. [(Surfactant Concentration transport in aqueous phase)](https://epubs.siam.org/doi/10.1137/23M1566649) accounting with surfactant adsorption on solid phase.
   
 ---
-**IMPORTANT**: This repository is part of an ongoing research associated with a scientific paper that is currently under preparation/submission. The contents are under active development and may change.
+<!-- **IMPORTANT**: This repository is part of an ongoing research associated with a scientific paper that is currently under preparation/submission. The contents are under active development and may change.
 
 ![Under Development](https://img.shields.io/badge/status-under%20development-orange)
-___
+___ -->
 
 ## Examples
 
