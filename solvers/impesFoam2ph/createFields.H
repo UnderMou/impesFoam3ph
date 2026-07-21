@@ -406,7 +406,7 @@ else if (foamModelName == "MehrabiFoam")
 
 word surfTranspModelName(transportProperties.lookup("surfactantTransportModel")); 
 
-if (surfTranspModelName == "Csw")
+if (surfTranspModelName != "noSurfTransp")
 {
     Info<< "Reading field Cs\n" << endl;
 

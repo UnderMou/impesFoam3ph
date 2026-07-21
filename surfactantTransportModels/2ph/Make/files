@@ -1,5 +1,6 @@
 surfactantTransportModel.C
 Csw/Csw.C
 noSurfTransp/noSurfTransp.C
+CswDiff/CswDiff.C
 
 LIB = $(FOAM_USER_LIBBIN)/libsurfactantTransportModels_2ph

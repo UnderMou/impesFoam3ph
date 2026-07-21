@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
             // Foam model
             Info<< "Using foam model: " << foamModel->type() << nl << endl;
             foamModel->correct(kra, U, Sa, Sb, phia, eps, K, fvc::grad(p));
-
+            Info<<"Foam ok"<<nl<<endl;
             // Total mobility (M_i) and fractional flux
             kraf = fvc::interpolate(kra,"kra");
             krbf = fvc::interpolate(krb,"krb");
