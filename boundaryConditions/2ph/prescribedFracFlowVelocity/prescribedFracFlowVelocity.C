@@ -107,11 +107,16 @@ void Foam::prescribedFracFlowVelocity::write
 ) const
 {
     fvPatchField<vector>::write(os);
+
+    // os.writeKeyword("U")
+    //     << U_ << token::END_STATEMENT << nl;
     os.writeKeyword("U")
-        << U_ << token::END_STATEMENT << nl;
+        << "uniform " << U_[0]
+        << token::END_STATEMENT << nl;
 
     os.writeKeyword("fractionalFlow")
         << fractionalFlow_ << token::END_STATEMENT << nl;
+    
     writeEntry(os, "value", *this);
 }
 
