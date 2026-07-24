@@ -1,2 +1,8 @@
+# OpenFOAM compiled files
+**/Make/linux*/
+*.o
+*.dep
+*.so
+
 Examples/3ph_Foam/OilBank_ternary_region/experiments/
-Examples/3ph_Foam/CTscan_SA/experiments/    *.avi
+Examples/3ph_Foam/CTscan_SA/experiments/*.avi

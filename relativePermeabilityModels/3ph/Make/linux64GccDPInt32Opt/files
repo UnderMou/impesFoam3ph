@@ -1,6 +1,0 @@
-SOURCE += relativePermeabilityModel.C
-SOURCE += CoreyBrooks/CoreyBrooks.C
-SOURCE += CoreyBrooksExtd/CoreyBrooksExtd.C
-SOURCE += Mehrabi/Mehrabi.C
-
-LIB = $(FOAM_USER_LIBBIN)/librelativePermeabilityModels_3ph
