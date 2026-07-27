@@ -46,23 +46,40 @@ ConstantInjection::ConstantInjection(const dictionary& dict)
 :
     wellModel(dict),
     Fb_inj_(readScalar(dict.lookup("Fb_inj")))
-{}
+{
 
-void ConstantInjection::correct
+}
+
+tmp<volScalarField> ConstantInjection::explicitSource_pEqn
 (
     volScalarField& qb,
+    const volScalarField& Sb, 
     const volScalarField& Fb, 
+    const volScalarField& p,
     const volScalarField& qt_inj,
     const volScalarField& qt_prod,
     scalar t
 ) const
 {
-    
+    return qt_inj - qt_prod;
+}
+
+tmp<volScalarField> ConstantInjection::explicitSource_SEqn
+(
+    volScalarField& qb,
+    const volScalarField& Sb, 
+    const volScalarField& Fb, 
+    const volScalarField& p,
+    const volScalarField& qt_inj,
+    const volScalarField& qt_prod,
+    scalar t
+) const
+{
     // Calculate injection/production rates based on:
     //  > specified injection rates;
     //  > production rates as function of injection rates and fractional flow
     qb = Fb_inj_ * qt_inj - Fb * qt_prod; 
-
+    return qb;
 }
 
 } // End namespace Foam

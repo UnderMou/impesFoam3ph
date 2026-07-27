@@ -71,14 +71,27 @@ public:
 
     ConstantInjection(const dictionary& dict);
 
-    virtual void correct
+    virtual tmp<volScalarField> explicitSource_pEqn
     (
         volScalarField& qb,
+        const volScalarField& Sb, 
         const volScalarField& Fb, 
+        const volScalarField& p,
         const volScalarField& qt_inj,
         const volScalarField& qt_prod,
         scalar t
-    ) const;
+    ) const override;
+
+    virtual tmp<volScalarField> explicitSource_SEqn
+    (
+        volScalarField& qb,
+        const volScalarField& Sb, 
+        const volScalarField& Fb, 
+        const volScalarField& p,
+        const volScalarField& qt_inj,
+        const volScalarField& qt_prod,
+        scalar t
+    ) const override;
 };
 
 } // End namespace Foam

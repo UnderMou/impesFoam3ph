@@ -22,46 +22,74 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::wellModel::noWell
+    Foam::wellModel::SlugInjection
 
 Description
-    no well model for three-phase flow fow when not considering injection wells.
+    Constant injection rate model (water/gas) given a constant time interval for three-phase flow.
 
     The default model coefficients are
     \verbatim
 
-        wellModel noWell;
+        wellModel SlugInjection;
 
-        noWell
+        SlugInjection
         {
-            
+            slugTime_w;
+            slugTime_g;            
         }
 
     \endverbatim
 
 SourceFiles
-    noWell.C
+    SlugInjection.C
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef noWell_H
-#define noWell_H
+#ifndef SlugInjection_H
+#define SlugInjection_H
 
 #include "wellModel.H"
 
 namespace Foam
 {
 
-class noWell
+class SlugInjection
 :
     public wellModel
 {
+    scalar slugTime_w_;
+    scalar slugTime_g_;
+    scalar cycleTime_;
+    scalar t_cycle_;
+    bool inWater_; 
+    bool inGas_; 
 
 public:
-    TypeName("noWell");
+    TypeName("SlugInjection");
 
-    noWell(const dictionary& dict);
-    
+    SlugInjection(const dictionary& dict);
+
+    virtual tmp<volScalarField> explicitSource_pEqn
+    (
+        volScalarField& qb,
+        const volScalarField& Sb, 
+        const volScalarField& Fb, 
+        const volScalarField& p,
+        const volScalarField& qt_inj,
+        const volScalarField& qt_prod,
+        scalar t
+    ) const override;
+
+    virtual tmp<volScalarField> explicitSource_SEqn
+    (
+        volScalarField& qb,
+        const volScalarField& Sb, 
+        const volScalarField& Fb, 
+        const volScalarField& p,
+        const volScalarField& qt_inj,
+        const volScalarField& qt_prod,
+        scalar t
+    ) const override;
 };
 
 } // End namespace Foam

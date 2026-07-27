@@ -23,7 +23,7 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "noWell.H"
+#include "SlugInjection.H"
 #include "addToRunTimeSelectionTable.H"
 
 namespace Foam
@@ -31,20 +31,70 @@ namespace Foam
 
 defineTypeNameAndDebug
 (
-    noWell,
+    SlugInjection,
     0
 );
 
 addToRunTimeSelectionTable
 (
     wellModel,
-    noWell,
+    SlugInjection,
     dictionary
 );
 
-noWell::noWell(const dictionary& dict)
+SlugInjection::SlugInjection(const dictionary& dict)
 :
-    wellModel(dict)
-{}
+    wellModel(dict),
+    slugTime_w_(readScalar(dict.lookup("slugTime_w"))),
+    slugTime_g_(readScalar(dict.lookup("slugTime_g")))
+{
+    cycleTime_ = slugTime_w_ + slugTime_g_;
+}
+
+tmp<volScalarField> SlugInjection::explicitSource_pEqn
+(
+    volScalarField& qb,
+    const volScalarField& Sb, 
+    const volScalarField& Fb, 
+    const volScalarField& p,
+    const volScalarField& qt_inj,
+    const volScalarField& qt_prod,
+    scalar t
+) const
+{
+    return qt_inj - qt_prod;
+}
+
+tmp<volScalarField> SlugInjection::explicitSource_SEqn
+(
+    volScalarField& qb,
+    const volScalarField& Sb, 
+    const volScalarField& Fb, 
+    const volScalarField& p,
+    const volScalarField& qt_inj,
+    const volScalarField& qt_prod,
+    scalar t
+) const
+{
+    
+    scalar t_cycle = std::fmod(t, cycleTime_);
+
+    bool inWater = (t_cycle >= 0.0 && t_cycle < slugTime_w_);
+    bool inGas   = (t_cycle >= slugTime_w_ && t_cycle < cycleTime_);
+
+    Info << "Time: " << t << " - In water slug: " << inWater << " - In gas slug: " << inGas << endl;
+
+    if(inWater)
+    {
+        qb = qt_inj - Fb * qt_prod; 
+    }
+    
+    if(inGas)
+    {
+        qb = -Fb * qt_prod; 
+    }
+
+    return qb;
+}
 
 } // End namespace Foam

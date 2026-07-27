@@ -14,12 +14,18 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-wellModel ConstantInjection;
+wellModel SlugInjection;
 
 ConstantInjection
 {
     // co-injection
     Fb_inj    0.2;
+}
+
+SlugInjection
+{
+  slugTime_w  2.0e3;
+  slugTime_g  2.0e3;  
 }
 
 

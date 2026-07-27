@@ -36,6 +36,7 @@ SourceFiles
 #ifndef wellModel_H
 #define wellModel_H
 
+#include "fvMatrices.H"
 #include "volFields.H"
 #include "dictionary.H"
 #include "runTimeSelectionTables.H"
@@ -70,15 +71,66 @@ public:
     virtual ~wellModel() = default;
 
     // ---- Interface ----
-    virtual void correct
+    virtual tmp<fvScalarMatrix> implicitSource_pEqn
     (
         volScalarField& qb,
+        const volScalarField& Sb, 
         const volScalarField& Fb, 
+        const volScalarField& p,
         const volScalarField& qt_inj,
         const volScalarField& qt_prod,
         scalar t
-    ) const = 0;
+    ) const 
+    {
+        return tmp<fvScalarMatrix>(new fvScalarMatrix(p, dimless));
+    }
 
+    virtual tmp<volScalarField> explicitSource_pEqn
+    (
+        volScalarField& qb,
+        const volScalarField& Sb, 
+        const volScalarField& Fb, 
+        const volScalarField& p,
+        const volScalarField& qt_inj,
+        const volScalarField& qt_prod,
+        scalar t
+    ) const 
+    {
+        tmp<volScalarField> tSource(new volScalarField(p));
+        tSource.ref() = dimensionedScalar("zero", dimless, 0.0);
+        return tSource;
+    }
+
+    virtual tmp<fvScalarMatrix> implicitSource_SEqn
+    (
+        volScalarField& qb,
+        const volScalarField& Sb, 
+        const volScalarField& Fb, 
+        const volScalarField& p,
+        const volScalarField& qt_inj,
+        const volScalarField& qt_prod,
+        scalar t
+    ) const
+    {
+        return tmp<fvScalarMatrix>(new fvScalarMatrix(Sb, dimless));
+    }
+
+    virtual tmp<volScalarField> explicitSource_SEqn
+    (
+        volScalarField& qb,
+        const volScalarField& Sb, 
+        const volScalarField& Fb,
+        const volScalarField& p, 
+        const volScalarField& qt_inj,
+        const volScalarField& qt_prod,
+        scalar t
+    ) const
+    {
+        tmp<volScalarField> tSource(new volScalarField(Sb));
+        tSource.ref() = dimensionedScalar("zero", dimless, 0.0);
+        return tSource;
+    }
+    
     // Factory
     static autoPtr<wellModel> New
     (

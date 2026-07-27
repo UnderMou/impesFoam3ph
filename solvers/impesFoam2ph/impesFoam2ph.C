@@ -111,9 +111,11 @@ int main(int argc, char *argv[])
             // pressure equation
             fvScalarMatrix pEqn
             (
-                fvm::laplacian(-Mf, p) + fvc::div(phiG) + fvc::div(phiPc)
+                fvm::laplacian(-Mf, p) + fvc::div(phiG) + fvc::div(phiPc) + 
+                wellModel->implicitSource_pEqn(qb,Sb,Fb,p,qt_inj,qt_prod,runTime.timeOutputValue())
                 ==
-                qt
+                wellModel->explicitSource_pEqn(qb,Sb,Fb,p,qt_inj,qt_prod,runTime.timeOutputValue())
+                // qt
             );
             pEqn.solve();
             phiP = pEqn.flux();
@@ -135,11 +137,11 @@ int main(int argc, char *argv[])
 
             // correct darcy velocities at boundaries
             U = fvc::reconstruct(phi);
-            U.correctBoundaryConditions();
             Ub = fvc::reconstruct(phib);
             Ua = U-Ub;
             Ub.correctBoundaryConditions();  
             Ua.correctBoundaryConditions();
+            U = Ua + Ub; // Correct U according with Ua and Ub Boundary values
             forAll(mesh.boundary(),patchi)
             {
                 if (isA< fixedValueFvPatchField<vector> >(Ua.boundaryField()[patchi]))
@@ -154,21 +156,23 @@ int main(int argc, char *argv[])
 
             // well model correction
             Info<< "Using well model: " << wellModel->type() << nl << endl;
-            wellModel->correct(qb,Fb,qt_inj,qt_prod,runTime.timeOutputValue());
+            // wellModel->correct(qb,Fb,qt_inj,qt_prod,runTime.timeOutputValue());
 
             // phase saturation equation
             fvScalarMatrix SbEqn
             (
-                eps*fvm::ddt(Sb) + fvc::div(phib) 
+                eps*fvm::ddt(Sb) + fvc::div(phib) +
+                wellModel->implicitSource_SEqn(qb,Sb,Fb,p,qt_inj,qt_prod,runTime.timeOutputValue())
                 ==
-                qb
+                wellModel->explicitSource_SEqn(qb,Sb,Fb,p,qt_inj,qt_prod,runTime.timeOutputValue())
+                // qb
             );
             SbEqn.solve();
 
+            Sa = scalar(1.0) - Sb;
+
             Sb.correctBoundaryConditions();  
             Sa.correctBoundaryConditions();
-
-            Sa = scalar(1.0) - Sb;
 
             Info << "Saturation a: " << " Min(Sa) = " << gMin(Sa) << " Max(Sa) = " << gMax(Sa) << endl;
             Info << "Saturation b: " << " Min(Sb) = " << gMin(Sb) << " Max(Sb) = " << gMax(Sb) << endl;

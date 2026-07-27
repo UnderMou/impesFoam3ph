@@ -119,7 +119,7 @@ if __name__ == '__main__':
 
     sats_OF = data_dict['Sb']
 
-    insts = [1e7, 4e7, 7e7, 1.0e8]
+    insts = [1e7, 4e7, 7.8e7, 1.0e8]
     insts_id = np.array([np.argmin(np.abs(t-inst)) for inst in insts], dtype=int)
 
 

@@ -1,5 +1,6 @@
 wellModel.C
 ConstantInjection/ConstantInjection.C
 noWell/noWell.C
+SlugInjection/SlugInjection.C
 
 LIB = $(FOAM_USER_LIBBIN)/libwellModels_2ph
