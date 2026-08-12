@@ -1,0 +1,46 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  9
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      wellProperties;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+wellModel Peaceman;
+
+ConstantInjection
+{
+    // co-injection
+    Fb_inj    0.2;
+}
+
+SlugInjection
+{
+  slugTime_w  2.0e3;
+  slugTime_g  2.0e3;  
+}
+
+Peaceman
+{
+  Fb_inj        0;
+  // Fb_inj        1;
+  inj_maxBHP    2.0e7;
+  inj_maxRate   1e-3;
+  prod_maxBHP   1e6;
+  prod_maxRate  1e-3;
+  slugTime_w    1000;
+  slugTime_g    0;
+  CsInj 0.0;
+  // CsInj 5.0;
+}
+
+
+// ************************************************************************* //

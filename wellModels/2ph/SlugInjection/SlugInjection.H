@@ -77,7 +77,11 @@ public:
         const volScalarField& p,
         const volScalarField& qt_inj,
         const volScalarField& qt_prod,
-        scalar t
+        scalar t,
+        const volScalarField& mob_t,
+        const volScalarField& WI,
+        const volScalarField& p_bh,
+        const volScalarField& isWell
     ) const override;
 
     virtual tmp<volScalarField> explicitSource_SEqn

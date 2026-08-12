@@ -1,3 +1,5 @@
+#include <cmath>
+
 // READING TRANSPORTPROPERTIES DICT AND FLUID PROPERTIES
 
 Info<< "Reading transportProperties\n" << endl;
@@ -82,7 +84,8 @@ volScalarField Sa
         IOobject::AUTO_WRITE
     ),
     mesh,
-    dimensionedScalar("one", dimless, 1.0)
+    dimensionedScalar("one", dimless, 1.0),
+    Sb.boundaryField().types() // TODO: Bugg fix
 );
 Sa = scalar(1.0) - Sb;
 
@@ -406,22 +409,35 @@ else if (foamModelName == "MehrabiFoam")
 
 word surfTranspModelName(transportProperties.lookup("surfactantTransportModel")); 
 
+foamAux.Cs = new volScalarField
+(
+    IOobject
+    (
+        "Cs",
+        runTime.timeName(),
+        mesh,
+        IOobject::MUST_READ,
+        IOobject::AUTO_WRITE
+    ),
+    mesh
+);
+
 if (surfTranspModelName != "noSurfTransp")
 {
     Info<< "Reading field Cs\n" << endl;
 
-    foamAux.Cs = new volScalarField
-    (
-        IOobject
-        (
-            "Cs",
-            runTime.timeName(),
-            mesh,
-            IOobject::MUST_READ,
-            IOobject::AUTO_WRITE
-        ),
-        mesh
-    );
+    // foamAux.Cs = new volScalarField
+    // (
+    //     IOobject
+    //     (
+    //         "Cs",
+    //         runTime.timeName(),
+    //         mesh,
+    //         IOobject::MUST_READ,
+    //         IOobject::AUTO_WRITE
+    //     ),
+    //     mesh
+    // );
 
     foamAux.Fcsw = new volScalarField
     (
@@ -655,6 +671,20 @@ volScalarField qb
     dimensionedScalar("zero", dimless, 0.0)
 );
 
+volScalarField qs
+(
+    IOobject
+    (
+        "qs",
+        runTime.timeName(),
+        mesh,
+        IOobject::NO_READ,
+        IOobject::AUTO_WRITE
+    ),
+    mesh,
+    dimensionedScalar("zero", dimless, 0.0)
+);
+
 volScalarField qt_inj
 (
     IOobject
@@ -696,3 +726,114 @@ IOdictionary wellProperties
 );
 
 autoPtr<wellModel> wellModel = wellModel::New(wellProperties);
+
+volScalarField mob_t
+(
+    IOobject
+    (
+        "mob_t",
+        runTime.timeName(),
+        mesh,
+        IOobject::NO_READ,
+        IOobject::AUTO_WRITE
+    ),
+    mesh,
+    dimensionedScalar("one", dimless, 1.0)
+);
+mob_t = kra/mu_a + krb/mu_b;
+Info << "mob_t OK" << endl;
+
+volScalarField cellVol
+(
+    IOobject
+    (
+        "cellVol",
+        runTime.timeName(),
+        mesh,
+        IOobject::NO_READ,
+        IOobject::NO_WRITE
+    ),
+    mesh,
+    dimensionedScalar("zero", dimVolume, 0.0)
+);
+cellVol.primitiveFieldRef() = mesh.V();
+cellVol.correctBoundaryConditions();
+Info << "cellVol OK" << endl;
+
+volScalarField re
+(
+    IOobject
+    (
+        "re",
+        runTime.timeName(),
+        mesh,
+        IOobject::NO_READ,
+        IOobject::AUTO_WRITE
+    ),
+    mesh,
+    0.0
+);
+re = Foam::sqrt(cellVol/M_PI);
+Info << "min(re) = " << gMin(re) << " max(re) = " << gMax(re) << endl;
+Info << "re OK" << endl;
+
+volScalarField WI
+(
+    IOobject
+    (
+        "WI",
+        runTime.timeName(),
+        mesh,
+        IOobject::NO_READ,
+        IOobject::AUTO_WRITE
+    ),
+    mesh,
+    dimensionedScalar("zero", dimless, 0.0)
+);
+
+WI = 2 * M_PI * K / (Foam::log(10.0)); // TODO: re/rw = 10
+Info << "min(WI) = " << gMin(WI) << "max(WI) = " << gMax(WI) << endl;
+Info << "WI OK" << endl;
+
+volScalarField p_bh
+(
+    IOobject
+    (
+        "p_bh",
+        runTime.timeName(),
+        mesh,
+        IOobject::NO_READ,
+        IOobject::AUTO_WRITE
+    ),
+    mesh,
+    dimensionedScalar("zero", dimless, 0.0)
+);
+Info << "p_bh OK" << endl;
+
+volScalarField isWell
+(
+    IOobject
+    (
+        "isWell",
+        runTime.timeName(),
+        mesh,
+        IOobject::NO_READ,
+        IOobject::AUTO_WRITE
+    ),
+    mesh,
+    dimensionedScalar("zero", dimless, 0.0)
+);
+
+// Mark well cells
+forAll(isWell, celli)
+{
+    if (qt[celli] > SMALL)
+    {
+        isWell[celli] = 1.0;
+    }
+    else if (qt[celli] < -SMALL)
+    {
+        isWell[celli] = 1.0;
+    }
+}
+Info << "isWell OK" << endl;

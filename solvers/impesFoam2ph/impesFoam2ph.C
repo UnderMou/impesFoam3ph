@@ -85,6 +85,7 @@ int main(int argc, char *argv[])
             Faf = Maf/Mf;
             Fbf = Mbf/Mf;
             Fb = (krb/mu_b) / ( (kra/mu_a) + (krb/mu_b) );
+            mob_t = kra/mu_a + krb/mu_b;
 
             // Gravitational effects (L_i)
             Laf = rho_a*Kf*kraf/mu_a;
@@ -112,9 +113,9 @@ int main(int argc, char *argv[])
             fvScalarMatrix pEqn
             (
                 fvm::laplacian(-Mf, p) + fvc::div(phiG) + fvc::div(phiPc) + 
-                wellModel->implicitSource_pEqn(qb,Sb,Fb,p,qt_inj,qt_prod,runTime.timeOutputValue())
+                wellModel->implicitSource_pEqn(qb,Sb,Fb,p,qt_inj,qt_prod,runTime.timeOutputValue(),mob_t,WI,p_bh,isWell)
                 ==
-                wellModel->explicitSource_pEqn(qb,Sb,Fb,p,qt_inj,qt_prod,runTime.timeOutputValue())
+                wellModel->explicitSource_pEqn(qb,Sb,Fb,p,qt_inj,qt_prod,runTime.timeOutputValue(),mob_t,WI,p_bh,isWell)
                 // qt
             );
             pEqn.solve();
@@ -156,7 +157,9 @@ int main(int argc, char *argv[])
 
             // well model correction
             Info<< "Using well model: " << wellModel->type() << nl << endl;
-            // wellModel->correct(qb,Fb,qt_inj,qt_prod,runTime.timeOutputValue());
+            wellModel->correct(qt,qb,Fb,p,runTime.timeOutputValue(),qt_inj,qt_prod,mob_t,WI,p_bh,isWell,qs,*foamAux.Cs);
+
+            Info << "BHP = " << gMax(p_bh.internalField()) << endl;
 
             // phase saturation equation
             fvScalarMatrix SbEqn
@@ -171,7 +174,7 @@ int main(int argc, char *argv[])
 
             Sa = scalar(1.0) - Sb;
 
-            Sb.correctBoundaryConditions();  
+            Sb.correctBoundaryConditions();
             Sa.correctBoundaryConditions();
 
             Info << "Saturation a: " << " Min(Sa) = " << gMin(Sa) << " Max(Sa) = " << gMax(Sa) << endl;
@@ -179,7 +182,7 @@ int main(int argc, char *argv[])
 
             // Surfactant transport model
             Info<< "Using surfactant transport model: " << surfTranspModel->type() << nl << endl;
-            surfTranspModel->correct(Sb, phib, eps);
+            surfTranspModel->correct(Sb, phib, eps, qb, qs);
 
         }
 

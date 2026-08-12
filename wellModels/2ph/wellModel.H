@@ -79,7 +79,11 @@ public:
         const volScalarField& p,
         const volScalarField& qt_inj,
         const volScalarField& qt_prod,
-        scalar t
+        scalar t,
+        const volScalarField& mob_t,
+        const volScalarField& WI,
+        const volScalarField& p_bh,
+        const volScalarField& isWell
     ) const 
     {
         return tmp<fvScalarMatrix>(new fvScalarMatrix(p, dimless));
@@ -93,7 +97,11 @@ public:
         const volScalarField& p,
         const volScalarField& qt_inj,
         const volScalarField& qt_prod,
-        scalar t
+        scalar t,
+        const volScalarField& mob_t,
+        const volScalarField& WI,
+        const volScalarField& p_bh,
+        const volScalarField& isWell
     ) const 
     {
         tmp<volScalarField> tSource(new volScalarField(p));
@@ -129,6 +137,28 @@ public:
         tmp<volScalarField> tSource(new volScalarField(Sb));
         tSource.ref() = dimensionedScalar("zero", dimless, 0.0);
         return tSource;
+    }
+
+    virtual void correct
+    (
+        volScalarField& qt,
+        volScalarField& qb,
+        const volScalarField& Fb,
+        const volScalarField& p, 
+        scalar t,
+        volScalarField& qt_inj,
+        volScalarField& qt_prod,
+        const volScalarField& mob_t,
+        const volScalarField& WI,
+        volScalarField& p_bh,
+        const volScalarField& isWell,
+        volScalarField& qs,
+        const volScalarField& Cs
+    ) 
+    {
+        // Default implementation does nothing,
+        // derived classes can override this method 
+        // to apply corrections to qt based on the well model.
     }
     
     // Factory
