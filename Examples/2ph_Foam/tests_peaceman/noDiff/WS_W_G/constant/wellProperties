@@ -42,7 +42,7 @@ Peaceman
   slugTime_w    1e7;
   slugTime_g    0;
 
-  // // Setup 2 - Water/Gas injection - t_final = 6e7
+  // // Setup 2 - Water/Gas injection - t_final = 16e7
   // Fb_inj  1.0;
   // CsInj 0.0;
 
