@@ -52,12 +52,14 @@ Peaceman::Peaceman(const dictionary& dict)
     prod_maxRate_(readScalar(dict.lookup("prod_maxRate"))),
     slugTime_w_(readScalar(dict.lookup("slugTime_w"))),
     slugTime_g_(readScalar(dict.lookup("slugTime_g"))),
-    CsInj_(readScalar(dict.lookup("CsInj")))
+    CsInj_(readScalar(dict.lookup("CsInj"))),
+    t0_(dict.lookupOrDefault<scalar>("t0", 0.0))
     
 {
     cycleTime_ = slugTime_w_ + slugTime_g_;
     inj_bhp_control_ = false;
     prod_bhp_control_ = false;
+    Info << "t0_ = " << t0_ << endl;
 }
 
 tmp<fvScalarMatrix> Peaceman::implicitSource_pEqn
@@ -149,7 +151,12 @@ tmp<volScalarField> Peaceman::explicitSource_SEqn
 ) const
 {
     
-    scalar t_cycle = std::fmod(t, cycleTime_);
+    scalar t_cycle = std::fmod(t - 1e7, cycleTime_);
+
+    if (t_cycle < 0.0)
+    {
+        t_cycle += cycleTime_;
+    }
 
     bool inWater = (t_cycle >= 0.0 && t_cycle < slugTime_w_);
     bool inGas   = (t_cycle >= slugTime_w_ && t_cycle < cycleTime_);
@@ -163,7 +170,7 @@ tmp<volScalarField> Peaceman::explicitSource_SEqn
     
     if(inGas)
     {
-        qb = Fb_inj_ * qt_inj - Fb * qt_prod; 
+        qb = (scalar(1.0) - Fb_inj_) * qt_inj - Fb * qt_prod; 
     }
 
     return qb;

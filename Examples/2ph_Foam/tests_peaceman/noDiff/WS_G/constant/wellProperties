@@ -30,16 +30,16 @@ SlugInjection
 
 Peaceman
 {
-  Fb_inj        0;
-  // Fb_inj        1;
+  // Fb_inj        0;
+  Fb_inj        1;
   inj_maxBHP    2.0e7;
   inj_maxRate   1e-3;
   prod_maxBHP   1e6;
   prod_maxRate  1e-3;
   slugTime_w    1000;
   slugTime_g    0;
-  CsInj 0.0;
-  // CsInj 5.0;
+  // CsInj 0.0;
+  CsInj 5.0;
 }
 
 

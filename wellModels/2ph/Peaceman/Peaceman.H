@@ -81,6 +81,8 @@ class Peaceman
     // surfactant
     scalar CsInj_;
 
+    scalar t0_;
+
 public:
     TypeName("Peaceman");
 

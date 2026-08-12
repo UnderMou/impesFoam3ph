@@ -30,16 +30,30 @@ SlugInjection
 
 Peaceman
 {
-  Fb_inj        0;
-  // Fb_inj        1;
+  // Setup 1 - Surfactant injection - t_final = 1e7
+  Fb_inj  1.0;
+  CsInj 5.0;
+
   inj_maxBHP    2.0e7;
   inj_maxRate   1e-3;
   prod_maxBHP   1e6;
   prod_maxRate  1e-3;
-  slugTime_w    1000;
+
+  slugTime_w    1e7;
   slugTime_g    0;
-  CsInj 0.0;
-  // CsInj 5.0;
+
+  // // Setup 2 - Water/Gas injection - t_final = 6e7
+  // Fb_inj  1.0;
+  // CsInj 0.0;
+
+  // inj_maxBHP    2.0e7;
+  // inj_maxRate   1e-3;
+  // prod_maxBHP   1e6;
+  // prod_maxRate  1e-3;
+
+  // slugTime_w    1e7;
+  // slugTime_g    4e7;
+  // t0            1e7; // t_final from setup 1
 }
 
 
