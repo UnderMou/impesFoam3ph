@@ -36,10 +36,12 @@ SourceFiles
 #ifndef wellModel_H
 #define wellModel_H
 
+#include "fvCFD.H"
 #include "fvMatrices.H"
 #include "volFields.H"
 #include "dictionary.H"
 #include "runTimeSelectionTables.H"
+#include "wellStruct.H"
 
 namespace Foam
 {
@@ -48,6 +50,45 @@ class wellModel
 {
 protected:
     const dictionary& dict_;
+    const dictionary& wellsDict_;
+    List<well> wells_;
+
+    virtual List<well> readWells(const dictionary& wellsDict) = 0;
+
+    // Check if all wells_ are rate controlled, 
+    // then check for sum(rates) = 0 condition
+    // (incompressible closed system).
+    void checkRateBalance()
+    {
+        bool allRateControlled = true;
+
+        forAll(wells_, w)
+        {
+            if (wells_[w].bhpControl)
+            {
+                allRateControlled = false;
+                break;
+            }
+        }
+
+        if (allRateControlled)
+        {
+            scalar Qtotal = 0.0;
+
+            forAll(wells_, w)
+            {
+                Qtotal += wells_[w].rate;
+            }
+
+            if (mag(Qtotal) > SMALL)
+            {
+                FatalErrorInFunction
+                    << "All wells are rate controlled, but Sum(Q) != 0." << nl
+                    << "Sum(Q) = " << Qtotal << nl
+                    << exit(FatalError);
+            }
+        }
+    }
 
 public:
     TypeName("wellModel");
@@ -65,101 +106,98 @@ public:
 
     wellModel(const dictionary& dict)
     :
-        dict_(dict)
-    {}
+        dict_(dict),
+        wellsDict_(dict.subDict("wells")),
+        wells_()
+    {
+    }
 
     virtual ~wellModel() = default;
 
     // ---- Interface ----
-    virtual tmp<fvScalarMatrix> implicitSource_pEqn
+    // void source_pEqn
+    // (
+    //     fvScalarMatrix& pEqn,
+    //     const volScalarField& p,
+    //     const volScalarField& mob_t,
+    //     const volScalarField& WI,
+    //     volScalarField& wellCoeff,
+    //     volScalarField& wellSource
+    // );
+
+    // virtual void source_SbEqn
+    // (
+    //     fvScalarMatrix& SbEqn,
+    //     const volScalarField& Sb, 
+    //     const volScalarField& Fb, 
+    //     const volScalarField& p,
+    //     scalar t,
+    //     volScalarField& qb
+    // )
+    // {
+    // }
+
+    // virtual void correct
+    // (
+    //     volScalarField& qt,
+    //     volScalarField& qb,
+    //     const volScalarField& Fb,
+    //     const volScalarField& p, 
+    //     scalar t,
+    //     const volScalarField& mob_t,
+    //     const volScalarField& WI,
+    //     volScalarField& p_bh,
+    //     volScalarField& qs,
+    //     const volScalarField& Cs
+    // ) 
+    // {
+    //     // Default implementation does nothing,
+    //     // derived classes can override this method 
+    //     // to apply corrections to qt based on the well model.
+    // }
+    virtual void source_pEqn
     (
-        volScalarField& qb,
-        const volScalarField& Sb, 
-        const volScalarField& Fb, 
+        fvScalarMatrix& pEqn,
         const volScalarField& p,
-        const volScalarField& qt_inj,
-        const volScalarField& qt_prod,
-        scalar t,
         const volScalarField& mob_t,
         const volScalarField& WI,
-        const volScalarField& p_bh,
-        const volScalarField& isWell
-    ) const 
-    {
-        return tmp<fvScalarMatrix>(new fvScalarMatrix(p, dimless));
-    }
+        volScalarField& wellCoeff,
+        volScalarField& wellSource,
+        const scalar& rho_a,
+        const scalar& rho_b,
+        const volScalarField& mob_a,
+        const volScalarField& mob_b,
+        const dimensionedVector& g
+    ) = 0;
 
-    virtual tmp<volScalarField> explicitSource_pEqn
+    virtual void source_SbEqn
     (
-        volScalarField& qb,
-        const volScalarField& Sb, 
-        const volScalarField& Fb, 
-        const volScalarField& p,
-        const volScalarField& qt_inj,
-        const volScalarField& qt_prod,
-        scalar t,
-        const volScalarField& mob_t,
-        const volScalarField& WI,
-        const volScalarField& p_bh,
-        const volScalarField& isWell
-    ) const 
-    {
-        tmp<volScalarField> tSource(new volScalarField(p));
-        tSource.ref() = dimensionedScalar("zero", dimless, 0.0);
-        return tSource;
-    }
-
-    virtual tmp<fvScalarMatrix> implicitSource_SEqn
-    (
-        volScalarField& qb,
-        const volScalarField& Sb, 
-        const volScalarField& Fb, 
-        const volScalarField& p,
-        const volScalarField& qt_inj,
-        const volScalarField& qt_prod,
-        scalar t
-    ) const
-    {
-        return tmp<fvScalarMatrix>(new fvScalarMatrix(Sb, dimless));
-    }
-
-    virtual tmp<volScalarField> explicitSource_SEqn
-    (
-        volScalarField& qb,
-        const volScalarField& Sb, 
+        fvScalarMatrix& SbEqn,
+        const volScalarField& Sb,
         const volScalarField& Fb,
-        const volScalarField& p, 
-        const volScalarField& qt_inj,
-        const volScalarField& qt_prod,
-        scalar t
-    ) const
-    {
-        tmp<volScalarField> tSource(new volScalarField(Sb));
-        tSource.ref() = dimensionedScalar("zero", dimless, 0.0);
-        return tSource;
-    }
+        const volScalarField& p,
+        scalar t,
+        volScalarField& qb
+    ) = 0;
 
     virtual void correct
     (
         volScalarField& qt,
         volScalarField& qb,
         const volScalarField& Fb,
-        const volScalarField& p, 
+        const volScalarField& p,
         scalar t,
-        volScalarField& qt_inj,
-        volScalarField& qt_prod,
         const volScalarField& mob_t,
         const volScalarField& WI,
         volScalarField& p_bh,
-        const volScalarField& isWell,
         volScalarField& qs,
-        const volScalarField& Cs
-    ) 
-    {
-        // Default implementation does nothing,
-        // derived classes can override this method 
-        // to apply corrections to qt based on the well model.
-    }
+        const volScalarField& Cs,
+        const scalar& rho_a,
+        const scalar& rho_b,
+        const volScalarField& mob_a,
+        const volScalarField& mob_b,
+        const dimensionedVector& g
+    ) = 0;
     
     // Factory
     static autoPtr<wellModel> New

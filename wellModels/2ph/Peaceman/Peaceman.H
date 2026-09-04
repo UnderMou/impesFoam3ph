@@ -25,9 +25,14 @@ Class
     Foam::wellModel::Peaceman
 
 Description
-    Peaceman well model operates according to the following constraints:
-        > Bottom hole pressure (BHP) is specified -> injection rate is calculated
-        > Injection rate is specified -> BHP is calculated
+    Constant injection rate model for two-phase flow.
+
+    Reference:
+    \verbatim
+        Horgue, P., Soulaine, C., Franc, J., Guibert, R., & Debenest, G. (2015).
+        An open-source toolbox for multiphase flow in porous media.
+        Computer Physics Communications, 187, 217-226.
+    \endverbatim
 
     The default model coefficients are
     \verbatim
@@ -36,8 +41,7 @@ Description
 
         Peaceman
         {
-            maxBHP 1000000; // [Pa] Maximum BHP for injection well
-            maxRate 1e-3;   // [m3/s /m3 = 1/s] Maximum injection rate            
+        
         }
 
     \endverbatim
@@ -50,7 +54,6 @@ SourceFiles
 #ifndef Peaceman_H
 #define Peaceman_H
 
-#include "fvCFD.H"
 #include "wellModel.H"
 
 namespace Foam
@@ -60,85 +63,43 @@ class Peaceman
 :
     public wellModel
 {
-    scalar Fb_inj_;
 
-    // peaceman
-    scalar inj_maxBHP_;
-    scalar inj_maxRate_;
-    bool inj_bhp_control_;
-    scalar prod_maxBHP_;
-    scalar prod_maxRate_;
-    bool prod_bhp_control_;
 
-    // slug
-    scalar slugTime_w_;
-    scalar slugTime_g_;
-    scalar cycleTime_;
-    scalar t_cycle_;
-    bool inWater_; 
-    bool inGas_; 
-
-    // surfactant
-    scalar CsInj_;
-
-    scalar t0_;
+protected:
+    virtual List<well> readWells
+    (
+        const dictionary& wellsDict
+    )override;
 
 public:
     TypeName("Peaceman");
 
     Peaceman(const dictionary& dict);
 
-    virtual tmp<fvScalarMatrix> implicitSource_pEqn
+    virtual void source_pEqn
     (
-        volScalarField& qb,
-        const volScalarField& Sb, 
-        const volScalarField& Fb, 
+        fvScalarMatrix& pEqn,
         const volScalarField& p,
-        const volScalarField& qt_inj,
-        const volScalarField& qt_prod,
-        scalar t,
         const volScalarField& mob_t,
         const volScalarField& WI,
-        const volScalarField& p_bh,
-        const volScalarField& isWell
-    ) const override;
+        volScalarField& wellCoeff,
+        volScalarField& wellSource,
+        const scalar& rho_a,
+        const scalar& rho_b,
+        const volScalarField& mob_a,
+        const volScalarField& mob_b,
+        const dimensionedVector& g
+    ) override;
 
-    virtual tmp<volScalarField> explicitSource_pEqn
+    virtual void source_SbEqn
     (
-        volScalarField& qb,
+        fvScalarMatrix& SbEqn,
         const volScalarField& Sb, 
         const volScalarField& Fb, 
         const volScalarField& p,
-        const volScalarField& qt_inj,
-        const volScalarField& qt_prod,
         scalar t,
-        const volScalarField& mob_t,
-        const volScalarField& WI,
-        const volScalarField& p_bh,
-        const volScalarField& isWell
-    ) const override;
-
-    // virtual tmp<fvScalarMatrix> implicitSource_SEqn
-    // (
-    //     volScalarField& qb,
-    //     const volScalarField& Sb, 
-    //     const volScalarField& Fb, 
-    //     const volScalarField& p,
-    //     const volScalarField& qt_inj,
-    //     const volScalarField& qt_prod,
-    //     scalar t
-    // ) const override;
-
-    virtual tmp<volScalarField> explicitSource_SEqn
-    (
-        volScalarField& qb,
-        const volScalarField& Sb, 
-        const volScalarField& Fb, 
-        const volScalarField& p,
-        const volScalarField& qt_inj,
-        const volScalarField& qt_prod,
-        scalar t
-    ) const override;
+        volScalarField& qb
+    ) override;
 
     virtual void correct
     (
@@ -147,16 +108,17 @@ public:
         const volScalarField& Fb,
         const volScalarField& p, 
         scalar t,
-        volScalarField& qt_inj,
-        volScalarField& qt_prod,
         const volScalarField& mob_t,
         const volScalarField& WI,
         volScalarField& p_bh,
-        const volScalarField& isWell,
         volScalarField& qs,
-        const volScalarField& Cs
+        const volScalarField& Cs,
+        const scalar& rho_a,
+        const scalar& rho_b,
+        const volScalarField& mob_a,
+        const volScalarField& mob_b,
+        const dimensionedVector& g
     ) override;
-
 };
 
 } // End namespace Foam

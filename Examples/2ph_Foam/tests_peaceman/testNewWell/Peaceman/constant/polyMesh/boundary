@@ -8,51 +8,28 @@
 FoamFile
 {
     format      ascii;
-    class       dictionary;
-    location    "system";
-    object      controlDict;
+    class       polyBoundaryMesh;
+    location    "constant/polyMesh";
+    object      boundary;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-application     impesFoam;
-
-startFrom       latestTime; // startTime;
-
-startTime       0;
-
-stopAt          endTime;
-
-endTime         16e7;
-
-deltaT          1e3;
-
-writeControl    runTime;
-
-writeInterval   1e6;
-
-purgeWrite      0;
-
-writeFormat     ascii;
-
-writePrecision  6;
-
-writeCompression off;
-
-timeFormat      general;
-
-timePrecision   6;
-
-runTimeModifiable true;
-
-libs
+2
 (
-    "libboundaryConditions_2ph.so"
-);
+    walls
+    {
+        type            wall;
+        inGroups        List<word> 1(wall);
+        nFaces          204;
+        startFace       5100;
+    }
+    emptyWalls
+    {
+        type            empty;
+        inGroups        List<word> 1(empty);
+        nFaces          5202;
+        startFace       5304;
+    }
+)
 
 // ************************************************************************* //
-
-
-DebugSwitches
-{
-    dimensionSet 0;
-}

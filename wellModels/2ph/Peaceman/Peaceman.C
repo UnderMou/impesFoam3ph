@@ -42,138 +42,132 @@ addToRunTimeSelectionTable
     dictionary
 );
 
+List<well> Peaceman::readWells(const dictionary& wellsDict)
+{
+    wordList wellNames = wellsDict.toc();
+
+    List<well> wells(wellNames.size());
+
+    forAll(wellNames, i)
+    {
+        const word& name = wellNames[i];
+
+        const dictionary& wellDict =
+            wellsDict.subDict(name);
+
+        wells[i].name = name;
+
+        wells[i].cells =
+            labelList(wellDict.lookup("cells"));
+
+        wells[i].injector =
+            readBool(wellDict.lookup("injector"));
+
+        wells[i].bhpControl =
+            readBool(wellDict.lookup("bhpControl"));
+
+        wells[i].target =
+            readScalar(wellDict.lookup("target"));
+        
+        if (wells[i].bhpControl)
+        {
+            wells[i].bhp  = wells[i].target;
+            wells[i].rate = 0.0;
+        }
+        else
+        {
+            wells[i].bhp  = 0.0;
+            wells[i].rate = wells[i].target;
+        }
+        
+        if (wells[i].injector)
+        {
+            wells[i].Fb_inj = readScalar(wellDict.lookup("Fb_inj"));;
+            wells[i].Cs_inj = readScalar(wellDict.lookup("Cs_inj"));
+        }
+        else
+        {
+            wells[i].Fb_inj = 0.0;
+            wells[i].Cs_inj = 0.0;
+        }
+
+        Info << "Reading well: " << name << nl;
+    }
+
+    return wells;
+}
+
 Peaceman::Peaceman(const dictionary& dict)
 :
-    wellModel(dict),
-    Fb_inj_(readScalar(dict.lookup("Fb_inj"))),
-    inj_maxBHP_(readScalar(dict.lookup("inj_maxBHP"))),
-    inj_maxRate_(readScalar(dict.lookup("inj_maxRate"))),
-    prod_maxBHP_(readScalar(dict.lookup("prod_maxBHP"))),
-    prod_maxRate_(readScalar(dict.lookup("prod_maxRate"))),
-    slugTime_w_(readScalar(dict.lookup("slugTime_w"))),
-    slugTime_g_(readScalar(dict.lookup("slugTime_g"))),
-    CsInj_(readScalar(dict.lookup("CsInj"))),
-    t0_(dict.lookupOrDefault<scalar>("t0", 0.0))
-    
+    wellModel(dict)
 {
-    cycleTime_ = slugTime_w_ + slugTime_g_;
-    inj_bhp_control_ = false;
-    prod_bhp_control_ = false;
-    Info << "t0_ = " << t0_ << endl;
+    wells_ = readWells(wellsDict_);
+    checkRateBalance();
 }
 
-tmp<fvScalarMatrix> Peaceman::implicitSource_pEqn
+void Peaceman::source_pEqn
 (
-    volScalarField& qb,
+    fvScalarMatrix& pEqn,
+    const volScalarField& p,
+    const volScalarField& mob_t,
+    const volScalarField& WI,
+    volScalarField& wellCoeff,
+    volScalarField& wellSource,
+    const scalar& rho_a,
+    const scalar& rho_b,
+    const volScalarField& mob_a,
+    const volScalarField& mob_b,
+    const dimensionedVector& g
+) 
+{
+    wellCoeff = scalar(0.0);
+    wellSource = scalar(0.0);
+
+    const scalarField& V = p.mesh().V();
+
+    forAll(wells_, w)
+    {
+        const well& well = wells_[w];
+        const scalar ratePerPerf = well.rate/scalar(well.cells.size());
+
+        Info << "name:" << well.name << ", injector?" << well.injector << ", bhp controlled?" << well.bhpControl << endl;
+        Info << "control values: bhp=" << well.bhp << ", rate=" << well.rate << endl;
+
+        forAll(well.cells, j)
+        {
+            label celli = well.cells[j];
+
+            // Info << celli << " " << endl;
+            
+            if (wells_[w].bhpControl)
+            {
+                // q = WI*mob*(p_bh - p)/V
+                wellCoeff[celli] += WI[celli]*mob_t[celli]/V[celli];
+                wellSource[celli] += WI[celli]*mob_t[celli]*wells_[w].bhp/V[celli];
+            }
+            else
+            {
+                // q = prescribed rate
+                wellSource[celli] += ratePerPerf/V[celli]; // wells_[w].rate;
+            }
+        }
+    }
+    pEqn += fvm::Sp(wellCoeff, p);
+    pEqn -= wellSource;
+}
+
+void Peaceman::source_SbEqn
+(
+    fvScalarMatrix& SbEqn,
     const volScalarField& Sb, 
     const volScalarField& Fb, 
     const volScalarField& p,
-    const volScalarField& qt_inj,
-    const volScalarField& qt_prod,
     scalar t,
-    const volScalarField& mob_t,
-    const volScalarField& WI,
-    const volScalarField& p_bh,
-    const volScalarField& isWell
-) const
-{
-    if (inj_bhp_control_)
-    {
-        // BHP is specified, calculate injection rate
-        return fvm::Sp((WI * mob_t)*isWell, p);
-    }
-    else
-    {
-        // Injection rate is specified, calculate BHP
-        return tmp<fvScalarMatrix>(new fvScalarMatrix(p, dimless));
-    }
-}
-
-tmp<volScalarField> Peaceman::explicitSource_pEqn
-(
-    volScalarField& qb,
-    const volScalarField& Sb, 
-    const volScalarField& Fb, 
-    const volScalarField& p,
-    const volScalarField& qt_inj,
-    const volScalarField& qt_prod,
-    scalar t,
-    const volScalarField& mob_t,
-    const volScalarField& WI,
-    const volScalarField& p_bh,
-    const volScalarField& isWell
-) const
+    volScalarField& qb
+)
 {   
-    if (inj_bhp_control_)
-    {
-        // BHP is specified, calculate injection rate
-        return (WI * mob_t * p_bh) * isWell;
-    }
-    else
-    {
-        // Injection rate is specified, calculate BHP
-        return qt_inj - qt_prod;
-    }
-}
-
-// virtual tmp<fvScalarMatrix> implicitSource_SEqn
-// (
-//     volScalarField& qb,
-//     const volScalarField& Sb, 
-//     const volScalarField& Fb, 
-//     const volScalarField& p,
-//     const volScalarField& qt_inj,
-//     const volScalarField& qt_prod,
-//     scalar t
-// ) const
-// {
-//     if (bhp_control_)
-//     {
-//         // BHP is specified, calculate injection rate
-//         // TODO:
-//     }
-//     else
-//     {
-//         // Injection rate is specified, calculate BHP
-//         // TODO:
-//     }
-// } 
-
-tmp<volScalarField> Peaceman::explicitSource_SEqn
-(
-    volScalarField& qb,
-    const volScalarField& Sb, 
-    const volScalarField& Fb, 
-    const volScalarField& p,
-    const volScalarField& qt_inj,
-    const volScalarField& qt_prod,
-    scalar t
-) const
-{
-    
-    scalar t_cycle = std::fmod(t - 1e7, cycleTime_);
-
-    if (t_cycle < 0.0)
-    {
-        t_cycle += cycleTime_;
-    }
-
-    bool inWater = (t_cycle >= 0.0 && t_cycle < slugTime_w_);
-    bool inGas   = (t_cycle >= slugTime_w_ && t_cycle < cycleTime_);
-
-    Info << "Time: " << t << " - In water slug: " << inWater << " - In gas slug: " << inGas << endl;
-
-    if(inWater)
-    {
-        qb = Fb_inj_ * qt_inj - Fb * qt_prod; 
-    }
-    
-    if(inGas)
-    {
-        qb = (scalar(1.0) - Fb_inj_) * qt_inj - Fb * qt_prod; 
-    }
-
-    return qb;
+    Info<< "qb: min = " << gMin(qb.internalField()) << ", max = " << gMax(qb.internalField()) << nl << endl;
+    SbEqn -= qb;
 }
 
 void Peaceman::correct
@@ -183,51 +177,156 @@ void Peaceman::correct
     const volScalarField& Fb,
     const volScalarField& p, 
     scalar t,
-    volScalarField& qt_inj,
-    volScalarField& qt_prod,
     const volScalarField& mob_t,
     const volScalarField& WI,
     volScalarField& p_bh,
-    const volScalarField& isWell,
     volScalarField& qs,
-    const volScalarField& Cs
+    const volScalarField& Cs,
+    const scalar& rho_a,
+    const scalar& rho_b,
+    const volScalarField& mob_a,
+    const volScalarField& mob_b,
+    const dimensionedVector& g
 ) 
 {
-    if (inj_bhp_control_)
+    // Correct qt and p_bh
+    qt = scalar(0.0);
+
+    const scalarField& V = qt.mesh().V();
+
+    forAll(wells_, w)
     {
-        // BHP is specified, calculate injection rate
-        qt = (WI * mob_t * (p_bh - p)) * isWell;
+        const well& well = wells_[w];
 
-        // scalar qtMax = gMax(qt.internalField());
-        // qt = qtMax * isWell;
+        if (well.bhpControl)
+        {
+            forAll(well.cells, j)
+            {
+                label celli = well.cells[j];
+                
+                // q = WI*mob*(p_bh - p)/V
+                qt[celli] += WI[celli]*mob_t[celli]*(well.bhp - p[celli])/V[celli];  
+            }
+        }
+        else
+        {
+            const scalar ratePerPerf = well.rate/scalar(well.cells.size());
 
-        qt_inj = Foam::mag(max(qt, scalar(0)));
-        qt_prod = Foam::mag(min(qt, scalar(0)));
-
-        // evaluate BHP
-        p_bh = (p + (qt / (WI * mob_t))) * isWell;
-        p_bh = min(p_bh, inj_maxBHP_); // limit BHP to maximum allowed value
-    }
-    else
-    {
-        // Injection rate is specified, calculate BHP
-        p_bh = (p + (qt / (WI * mob_t))) * isWell;
-    }
-
-    // check if the BHP exceeds the maximum allowed value
-    if (gMax(p_bh.internalField()) >= inj_maxBHP_)
-    {
-        Info << "BHP = " << gMax(p_bh.internalField()) << ", exceeds maximum allowed value. Switching to BHP control." << endl;
-        inj_bhp_control_ = true;
-
-        p_bh = min(p_bh, inj_maxBHP_); // limit BHP to maximum allowed value
-    }
+            forAll(well.cells, j)
+            {
+                label celli = well.cells[j];
+                
+                // q = Q/V
+                qt[celli] += ratePerPerf/V[celli];                
+            }
+        }
     
-    Info << "BHP = " << gMax(p_bh) << endl;
-    Info << "well constraint: " << (inj_bhp_control_ ? "BHP control" : "Rate control") << endl;
+    }
+
+    // check total rate
+    scalar totalRate = 0.0;
+
+    forAll(qt.internalField(), celli)
+    {
+        totalRate += qt[celli]*V[celli];
+    }
+
+    Info<< "Integrated total well rate = "
+        << totalRate << nl << endl;
+
+    // Correct bhp and rate
+    forAll(wells_, w)
+    {
+        well& well = wells_[w];
+
+        if (!well.bhpControl)
+        {
+            scalar sumT = 0.0;
+            scalar sumTp = 0.0;
+
+            forAll(well.cells, j)
+            {
+                const label celli = well.cells[j];
+
+                const scalar Ti = WI[celli]*mob_t[celli];
+
+                sumT  += Ti;
+                sumTp += Ti*p[celli];
+            }
+
+            well.bhp = (well.rate + sumTp)/sumT;
+
+            forAll(well.cells, j)
+            {
+                const label celli = well.cells[j];
+
+                p_bh[celli] = well.bhp;
+            }
+        }
+        else
+        {
+            well.rate = 0.0;
+
+            forAll(well.cells, j)
+            {
+                const label celli = well.cells[j];
+
+                well.rate += WI[celli]*mob_t[celli]*(well.bhp - p[celli]);    
+            
+                p_bh[celli] = well.bhp;
+            }
+            Info << "Well " << well.name << " bhp = " << well.bhp << ", rate = " << well.rate << nl << endl;
+        }
+        
+    }
+        
+    // Correct qb
+    qb = scalar(0.0);
+
+    forAll(wells_, w)
+    {
+        const well& well = wells_[w];
+
+        forAll(well.cells, j)
+        {
+            label celli = well.cells[j];
+
+            if (well.injector)
+            {
+                qb[celli] += well.Fb_inj*qt[celli];
+            }
+            else
+            {
+                qb[celli] += Fb[celli]*qt[celli]; 
+            }
+        }
+    }
 
     // Correct qs
-    qs = CsInj_*qb*pos(qb) + Cs*qb*neg(qb);
+    qs = scalar(0.0);
+
+    forAll(wells_, w)
+    {
+        const well& well = wells_[w];
+        
+        if (well.injector)
+        {
+            forAll(well.cells, j)
+            {
+                label celli = well.cells[j];
+                qs[celli] += well.Cs_inj*qb[celli]; 
+            }
+        }
+        else
+        {
+            forAll(well.cells, j)
+            {
+                label celli = well.cells[j];
+                qs[celli] += Cs[celli]*qb[celli]; 
+            }
+        }
+    }
+
 }
 
 } // End namespace Foam

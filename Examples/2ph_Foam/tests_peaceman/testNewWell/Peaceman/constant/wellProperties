@@ -1,0 +1,100 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  9
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      wellProperties;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+wellModel Peaceman;
+
+noWell
+{
+}
+
+Peaceman
+{
+  wells
+  {
+    injector1
+    {
+      name        INJ1;
+      cells       (51 103 155);
+      injector    true;
+      bhpControl  false;
+      target      1e-4;
+      Fb_inj      0.0;
+      Cs_inj      0.0;
+    }
+
+    injector2
+    {
+      name        INJ2;
+      // cells       (500 501 502);
+      cells       (1500 1501 1502);
+      injector    true;
+      bhpControl  false;
+      target      1e-4;
+      Fb_inj      1.0;
+      Cs_inj      1.0;
+    }
+
+    producer1
+    {
+      name        PROD1;
+      cells       (2600);
+      injector    false;
+      bhpControl  true;
+      target      0.0;
+    }
+  }
+
+}
+
+ConstantInjection
+{
+  wells
+  {
+    injector1
+    {
+      name        INJ1;
+      cells       (0);
+      injector    true;
+      // bhpControl  false;
+      target      1e-5;
+      Fb_inj      0.0;
+      Cs_inj      0.0;
+    }
+
+    injector2
+    {
+      name        INJ2;
+      cells       (500 501 502);
+      injector    true;
+      // bhpControl  false;
+      target      3e-5;
+      Fb_inj      0.5;
+      Cs_inj      1.0;
+    }
+
+    producer1
+    {
+      name        PROD1;
+      cells       (2600);
+      injector    false;
+      // bhpControl  false;
+      target      -4e-5;
+    }
+  }
+
+}
+
+// ************************************************************************* //

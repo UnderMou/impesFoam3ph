@@ -14,6 +14,8 @@ import scienceplots
 
 if __name__ == "__main__":
 
+    saveName = "plot"
+
     plt.style.use('science')
     plt.rcParams.update({'font.size': 22})
 
@@ -21,31 +23,28 @@ if __name__ == "__main__":
     data_single = uqt.parse_openfoam_case(
         case_dir=exp_dir,
         variables=["qt","qb","p","p_bh","WI","mob_t","Cs","Sb"],
-        time_dirs=[f"{i:g}" for i in np.arange(2e7, 16e7, 1e6)]   
-        # time_dirs=[f"{i:g}" for i in np.arange(1e6, 6e7, 1e6)]   
+        time_dirs=[f"{i:g}" for i in np.arange(1e5, 16e6, 1e5)]
     )    
 
     # PLOT INJECTIVITY ==================================
 
     t = np.asarray(data_single.time)
     
-    bkt = 5.7e7
-    max_BHP = 2.0e7
-    saveName = 'injectivity_withBHP'
+    Lx = 142.245
+    Ly = Lx
+    Nx = 51
+    Ny = Nx
 
-    # bkt = 4.1e7
-    # max_BHP = 1.0e8
-    # saveName = 'injectivity_noBHP'
-    
-    dx = 1          # m
-    dh = 0.1        # m
-    dv = dx*dh**2   # m^3
-    Nx = 1000
-    phi = 0.1593
-    PV = Nx*dx * dh**2 * phi # m^3
+    dx = Lx / Nx
+    dy = Ly / Ny
+    dz = 10        
+    dv = dx*dy*dz 
+    phi = 0.2
+    PV = Lx*Ly*dz*phi
 
     J = np.zeros_like(t)
     qt_inj = np.zeros_like(t)
+    qw_inj = np.zeros_like(t)
     qw_prod = np.zeros_like(t)
     p_bh_inj = np.zeros_like(t)
     p_inj = np.zeros_like(t)
@@ -65,17 +64,21 @@ if __name__ == "__main__":
         p_bh_inj[j] = p_bh[0]
         p_inj[j] = p[0]
         qw_prod[j] = -qb[-1]*dv
+        qw_inj[j] = -qb[0]*dv
 
         J[j] = WI[0]*mob_t[0]
         # J[j] = qt_inj[j]/(p_bh_inj[j] - p_inj[j])
 
-        area_Csw[j] = np.sum(dx*Cs*Sb)
+        area_Csw[j] = np.sum(dx*dy*Cs*Sb)
 
     Q_prod = np.zeros(len(qw_prod))
     Q_prod[0] = 0
+    Q_inj = np.zeros(len(qw_inj))
+    Q_inj[0] = 0
     dt = t[1:] - t[:-1]
     for j in range(Q_prod[1:].shape[0]+1):
         Q_prod[j] = np.sum(qw_prod[:j]*dt[:j])
+        Q_inj[j] = np.sum(qw_inj[:j]*dt[:j])
     
     fig, ax = plt.subplots(1,4,
                            figsize=(18,5),
@@ -85,7 +88,7 @@ if __name__ == "__main__":
     ax[1].plot(t, J, color='tab:blue', lw=2, label=r"$J=\frac{q_t}{p_\textrm{bh}-p_\textrm{res. cell}}$")
     ax[2].plot(t, p_bh_inj, color='tab:green', lw=2, label = "BHP")
     # ax[2].plot(t, p_inj, color='tab:purple', lw=2, label = r"$p_{\textrm{res. cell}}$")
-    ax[3].plot(t, Q_prod/PV, color='tab:red', lw=2, label = "prod rate")
+    ax[3].plot(t, (Q_prod-Q_inj)/PV, color='tab:red', lw=2, label = "prod rate")
 
     # ax[0].axvline(bkt, color='k', ls='--', lw=1.5, label = "gas breakthrough")
     # ax[1].axvline(bkt, color='k', ls='--', lw=1.5)
@@ -96,12 +99,12 @@ if __name__ == "__main__":
     ax[0].grid()
     ax[0].set_xlabel(r"$t$ [s]")
     ax[0].set_ylabel(r"$q_\textrm{inj}$ [$\textrm{m}^3/\textrm{s}$]")
-    ax[0].set_ylim([0, 1.1e-6])
+    # ax[0].set_ylim([0, 1.1e-6])
         
     ax[1].grid()
     ax[1].set_xlabel(r"$t$ [s]")
     ax[1].set_ylabel(r"$J$ [$\textrm{m}^3/\textrm{s}\cdot\textrm{Pa}$]")
-    ax[1].set_ylim([0, 1.5e-9])
+    # ax[1].set_ylim([0, 1.5e-9])
 
     ax[2].grid()
     ax[2].set_xlabel(r"$t$ [s]")
@@ -109,8 +112,8 @@ if __name__ == "__main__":
 
     ax[3].grid()
     ax[3].set_xlabel(r"$t$ [s]")
-    ax[3].set_ylabel(r"$Q_\textrm{prod}$ [$\textrm{PV}$]")
-    ax[3].set_ylim([-1e-2, 0.1])
+    ax[3].set_ylabel(r"$Q_\textrm{prod} - Q_\textrm{inj}$ [$\textrm{PV}$]")
+    # ax[3].set_ylim([-1e-2, 0.1])
 
     ax[0].legend(loc='best', fontsize=14)
     ax[1].legend(loc='best', fontsize=24)
@@ -144,7 +147,7 @@ if __name__ == "__main__":
     plt.figure(figsize=(6,5))
     plt.plot(t,area_Csw)
     plt.xlabel(r"$t$ [s]")
-    plt.ylabel(r"$\int_0^L C_s \cdot S_w \, dx$")
+    plt.ylabel(r"$\int_A C_s \cdot S_w \, da$")
     plt.title("Surfactant area")
     plt.grid()
     plt.tight_layout()

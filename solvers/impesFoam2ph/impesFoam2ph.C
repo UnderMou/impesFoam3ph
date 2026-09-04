@@ -86,6 +86,8 @@ int main(int argc, char *argv[])
             Fbf = Mbf/Mf;
             Fb = (krb/mu_b) / ( (kra/mu_a) + (krb/mu_b) );
             mob_t = kra/mu_a + krb/mu_b;
+            mob_a = kra/mu_a;
+            mob_b = krb/mu_b;
 
             // Gravitational effects (L_i)
             Laf = rho_a*Kf*kraf/mu_a;
@@ -112,12 +114,9 @@ int main(int argc, char *argv[])
             // pressure equation
             fvScalarMatrix pEqn
             (
-                fvm::laplacian(-Mf, p) + fvc::div(phiG) + fvc::div(phiPc) + 
-                wellModel->implicitSource_pEqn(qb,Sb,Fb,p,qt_inj,qt_prod,runTime.timeOutputValue(),mob_t,WI,p_bh,isWell)
-                ==
-                wellModel->explicitSource_pEqn(qb,Sb,Fb,p,qt_inj,qt_prod,runTime.timeOutputValue(),mob_t,WI,p_bh,isWell)
-                // qt
+                fvm::laplacian(-Mf, p) + fvc::div(phiG) + fvc::div(phiPc)
             );
+            wellModel->source_pEqn(pEqn,p,mob_t,WI,wellCoeff,wellSource,rho_a.value(),rho_b.value(),mob_a,mob_b,g_vector);
             pEqn.solve();
             phiP = pEqn.flux();
 
@@ -157,22 +156,18 @@ int main(int argc, char *argv[])
 
             // well model correction
             Info<< "Using well model: " << wellModel->type() << nl << endl;
-            wellModel->correct(qt,qb,Fb,p,runTime.timeOutputValue(),qt_inj,qt_prod,mob_t,WI,p_bh,isWell,qs,*foamAux.Cs);
-
+            wellModel->correct(qt,qb,Fb,p,runTime.timeOutputValue(),mob_t,WI,p_bh,qs,*foamAux.Cs,rho_a.value(),rho_b.value(),mob_a,mob_b,g_vector);
             Info << "BHP = " << gMax(p_bh.internalField()) << endl;
 
             // phase saturation equation
             fvScalarMatrix SbEqn
             (
-                eps*fvm::ddt(Sb) + fvc::div(phib) +
-                wellModel->implicitSource_SEqn(qb,Sb,Fb,p,qt_inj,qt_prod,runTime.timeOutputValue())
-                ==
-                wellModel->explicitSource_SEqn(qb,Sb,Fb,p,qt_inj,qt_prod,runTime.timeOutputValue())
-                // qb
+                eps*fvm::ddt(Sb) + fvc::div(phib)
             );
+            wellModel->source_SbEqn(SbEqn,Sb,Fb,p,runTime.timeOutputValue(),qb);
             SbEqn.solve();
 
-            Sa = scalar(1.0) - Sb;
+            Sa = scalar(1.0) - Sb - VSMALL;
 
             Sb.correctBoundaryConditions();
             Sa.correctBoundaryConditions();

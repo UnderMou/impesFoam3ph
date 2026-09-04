@@ -16,15 +16,15 @@ FoamFile
 
 application     impesFoam;
 
-startFrom       latestTime; // startTime;
+startFrom       latestTime; //startTime;
 
 startTime       0;
 
 stopAt          endTime;
 
-endTime         16e7;
+endTime         5e7;
 
-deltaT          1e3;
+deltaT          1e3; 
 
 writeControl    runTime;
 
@@ -56,3 +56,10 @@ DebugSwitches
 {
     dimensionSet 0;
 }
+
+// qtValue 1.27472e-2; // [kg/s]
+// qtValue 3.175e-3; // [kg/s]
+
+// qtValue 0.0509888;
+
+// qtValue 1.27472e-2; // [m3/s]

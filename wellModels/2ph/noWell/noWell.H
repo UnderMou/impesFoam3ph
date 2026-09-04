@@ -25,7 +25,14 @@ Class
     Foam::wellModel::noWell
 
 Description
-    no well model for three-phase flow fow when not considering injection wells.
+    Constant injection rate model for two-phase flow.
+
+    Reference:
+    \verbatim
+        Horgue, P., Soulaine, C., Franc, J., Guibert, R., & Debenest, G. (2015).
+        An open-source toolbox for multiphase flow in porous media.
+        Computer Physics Communications, 187, 217-226.
+    \endverbatim
 
     The default model coefficients are
     \verbatim
@@ -34,7 +41,7 @@ Description
 
         noWell
         {
-            
+
         }
 
     \endverbatim
@@ -57,11 +64,61 @@ class noWell
     public wellModel
 {
 
+
+protected:
+    virtual List<well> readWells
+    (
+        const dictionary& wellsDict
+    )override;
+
 public:
     TypeName("noWell");
 
     noWell(const dictionary& dict);
-    
+
+    virtual void source_pEqn
+    (
+        fvScalarMatrix& pEqn,
+        const volScalarField& p,
+        const volScalarField& mob_t,
+        const volScalarField& WI,
+        volScalarField& wellCoeff,
+        volScalarField& wellSource,
+        const scalar& rho_a,
+        const scalar& rho_b,
+        const volScalarField& mob_a,
+        const volScalarField& mob_b,
+        const dimensionedVector& g
+    ) override;
+
+    virtual void source_SbEqn
+    (
+        fvScalarMatrix& SbEqn,
+        const volScalarField& Sb, 
+        const volScalarField& Fb, 
+        const volScalarField& p,
+        scalar t,
+        volScalarField& qb
+    ) override;
+
+    virtual void correct
+    (
+        volScalarField& qt,
+        volScalarField& qb,
+        const volScalarField& Fb,
+        const volScalarField& p, 
+        scalar t,
+        const volScalarField& mob_t,
+        const volScalarField& WI,
+        volScalarField& p_bh,
+        volScalarField& qs,
+        const volScalarField& Cs,
+        const scalar& rho_a,
+        const scalar& rho_b,
+        const volScalarField& mob_a,
+        const volScalarField& mob_b,
+        const dimensionedVector& g
+    ) override;
 };
 
 } // End namespace Foam

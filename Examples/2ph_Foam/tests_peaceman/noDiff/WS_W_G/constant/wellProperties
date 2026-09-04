@@ -16,23 +16,41 @@ FoamFile
 
 wellModel Peaceman;
 
-ConstantInjection
-{
-    // co-injection
-    Fb_inj    0.2;
-}
+// ConstantInjection
+// {
+//     // co-injection
+//     Fb_inj    0.2;
+// }
 
-SlugInjection
-{
-  slugTime_w  2.0e3;
-  slugTime_g  2.0e3;  
-}
+// SlugInjection
+// {
+//   slugTime_w  2.0e3;
+//   slugTime_g  2.0e3;  
+// }
 
 Peaceman
 {
-  // Setup 1 - Surfactant injection - t_final = 1e7
+  // // Setup 1 - Surfactant injection - t_final = 1e7
+  // Fb_inj  1.0;              // Fb_inj!= 1 > co-injection proportion 
+  //                           //              Fb_inj in water cycle and (1-Fb_inj) in gas cycle
+  //                           // Fb_inj = 1.0 > water injection only in water cycle and gas injection only in gas cycle
+  
+  // CsInj 5.0;                // surfactant injection concentration in water cycle              
+
+  // inj_maxBHP    2.0e7;
+  // inj_maxRate   1e-3;
+  // prod_maxBHP   1e6;
+  // prod_maxRate  1e-3;
+
+  // // Every slugTime_w and slugTime_g, the injection is switched between water and gas injection up to 
+  // // t_final ('endTime' in controlDict)
+  // slugTime_w    1e7;        // duration of water injection
+  // slugTime_g    0;          // duration of gas injection
+
+
+  // Setup 2 - Water/Gas injection - t_final = 16e7
   Fb_inj  1.0;
-  CsInj 5.0;
+  CsInj 0.0;
 
   inj_maxBHP    2.0e7;
   inj_maxRate   1e-3;
@@ -40,20 +58,8 @@ Peaceman
   prod_maxRate  1e-3;
 
   slugTime_w    1e7;
-  slugTime_g    0;
-
-  // // Setup 2 - Water/Gas injection - t_final = 16e7
-  // Fb_inj  1.0;
-  // CsInj 0.0;
-
-  // inj_maxBHP    2.0e7;
-  // inj_maxRate   1e-3;
-  // prod_maxBHP   1e6;
-  // prod_maxRate  1e-3;
-
-  // slugTime_w    1e7;
-  // slugTime_g    4e7;
-  // t0            1e7; // t_final from setup 1
+  slugTime_g    4e7;
+  t0            1e7; // t_final from setup 1
 }
 
 

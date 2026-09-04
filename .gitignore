@@ -3,6 +3,14 @@
 *.o
 *.dep
 *.so
+**/Make/../lnInclude/
+
+Examples/2ph_Foam/tests_peaceman/noDiff/
+Examples/2ph_Foam/tests_peaceman/5spot_onnx/
+Examples/2ph_Foam/tests_peaceman/5spot_panday/
+Examples/2ph_Foam/tests_peaceman/5spot_rodrigo/
+Examples/2ph_Foam/tests_peaceman/testNewWell/Peaceman_g
+wellModels/2ph/Peaceman_g
 
 Examples/3ph_Foam/OilBank_ternary_region/experiments/
 Examples/3ph_Foam/CTscan_SA/experiments/*.avi

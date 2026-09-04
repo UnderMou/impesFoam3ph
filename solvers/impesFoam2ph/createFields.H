@@ -685,30 +685,32 @@ volScalarField qs
     dimensionedScalar("zero", dimless, 0.0)
 );
 
-volScalarField qt_inj
+volScalarField wellCoeff
 (
     IOobject
     (
-        "qt_inj",
+        "wellCoeff",
         runTime.timeName(),
         mesh,
         IOobject::NO_READ,
-        IOobject::AUTO_WRITE
+        IOobject::NO_WRITE
     ),
-    Foam::mag(max(qt, scalar(0)))
+    mesh,
+    dimensionedScalar("zero", dimless, 0.0)
 );
 
-volScalarField qt_prod
+volScalarField wellSource
 (
     IOobject
     (
-        "qt_prod",
+        "wellSource",
         runTime.timeName(),
         mesh,
         IOobject::NO_READ,
-        IOobject::AUTO_WRITE
+        IOobject::NO_WRITE
     ),
-    Foam::mag(min(qt, scalar(0)))
+    mesh,
+    dimensionedScalar("zero", dimless, 0.0)
 );
 
 Info<< "Reading wellProperties\n" << endl;
@@ -741,7 +743,38 @@ volScalarField mob_t
     dimensionedScalar("one", dimless, 1.0)
 );
 mob_t = kra/mu_a + krb/mu_b;
-Info << "mob_t OK" << endl;
+
+volScalarField mob_a
+(
+    IOobject
+    (
+        "mob_a",
+        runTime.timeName(),
+        mesh,
+        IOobject::NO_READ,
+        IOobject::AUTO_WRITE
+    ),
+    mesh,
+    dimensionedScalar("one", dimless, 1.0)
+);
+mob_a = kra/mu_a;
+
+volScalarField mob_b
+(
+    IOobject
+    (
+        "mob_b",
+        runTime.timeName(),
+        mesh,
+        IOobject::NO_READ,
+        IOobject::AUTO_WRITE
+    ),
+    mesh,
+    dimensionedScalar("one", dimless, 1.0)
+);
+mob_b = krb/mu_b;
+
+Info << "mob_b OK" << endl;
 
 volScalarField cellVol
 (
@@ -791,7 +824,7 @@ volScalarField WI
     dimensionedScalar("zero", dimless, 0.0)
 );
 
-WI = 2 * M_PI * K / (Foam::log(10.0)); // TODO: re/rw = 10
+WI = 2 * M_PI * K * 2.789117647 / (Foam::log(10.0)); // TODO: re/rw = 10
 Info << "min(WI) = " << gMin(WI) << "max(WI) = " << gMax(WI) << endl;
 Info << "WI OK" << endl;
 
@@ -810,30 +843,3 @@ volScalarField p_bh
 );
 Info << "p_bh OK" << endl;
 
-volScalarField isWell
-(
-    IOobject
-    (
-        "isWell",
-        runTime.timeName(),
-        mesh,
-        IOobject::NO_READ,
-        IOobject::AUTO_WRITE
-    ),
-    mesh,
-    dimensionedScalar("zero", dimless, 0.0)
-);
-
-// Mark well cells
-forAll(isWell, celli)
-{
-    if (qt[celli] > SMALL)
-    {
-        isWell[celli] = 1.0;
-    }
-    else if (qt[celli] < -SMALL)
-    {
-        isWell[celli] = 1.0;
-    }
-}
-Info << "isWell OK" << endl;

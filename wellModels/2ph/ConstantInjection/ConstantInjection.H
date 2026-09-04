@@ -64,38 +64,63 @@ class ConstantInjection
 :
     public wellModel
 {
-    scalar Fb_inj_;
+
+
+protected:
+    virtual List<well> readWells
+    (
+        const dictionary& wellsDict
+    )override;
 
 public:
     TypeName("ConstantInjection");
 
     ConstantInjection(const dictionary& dict);
 
-    virtual tmp<volScalarField> explicitSource_pEqn
+    virtual void source_pEqn
     (
-        volScalarField& qb,
+        fvScalarMatrix& pEqn,
+        const volScalarField& p,
+        const volScalarField& mob_t,
+        const volScalarField& WI,
+        volScalarField& wellCoeff,
+        volScalarField& wellSource,
+        const scalar& rho_a,
+        const scalar& rho_b,
+        const volScalarField& mob_a,
+        const volScalarField& mob_b,
+        const dimensionedVector& g
+        
+    ) override;
+
+    virtual void source_SbEqn
+    (
+        fvScalarMatrix& SbEqn,
         const volScalarField& Sb, 
         const volScalarField& Fb, 
         const volScalarField& p,
-        const volScalarField& qt_inj,
-        const volScalarField& qt_prod,
+        scalar t,
+        volScalarField& qb
+    ) override;
+
+    virtual void correct
+    (
+        volScalarField& qt,
+        volScalarField& qb,
+        const volScalarField& Fb,
+        const volScalarField& p, 
         scalar t,
         const volScalarField& mob_t,
         const volScalarField& WI,
-        const volScalarField& p_bh,
-        const volScalarField& isWell
-    ) const override;
-
-    virtual tmp<volScalarField> explicitSource_SEqn
-    (
-        volScalarField& qb,
-        const volScalarField& Sb, 
-        const volScalarField& Fb, 
-        const volScalarField& p,
-        const volScalarField& qt_inj,
-        const volScalarField& qt_prod,
-        scalar t
-    ) const override;
+        volScalarField& p_bh,
+        volScalarField& qs,
+        const volScalarField& Cs,
+        const scalar& rho_a,
+        const scalar& rho_b,
+        const volScalarField& mob_a,
+        const volScalarField& mob_b,
+        const dimensionedVector& g
+    ) override;
 };
 
 } // End namespace Foam

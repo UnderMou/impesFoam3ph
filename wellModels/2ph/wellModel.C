@@ -76,5 +76,4 @@ wellModel::New
     );
 }
 
-
 } // End namespace Foam
