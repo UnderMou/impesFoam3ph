@@ -72,6 +72,11 @@ void CoreyBrooks::correct
     volScalarField Se_b = (Sb - Sb_min_) / (1.0 - Sa_min_ - Sb_min_ - Sc_min_);
     volScalarField Se_c = (scalar(1.0) - Sa - Sb - Sc_min_) / (1.0 - Sa_min_ - Sb_min_ - Sc_min_);
     
+    // Check
+    Se_a = min(max(Se_a, scalar(0.0)), scalar(1.0));
+    Se_b = min(max(Se_b, scalar(0.0)), scalar(1.0));
+    Se_c = min(max(Se_c, scalar(0.0)), scalar(1.0));
+
     // Corey-type relative permeabilities
     kra = kra_max_ * Foam::pow(Se_a, a_exp_); 
     krb = krb_max_ * Foam::pow(Se_b, b_exp_); 

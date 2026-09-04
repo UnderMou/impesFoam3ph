@@ -65,6 +65,9 @@ void CoreyBrooks::correct
     // Effective saturations (normalization)
     volScalarField Se = (Sb - Sb_min_) / (1.0 - Sa_min_ - Sb_min_);
 
+    // Check
+    Se = min(max(Se, scalar(0.0)), scalar(1.0));
+
     // Corey-type relative permeabilities
     kra = kra_max_ * Foam::pow(scalar(1.0) - Se, a_exp_);
     krb = krb_max_ * Foam::pow(Se, b_exp_); 

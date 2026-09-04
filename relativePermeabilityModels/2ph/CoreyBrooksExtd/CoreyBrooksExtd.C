@@ -66,6 +66,9 @@ void CoreyBrooksExtd::correct
     volScalarField Se = (Sb - Sb_min_) / (1.0 - Sa_min_ - Sb_min_);
     volScalarField Sa = scalar(1.0) - Sb;
 
+    // Check
+    Se = min(max(Se, scalar(0.0)), scalar(1.0));
+
     // Correct kra
     // cell centered values
     forAll(kra,i){
