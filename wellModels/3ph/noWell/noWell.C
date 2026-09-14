@@ -42,24 +42,92 @@ addToRunTimeSelectionTable
     dictionary
 );
 
+List<well> noWell::readWells(const dictionary& wellsDict)
+{
+    return List<well>(0);
+}
+
 noWell::noWell(const dictionary& dict)
 :
     wellModel(dict)
-{}
+{
+    wells_ = readWells(wellsDict_);
+    // checkRateBalance();
+}
+
+void noWell::source_pEqn
+(
+    fvScalarMatrix& pEqn,
+    const volScalarField& p,
+    const volScalarField& mob_t,
+    const volScalarField& WI,
+    volScalarField& wellCoeff,
+    volScalarField& wellSource,
+    const scalar& rho_a,
+    const scalar& rho_b,
+    const scalar& rho_c,
+    const volScalarField& mob_a,
+    const volScalarField& mob_b,
+    const volScalarField& mob_c,
+    const dimensionedVector& g,
+    const volScalarField& qt,
+    const volScalarField& qa,
+    const volScalarField& qb
+) 
+{
+    // no well
+}
+
+void noWell::source_SaEqn
+(
+    fvScalarMatrix& SaEqn,
+    const volScalarField& Sa, 
+    const volScalarField& Fa, 
+    const volScalarField& p,
+    scalar t,
+    volScalarField& qa
+)
+{
+    // no well
+}
+
+void noWell::source_SbEqn
+(
+    fvScalarMatrix& SbEqn,
+    const volScalarField& Sb, 
+    const volScalarField& Fb, 
+    const volScalarField& p,
+    scalar t,
+    volScalarField& qb
+)
+{
+    // no well
+}
 
 void noWell::correct
 (
+    volScalarField& qt,
     volScalarField& qa,
-        volScalarField& qb,
-        const volScalarField& Fa,
-        const volScalarField& Fb, 
-        const volScalarField& qt_inj,
-        const volScalarField& qt_prod,
-        scalar t
-) const
+    volScalarField& qb,
+    const volScalarField& Fa,
+    const volScalarField& Fb,
+    const volScalarField& p,
+    scalar t,
+    const volScalarField& mob_t,
+    const volScalarField& WI,
+    volScalarField& p_bh,
+    volScalarField& qs,
+    const volScalarField& Cs,
+    const scalar& rho_a,
+    const scalar& rho_b,
+    const scalar& rho_c,
+    const volScalarField& mob_a,
+    const volScalarField& mob_b,
+    const volScalarField& mob_c,
+    const dimensionedVector& g
+) 
 {
-    // no well model
-    // pass
+    // no well
 }
 
 } // End namespace Foam

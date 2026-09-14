@@ -22,46 +22,78 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::wellModel::noWell
+    Foam::wellModel::Peaceman
 
 Description
-    No well model for three-phase flow.
+    Peaceman well model for three-phase flow in porous media.
 
     Reference:
     \verbatim
+        CHEN, Zhangxin; HUAN, Guanren; MA, Yuanle. 
+        Computational methods for multiphase flows in porous media. 
+        Society for Industrial and Applied Mathematics, 2006.
 
+        JIANG, Yuanlin. 
+        Techniques for modeling complex reservoirs and advanced wells. 
+        2008. phD Thesis. Stanford University.
     \endverbatim
 
     The default model coefficients are
     \verbatim
 
-        wellModel noWell;
+        wellModel Peaceman;
 
-        noWell
+        Peaceman
         {
+            vertDir (0 1 0);
+            
+            wells
+            {
+                injector1
+                {
+                name        INJ1;
+                cells       (0 1 2 3 4 5 6 7 8 9);  // cell index
+                injector    true;                   // false = producer
+                bhpControl  true;                   // bhpControl false = rate control
+                target      3e6;                    // target value for bhp [Pa] or rate control [m3/s]
+                Fa_inj      0.0;                    // injection phase a fraction
+                Fb_inj      0.0;                    // injection phase b fraction
+                Cs_inj      0.0;                    // injection phase concentration [kg/m3]
+                }
 
+                producer1
+                {
+                name        PROD1;
+                cells       (90 91 92 93 94 95 96 97 98 99); 
+                injector    false;
+                bhpControl  true;
+                target      0.0;
+                }
+            }
         }
+
 
     \endverbatim
 
 SourceFiles
-    noWell.C
+    Peaceman.C
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef noWell_H
-#define noWell_H
+#ifndef Peaceman_H
+#define Peaceman_H
 
+#include <cmath>
 #include "wellModel.H"
 
 namespace Foam
 {
 
-class noWell
+class Peaceman
 :
     public wellModel
 {
-
+    vector vertDir_;
 
 protected:
     virtual List<well> readWells
@@ -70,9 +102,9 @@ protected:
     )override;
 
 public:
-    TypeName("noWell");
+    TypeName("Peaceman");
 
-    noWell(const dictionary& dict);
+    Peaceman(const dictionary& dict);
 
     virtual void source_pEqn
     (
@@ -135,6 +167,12 @@ public:
         const volScalarField& mob_b,
         const volScalarField& mob_c,
         const dimensionedVector& g
+    ) override;
+
+    void initialize
+    (
+        volScalarField& WI,
+        const volScalarField& K
     ) override;
 };
 

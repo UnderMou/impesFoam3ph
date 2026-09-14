@@ -89,6 +89,10 @@ int main(int argc, char *argv[])
             Fbf = Mbf/Mf;
             Fa = (kra/mu_a) / ( (kra/mu_a) + (krb/mu_b) + (krc/mu_c) );
             Fb = (krb/mu_b) / ( (kra/mu_a) + (krb/mu_b) + (krc/mu_c) );
+            mob_t = kra/mu_a + krb/mu_b + krc/mu_c;
+            mob_a = kra/mu_a;
+            mob_b = krb/mu_b;
+            mob_c = krc/mu_c;
 
             // Gravitational effects (L_i)
             Laf = rho_a*Kf*kraf/mu_a;
@@ -127,9 +131,12 @@ int main(int argc, char *argv[])
             fvScalarMatrix pEqn
             (
                 fvm::laplacian(-Mf, p) + fvc::div(phiG) + fvc::div(phiPc)
-                ==
-                qt
             );
+            wellModel->source_pEqn(pEqn,p,mob_t,WI,wellCoeff,wellSource,rho_a.value(),rho_b.value(),rho_c.value(),mob_a,mob_b,mob_c,g_vector,qt,qa,qb);
+            if (usePressureReference)
+            {
+                pEqn.setReference(pRefCell, pRefValue);
+            }
             pEqn.solve();
             phiP = pEqn.flux();
 
@@ -158,6 +165,7 @@ int main(int argc, char *argv[])
             Ub.correctBoundaryConditions();  
             Ua.correctBoundaryConditions();
             Uc.correctBoundaryConditions();
+            U = Ua + Ub + Uc; // Correct U according with Ua , Ub and Uc Boundary values
             forAll(mesh.boundary(),patchi)
             {
                 if (isA< fixedValueFvPatchField<vector> >(Ua.boundaryField()[patchi]))
@@ -176,34 +184,32 @@ int main(int argc, char *argv[])
 
             // well model correction
             Info<< "Using well model: " << wellModel->type() << nl << endl;
-            wellModel->correct(qa,qb,Fa,Fb,qt_inj,qt_prod,runTime.timeOutputValue());
+            wellModel->correct(qt,qa,qb,Fa,Fb,p,runTime.timeOutputValue(),mob_t,WI,p_bh,qs,*foamAux.Cs,rho_a.value(),rho_b.value(),rho_c.value(),mob_a,mob_b,mob_c,g_vector);
 
             // phase saturation equation
             fvScalarMatrix SaEqn
             (
                 eps*fvm::ddt(Sa) + fvc::div(phia)
-                ==
-                qa
             );
+            wellModel->source_SaEqn(SaEqn,Sa,Fa,p,runTime.timeOutputValue(),qa);
             SaEqn.solve();
 
             fvScalarMatrix SbEqn
             (
                 eps*fvm::ddt(Sb) + fvc::div(phib) 
-                ==
-                qb
             );
+            wellModel->source_SbEqn(SbEqn,Sb,Fb,p,runTime.timeOutputValue(),qb);
             SbEqn.solve();
+
+            // Sa = min(max(Sa, scalar(0)), scalar(1));
+            // Sb = min(max(Sb, scalar(0)), scalar(1));
+
+            Sc = scalar(1.0) - Sa - Sb - VSMALL;
+            // Sc = min(max(Sc, scalar(0)), scalar(1));
 
             Sb.correctBoundaryConditions();  
             Sa.correctBoundaryConditions();
             Sc.correctBoundaryConditions();  
-
-            Sa = min(max(Sa, scalar(0)), scalar(1));
-            Sb = min(max(Sb, scalar(0)), scalar(1));
-
-            Sc = scalar(1.0) - Sa - Sb;
-            Sc = min(max(Sc, scalar(0)), scalar(1));
 
             Info << "Saturation a: " << " Min(Sa) = " << gMin(Sa) << " Max(Sa) = " << gMax(Sa) << endl;
             Info << "Saturation b: " << " Min(Sb) = " << gMin(Sb) << " Max(Sb) = " << gMax(Sb) << endl;

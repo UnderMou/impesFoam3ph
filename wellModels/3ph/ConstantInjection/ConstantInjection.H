@@ -29,9 +29,7 @@ Description
 
     Reference:
     \verbatim
-        Horgue, P., Soulaine, C., Franc, J., Guibert, R., & Debenest, G. (2015).
-        An open-source toolbox for multiphase flow in porous media.
-        Computer Physics Communications, 187, 217-226.
+
     \endverbatim
 
     The default model coefficients are
@@ -41,9 +39,29 @@ Description
 
         ConstantInjection
         {
-            // co-injection
-            Fa_inj    0.7;
-            Fb_inj    0.3;
+            vertDir (0 1 0);
+            
+            wells
+            {
+                injector1
+                {
+                name        INJ1;
+                cells       (0 1 2 3 4 5 6 7 8 9);  // cell index
+                injector    true;                   // false = producer
+                target      1e-4;                   // target value for rate control [m3/s]
+                Fa_inj      0.0;                    // injection phase a action
+                Fb_inj      0.0;                    // injection phase b action
+                Cs_inj      0.0;                    // injection phase concentration [kg/m3]
+                }
+
+                producer1
+                {
+                name        PROD1;
+                cells       (90 91 92 93 94 95 96 97 98 99); 
+                injector    false;
+                target      -1e-4;                  // target value are negative for producer well
+                }
+            }
         }
 
     \endverbatim
@@ -65,24 +83,80 @@ class ConstantInjection
 :
     public wellModel
 {
-    scalar Fa_inj_;
-    scalar Fb_inj_;
+
+protected:
+    virtual List<well> readWells
+    (
+        const dictionary& wellsDict
+    )override;
 
 public:
     TypeName("ConstantInjection");
 
     ConstantInjection(const dictionary& dict);
 
+    virtual void source_pEqn
+    (
+        fvScalarMatrix& pEqn,
+        const volScalarField& p,
+        const volScalarField& mob_t,
+        const volScalarField& WI,
+        volScalarField& wellCoeff,
+        volScalarField& wellSource,
+        const scalar& rho_a,
+        const scalar& rho_b,
+        const scalar& rho_c,
+        const volScalarField& mob_a,
+        const volScalarField& mob_b,
+        const volScalarField& mob_c,
+        const dimensionedVector& g,
+        const volScalarField& qt,
+        const volScalarField& qa,
+        const volScalarField& qb
+    ) override;
+
+    virtual void source_SaEqn
+    (
+        fvScalarMatrix& SaEqn,
+        const volScalarField& Sa,
+        const volScalarField& Fa,
+        const volScalarField& p,
+        scalar t,
+        volScalarField& qa
+    ) override;
+
+    virtual void source_SbEqn
+    (
+        fvScalarMatrix& SbEqn,
+        const volScalarField& Sb, 
+        const volScalarField& Fb, 
+        const volScalarField& p,
+        scalar t,
+        volScalarField& qb
+    ) override;
+
     virtual void correct
     (
+        volScalarField& qt,
         volScalarField& qa,
         volScalarField& qb,
         const volScalarField& Fa,
-        const volScalarField& Fb, 
-        const volScalarField& qt_inj,
-        const volScalarField& qt_prod,
-        scalar t
-    ) const;
+        const volScalarField& Fb,
+        const volScalarField& p,
+        scalar t,
+        const volScalarField& mob_t,
+        const volScalarField& WI,
+        volScalarField& p_bh,
+        volScalarField& qs,
+        const volScalarField& Cs,
+        const scalar& rho_a,
+        const scalar& rho_b,
+        const scalar& rho_c,
+        const volScalarField& mob_a,
+        const volScalarField& mob_b,
+        const volScalarField& mob_c,
+        const dimensionedVector& g
+    ) override;
 };
 
 } // End namespace Foam

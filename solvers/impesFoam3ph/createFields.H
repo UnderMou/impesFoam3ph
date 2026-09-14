@@ -858,30 +858,46 @@ volScalarField qb
     dimensionedScalar("zero", dimless, 0.0)
 );
 
-volScalarField qt_inj
+volScalarField qs
 (
     IOobject
     (
-        "qt_inj",
+        "qs",
         runTime.timeName(),
         mesh,
         IOobject::NO_READ,
         IOobject::AUTO_WRITE
     ),
-    Foam::mag(max(qt, scalar(0)))
+    mesh,
+    dimensionedScalar("zero", dimless, 0.0)
 );
 
-volScalarField qt_prod
+volScalarField wellCoeff
 (
     IOobject
     (
-        "qt_prod",
+        "wellCoeff",
         runTime.timeName(),
         mesh,
         IOobject::NO_READ,
-        IOobject::AUTO_WRITE
+        IOobject::NO_WRITE
     ),
-    Foam::mag(min(qt, scalar(0)))
+    mesh,
+    dimensionedScalar("zero", dimless, 0.0)
+);
+
+volScalarField wellSource
+(
+    IOobject
+    (
+        "wellSource",
+        runTime.timeName(),
+        mesh,
+        IOobject::NO_READ,
+        IOobject::NO_WRITE
+    ),
+    mesh,
+    dimensionedScalar("zero", dimless, 0.0)
 );
 
 Info<< "Reading wellProperties\n" << endl;
@@ -899,3 +915,117 @@ IOdictionary wellProperties
 );
 
 autoPtr<wellModel> wellModel = wellModel::New(wellProperties);
+
+volScalarField mob_t
+(
+    IOobject
+    (
+        "mob_t",
+        runTime.timeName(),
+        mesh,
+        IOobject::NO_READ,
+        IOobject::AUTO_WRITE
+    ),
+    mesh,
+    dimensionedScalar("one", dimless, 1.0)
+);
+mob_t = kra/mu_a + krb/mu_b + krc/mu_c;
+
+volScalarField mob_a
+(
+    IOobject
+    (
+        "mob_a",
+        runTime.timeName(),
+        mesh,
+        IOobject::NO_READ,
+        IOobject::AUTO_WRITE
+    ),
+    mesh,
+    dimensionedScalar("one", dimless, 1.0)
+);
+mob_a = kra/mu_a;
+
+volScalarField mob_b
+(
+    IOobject
+    (
+        "mob_b",
+        runTime.timeName(),
+        mesh,
+        IOobject::NO_READ,
+        IOobject::AUTO_WRITE
+    ),
+    mesh,
+    dimensionedScalar("one", dimless, 1.0)
+);
+mob_b = krb/mu_b;
+
+volScalarField mob_c
+(
+    IOobject
+    (
+        "mob_c",
+        runTime.timeName(),
+        mesh,
+        IOobject::NO_READ,
+        IOobject::AUTO_WRITE
+    ),
+    mesh,
+    dimensionedScalar("one", dimless, 1.0)
+);
+mob_c = krc/mu_c;
+
+volScalarField WI
+(
+    IOobject
+    (
+        "WI",
+        runTime.timeName(),
+        mesh,
+        IOobject::NO_READ,
+        IOobject::AUTO_WRITE
+    ),
+    mesh,
+    dimensionedScalar("zero", dimless, 0.0)
+);
+
+wellModel->initialize(WI, K);
+
+volScalarField p_bh
+(
+    IOobject
+    (
+        "p_bh",
+        runTime.timeName(),
+        mesh,
+        IOobject::NO_READ,
+        IOobject::AUTO_WRITE
+    ),
+    mesh,
+    dimensionedScalar("zero", dimless, 0.0)
+);
+
+// PREFF
+label pRefCell = 0;
+scalar pRefValue = 0.0;
+
+const dictionary& impesDict = mesh.solutionDict().subDict("IMPES");
+
+bool usePressureReference =
+    impesDict.lookupOrDefault<bool>
+    (
+        "usePressureReference",
+        false
+    );
+
+if (usePressureReference)
+{
+    setRefCell
+    (
+        p,
+        impesDict,
+        pRefCell,
+        pRefValue
+    );
+}
