@@ -25,13 +25,11 @@ Class
     Foam::wellModel::noWell
 
 Description
-    Constant injection rate model for two-phase flow.
+    No well model for two-phase flow.
 
     Reference:
     \verbatim
-        Horgue, P., Soulaine, C., Franc, J., Guibert, R., & Debenest, G. (2015).
-        An open-source toolbox for multiphase flow in porous media.
-        Computer Physics Communications, 187, 217-226.
+
     \endverbatim
 
     The default model coefficients are
@@ -88,7 +86,9 @@ public:
         const scalar& rho_b,
         const volScalarField& mob_a,
         const volScalarField& mob_b,
-        const dimensionedVector& g
+        const dimensionedVector& g,
+        const volScalarField& qt,
+        const volScalarField& qb
     ) override;
 
     virtual void source_SbEqn

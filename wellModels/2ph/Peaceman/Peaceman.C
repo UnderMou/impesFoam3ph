@@ -52,22 +52,17 @@ List<well> Peaceman::readWells(const dictionary& wellsDict)
     {
         const word& name = wellNames[i];
 
-        const dictionary& wellDict =
-            wellsDict.subDict(name);
+        const dictionary& wellDict = wellsDict.subDict(name);
 
         wells[i].name = name;
 
-        wells[i].cells =
-            labelList(wellDict.lookup("cells"));
+        wells[i].cells = labelList(wellDict.lookup("cells"));
 
-        wells[i].injector =
-            readBool(wellDict.lookup("injector"));
+        wells[i].injector = readBool(wellDict.lookup("injector"));
 
-        wells[i].bhpControl =
-            readBool(wellDict.lookup("bhpControl"));
+        wells[i].bhpControl = readBool(wellDict.lookup("bhpControl"));
 
-        wells[i].target =
-            readScalar(wellDict.lookup("target"));
+        wells[i].target = readScalar(wellDict.lookup("target"));
         
         if (wells[i].bhpControl)
         {
@@ -91,6 +86,10 @@ List<well> Peaceman::readWells(const dictionary& wellsDict)
             wells[i].Cs_inj = 0.0;
         }
 
+        wells[i].rhoWell = 0.0;
+
+        wells[i].radius = wellDict.lookupOrDefault<scalar>("radius", 0.497); 
+
         Info << "Reading well: " << name << nl;
     }
 
@@ -99,9 +98,11 @@ List<well> Peaceman::readWells(const dictionary& wellsDict)
 
 Peaceman::Peaceman(const dictionary& dict)
 :
-    wellModel(dict)
+    wellModel(dict),
+    vertDir_(dict.lookupOrDefault<vector>("vertDir", vector(0, 0, 1)))
 {
     wells_ = readWells(wellsDict_);
+    Info << "Vertical direction: " << vertDir_ << nl << endl;
     checkRateBalance();
 }
 
@@ -117,38 +118,102 @@ void Peaceman::source_pEqn
     const scalar& rho_b,
     const volScalarField& mob_a,
     const volScalarField& mob_b,
-    const dimensionedVector& g
+    const dimensionedVector& g,
+    const volScalarField& qt,
+    const volScalarField& qb
 ) 
 {
     wellCoeff = scalar(0.0);
     wellSource = scalar(0.0);
-
     const scalarField& V = p.mesh().V();
+    const volVectorField& C = p.mesh().C();
 
+    // Correct rhoWell value
+    forAll(wells_, w)
+    {
+        well& well = wells_[w];
+
+        // producer well
+        if (!well.injector)
+        {
+            scalar QaProd = 0.0;
+            scalar QbProd = 0.0;
+
+            forAll(well.cells, j)
+            {
+                const label celli = well.cells[j];
+
+                const scalar Qt = qt[celli]*V[celli];
+                const scalar Qb = qb[celli]*V[celli];
+                const scalar Qa = Qt - Qb;
+ 
+                QaProd += -min(Qa, scalar(0.0));
+                QbProd += -min(Qb, scalar(0.0));
+            }
+
+            const scalar QProd = QaProd + QbProd;
+
+            if (QProd > SMALL)
+            {
+                well.rhoWell = (rho_a*QaProd + rho_b*QbProd)/QProd;
+            }
+            else
+            {
+                // No previous production:
+                // use following initialization value
+
+                scalar numerator   = 0.0;
+                scalar denominator = 0.0;
+
+                forAll(well.cells, j)
+                {
+                    const label celli = well.cells[j];
+
+                    numerator += WI[celli]*(mob_a[celli]*rho_a + mob_b[celli]*rho_b);
+                    denominator += WI[celli]*mob_t[celli];
+                }
+
+                well.rhoWell = numerator/denominator;
+            }
+
+            Info<< "Well " << well.name
+                << ": QaProd = " << QaProd
+                << ", QbProd = " << QbProd
+                << ", rhoWell = " << well.rhoWell
+                << nl;
+        }
+        // injection well
+        else
+        {
+            well.rhoWell = well.Fb_inj*rho_b + (1.0 - well.Fb_inj)*rho_a;
+        }
+    }
+
+    // Evaluate well contributions to pressure equation
     forAll(wells_, w)
     {
         const well& well = wells_[w];
-        const scalar ratePerPerf = well.rate/scalar(well.cells.size());
+        const scalar ratePerPerf = well.rate/scalar(well.cells.size()); // Qi = Q/Nperf
 
-        Info << "name:" << well.name << ", injector?" << well.injector << ", bhp controlled?" << well.bhpControl << endl;
-        Info << "control values: bhp=" << well.bhp << ", rate=" << well.rate << endl;
+        // Info << "name:" << well.name << ", injector?" << well.injector << ", bhp controlled?" << well.bhpControl << endl;
+        // Info << "control values: bhp=" << well.bhp << ", rate=" << well.rate << endl;
+        // Info << well.name << ": C[" << well.cells[0] << "] = " << C[well.cells[0]] << endl;
 
         forAll(well.cells, j)
         {
             label celli = well.cells[j];
 
             // Info << celli << " " << endl;
-            
             if (wells_[w].bhpControl)
             {
-                // q = WI*mob*(p_bh - p)/V
+                // q = WI*mob*(p_bh - p - rhoWell*g*Delta_z) --- prescribed bhp
                 wellCoeff[celli] += WI[celli]*mob_t[celli]/V[celli];
-                wellSource[celli] += WI[celli]*mob_t[celli]*wells_[w].bhp/V[celli];
+                wellSource[celli] += WI[celli]*mob_t[celli]*(wells_[w].bhp - well.rhoWell * (g.value() & (C[well.cells[0]] - C[celli])))/V[celli];
             }
             else
             {
-                // q = prescribed rate
-                wellSource[celli] += ratePerPerf/V[celli]; // wells_[w].rate;
+                // q = Q/Nperf --- prescribed rate
+                wellSource[celli] += ratePerPerf/V[celli]; 
             }
         }
     }
@@ -189,10 +254,11 @@ void Peaceman::correct
     const dimensionedVector& g
 ) 
 {
-    // Correct qt and p_bh
-    qt = scalar(0.0);
-
+    const volVectorField& C = p.mesh().C();
     const scalarField& V = qt.mesh().V();
+
+    // Correct qt 
+    qt = scalar(0.0);
 
     forAll(wells_, w)
     {
@@ -204,8 +270,8 @@ void Peaceman::correct
             {
                 label celli = well.cells[j];
                 
-                // q = WI*mob*(p_bh - p)/V
-                qt[celli] += WI[celli]*mob_t[celli]*(well.bhp - p[celli])/V[celli];  
+                // q = WI*mob*(p_bh - p - rhoWell*g*Delta_z) --- prescribed bhp
+                qt[celli] += WI[celli]*mob_t[celli]*(well.bhp - p[celli] - well.rhoWell * (g.value() & (C[well.cells[0]] - C[celli])))/V[celli]; 
             }
         }
         else
@@ -216,23 +282,20 @@ void Peaceman::correct
             {
                 label celli = well.cells[j];
                 
-                // q = Q/V
+                // q = Q/Nperf --- prescribed rate
                 qt[celli] += ratePerPerf/V[celli];                
             }
         }
     
     }
 
-    // check total rate
+    // check total rate: Sum(qt*V) == 0
     scalar totalRate = 0.0;
-
     forAll(qt.internalField(), celli)
     {
         totalRate += qt[celli]*V[celli];
     }
-
-    Info<< "Integrated total well rate = "
-        << totalRate << nl << endl;
+    Info<< "Integrated total well rate = " << totalRate << nl << endl;
 
     // Correct bhp and rate
     forAll(wells_, w)
@@ -251,7 +314,7 @@ void Peaceman::correct
                 const scalar Ti = WI[celli]*mob_t[celli];
 
                 sumT  += Ti;
-                sumTp += Ti*p[celli];
+                sumTp += Ti*p[celli] + Ti*well.rhoWell * (g.value() & (C[well.cells[0]] - C[celli]));
             }
 
             well.bhp = (well.rate + sumTp)/sumT;
@@ -260,7 +323,8 @@ void Peaceman::correct
             {
                 const label celli = well.cells[j];
 
-                p_bh[celli] = well.bhp;
+                // well pressure = BHP - rhoWell*g*Delta_z
+                p_bh[celli] = well.bhp - well.rhoWell * (g.value() & (C[well.cells[0]] - C[celli]));
             }
         }
         else
@@ -271,9 +335,10 @@ void Peaceman::correct
             {
                 const label celli = well.cells[j];
 
-                well.rate += WI[celli]*mob_t[celli]*(well.bhp - p[celli]);    
-            
-                p_bh[celli] = well.bhp;
+                well.rate += WI[celli]*mob_t[celli]*(well.bhp - p[celli] - well.rhoWell * (g.value() & (C[well.cells[0]] - C[celli])));    
+                
+                // well pressure = BHP - rhoWell*g*Delta_z
+                p_bh[celli] = well.bhp - well.rhoWell * (g.value() & (C[well.cells[0]] - C[celli]));
             }
             Info << "Well " << well.name << " bhp = " << well.bhp << ", rate = " << well.rate << nl << endl;
         }
@@ -293,11 +358,11 @@ void Peaceman::correct
 
             if (well.injector)
             {
-                qb[celli] += well.Fb_inj*qt[celli];
+                qb[celli] += well.Fb_inj*qt[celli];              
             }
             else
             {
-                qb[celli] += Fb[celli]*qt[celli]; 
+                qb[celli] += Fb[celli]*qt[celli];
             }
         }
     }
@@ -328,5 +393,66 @@ void Peaceman::correct
     }
 
 }
+
+void Peaceman::initialize
+(
+    volScalarField& WI,
+    const volScalarField& K
+)
+{
+    const scalarField& V = WI.mesh().V();
+
+    scalarField re = Foam::sqrt(V/M_PI);
+
+    Info<< "min(re) = " << gMin(re) << " max(re) = " << gMax(re) << nl << endl;
+
+    forAll(wells_, w)
+    {
+        const well& well = wells_[w];
+
+        forAll(well.cells, j)
+            {
+                label celli = well.cells[j];
+
+                // Evaluate cell height
+                const pointField& points = WI.mesh().points();
+                const cell& c = WI.mesh().cells()[celli];
+                const labelList pointLabels = c.labels(WI.mesh().faces());
+                scalar sMin = GREAT;
+                scalar sMax = -GREAT;
+
+                forAll(pointLabels, pi)
+                {
+                    const point& pt = points[pointLabels[pi]];
+
+                    const scalar s = pt & vertDir_;
+
+                    sMin = min(sMin, s);
+                    sMax = max(sMax, s);
+                }
+
+                const scalar cellHeight = sMax - sMin;
+                Info<< "Well " << well.name << ": cellHeight = " << cellHeight << nl << endl;
+
+                // Evaluate Well Index
+                if (re[celli]/well.radius <= 1.0)
+                {
+                    FatalErrorInFunction
+                        << "Invalid Peaceman geometry: re/rw <= 1 for well "
+                        << well.name << ", cell " << celli
+                        << exit(FatalError);
+                }
+                WI[celli] = 2.0*M_PI*K[celli]*cellHeight / Foam::log(re[celli]/well.radius); // TODO: implement skin factor correction
+            }
+        Info<< "Well " << well.name << ": radius = " << well.radius << nl << endl;
+    }
+
+    Info<< "min(WI) = " << gMin(WI.internalField())
+        << " max(WI) = " << gMax(WI.internalField())
+        << nl << endl;
+
+    Info<< "WI OK" << nl << endl;
+
+} 
 
 } // End namespace Foam

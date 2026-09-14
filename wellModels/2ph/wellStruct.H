@@ -22,6 +22,10 @@ struct well
 
     scalar rate;
     scalar bhp;
+
+    scalar rhoWell;
+
+    scalar radius;
     
 };
 

@@ -115,46 +115,7 @@ public:
     virtual ~wellModel() = default;
 
     // ---- Interface ----
-    // void source_pEqn
-    // (
-    //     fvScalarMatrix& pEqn,
-    //     const volScalarField& p,
-    //     const volScalarField& mob_t,
-    //     const volScalarField& WI,
-    //     volScalarField& wellCoeff,
-    //     volScalarField& wellSource
-    // );
 
-    // virtual void source_SbEqn
-    // (
-    //     fvScalarMatrix& SbEqn,
-    //     const volScalarField& Sb, 
-    //     const volScalarField& Fb, 
-    //     const volScalarField& p,
-    //     scalar t,
-    //     volScalarField& qb
-    // )
-    // {
-    // }
-
-    // virtual void correct
-    // (
-    //     volScalarField& qt,
-    //     volScalarField& qb,
-    //     const volScalarField& Fb,
-    //     const volScalarField& p, 
-    //     scalar t,
-    //     const volScalarField& mob_t,
-    //     const volScalarField& WI,
-    //     volScalarField& p_bh,
-    //     volScalarField& qs,
-    //     const volScalarField& Cs
-    // ) 
-    // {
-    //     // Default implementation does nothing,
-    //     // derived classes can override this method 
-    //     // to apply corrections to qt based on the well model.
-    // }
     virtual void source_pEqn
     (
         fvScalarMatrix& pEqn,
@@ -167,7 +128,9 @@ public:
         const scalar& rho_b,
         const volScalarField& mob_a,
         const volScalarField& mob_b,
-        const dimensionedVector& g
+        const dimensionedVector& g,
+        const volScalarField& qt,
+        const volScalarField& qb
     ) = 0;
 
     virtual void source_SbEqn
@@ -198,6 +161,15 @@ public:
         const volScalarField& mob_b,
         const dimensionedVector& g
     ) = 0;
+
+    virtual void initialize
+    (
+        volScalarField& WI,
+        const volScalarField& K
+    )
+    {
+        // Default: do nothing
+    }
     
     // Factory
     static autoPtr<wellModel> New

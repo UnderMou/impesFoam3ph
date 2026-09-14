@@ -25,13 +25,17 @@ Class
     Foam::wellModel::Peaceman
 
 Description
-    Constant injection rate model for two-phase flow.
+    Peaceman well model for two-phase flow in porous media.
 
     Reference:
     \verbatim
-        Horgue, P., Soulaine, C., Franc, J., Guibert, R., & Debenest, G. (2015).
-        An open-source toolbox for multiphase flow in porous media.
-        Computer Physics Communications, 187, 217-226.
+        CHEN, Zhangxin; HUAN, Guanren; MA, Yuanle. 
+        Computational methods for multiphase flows in porous media. 
+        Society for Industrial and Applied Mathematics, 2006.
+
+        JIANG, Yuanlin. 
+        Techniques for modeling complex reservoirs and advanced wells. 
+        2008. phD Thesis. Stanford University.
     \endverbatim
 
     The default model coefficients are
@@ -41,8 +45,32 @@ Description
 
         Peaceman
         {
-        
+            vertDir (0 1 0);
+            
+            wells
+            {
+                injector1
+                {
+                name        INJ1;
+                cells       (0 1 2 3 4 5 6 7 8 9);  // cell index
+                injector    true;                   // false = producer
+                bhpControl  true;                   // bhpControl false = rate control
+                target      3e6;                    // target value for bhp [Pa] or rate control [m3/s]
+                Fb_inj      0.0;                    // injection phase fraction
+                Cs_inj      0.0;                    // injection phase concentration [kg/m3]
+                }
+
+                producer1
+                {
+                name        PROD1;
+                cells       (90 91 92 93 94 95 96 97 98 99); 
+                injector    false;
+                bhpControl  true;
+                target      0.0;
+                }
+            }
         }
+
 
     \endverbatim
 
@@ -54,6 +82,7 @@ SourceFiles
 #ifndef Peaceman_H
 #define Peaceman_H
 
+#include <cmath>
 #include "wellModel.H"
 
 namespace Foam
@@ -63,7 +92,7 @@ class Peaceman
 :
     public wellModel
 {
-
+    vector vertDir_;
 
 protected:
     virtual List<well> readWells
@@ -88,7 +117,9 @@ public:
         const scalar& rho_b,
         const volScalarField& mob_a,
         const volScalarField& mob_b,
-        const dimensionedVector& g
+        const dimensionedVector& g,
+        const volScalarField& qt,
+        const volScalarField& qb
     ) override;
 
     virtual void source_SbEqn
@@ -118,6 +149,12 @@ public:
         const volScalarField& mob_a,
         const volScalarField& mob_b,
         const dimensionedVector& g
+    ) override;
+
+    void initialize
+    (
+        volScalarField& WI,
+        const volScalarField& K
     ) override;
 };
 

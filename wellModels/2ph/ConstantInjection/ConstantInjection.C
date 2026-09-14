@@ -52,22 +52,17 @@ List<well> ConstantInjection::readWells(const dictionary& wellsDict)
     {
         const word& name = wellNames[i];
 
-        const dictionary& wellDict =
-            wellsDict.subDict(name);
+        const dictionary& wellDict = wellsDict.subDict(name);
 
         wells[i].name = name;
 
-        wells[i].cells =
-            labelList(wellDict.lookup("cells"));
+        wells[i].cells = labelList(wellDict.lookup("cells"));
 
-        wells[i].injector =
-            readBool(wellDict.lookup("injector"));
+        wells[i].injector = readBool(wellDict.lookup("injector"));
 
         wells[i].bhpControl = false;
-            // readBool(wellDict.lookup("bhpControl"));
 
-        wells[i].target =
-            readScalar(wellDict.lookup("target"));
+        wells[i].target = readScalar(wellDict.lookup("target"));
         
         if (wells[i].bhpControl)
         {
@@ -90,6 +85,9 @@ List<well> ConstantInjection::readWells(const dictionary& wellsDict)
             wells[i].Fb_inj = 0.0;
             wells[i].Cs_inj = 0.0;
         }
+
+        wells[i].rhoWell = 0.0;
+        wells[i].radius = 0.0;
 
         Info << "Reading well: " << name << nl;
     }
@@ -117,31 +115,30 @@ void ConstantInjection::source_pEqn
     const scalar& rho_b,
     const volScalarField& mob_a,
     const volScalarField& mob_b,
-    const dimensionedVector& g
+    const dimensionedVector& g,
+    const volScalarField& qt,
+    const volScalarField& qb
 ) 
 {
-    wellCoeff = scalar(0.0);
     wellSource = scalar(0.0);
-
     const scalarField& V = p.mesh().V();
 
     forAll(wells_, w)
     {
         const well& well = wells_[w];
-        const scalar ratePerPerf = well.rate/scalar(well.cells.size());
+        const scalar ratePerPerf = well.rate/scalar(well.cells.size());     // Qi = Q/Nperf
 
-        Info << "name:" << well.name << ", injector?" << well.injector << ", bhp controlled?" << well.bhpControl << endl;
-        Info << "control values: bhp=" << well.bhp << ", rate=" << well.rate << endl;
+        // Info << "name:" << well.name << ", injector?" << well.injector << ", bhp controlled?" << well.bhpControl << endl;
+        // Info << "control values: bhp=" << well.bhp << ", rate=" << well.rate << endl;
 
         forAll(well.cells, j)
         {
             label celli = well.cells[j];
 
-            Info << celli << " " << endl;
+            // Info << celli << " " << endl;
         
-            // q = prescribed rate
-            wellSource[celli] += ratePerPerf/V[celli]; // wells_[w].rate;
-            
+            // q = Qi/V --- prescribed rate
+            wellSource[celli] += ratePerPerf/V[celli]; 
         }
     }
     pEqn -= wellSource;
@@ -200,17 +197,13 @@ void ConstantInjection::correct
         }
     }
 
-    // check total rate
+    // check total rate: sum(qt*V) == 0
     scalar totalRate = 0.0;
-
     forAll(qt.internalField(), celli)
     {
         totalRate += qt[celli]*V[celli];
     }
-
-    Info<< "Integrated total well rate = "
-        << totalRate << nl << endl;
-
+    Info<< "Integrated total well rate = " << totalRate << nl << endl;
 
     // Correct qb
     qb = scalar(0.0);
@@ -258,7 +251,6 @@ void ConstantInjection::correct
             }
         }
     }
-
 }
 
 } // End namespace Foam

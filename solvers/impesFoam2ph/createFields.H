@@ -409,6 +409,7 @@ else if (foamModelName == "MehrabiFoam")
 
 word surfTranspModelName(transportProperties.lookup("surfactantTransportModel")); 
 
+// TODO: Moved out of if statement to avoid errors on well 'qs' correction when surfTranspModelName = "noSurfTransp"
 foamAux.Cs = new volScalarField
 (
     IOobject
@@ -774,42 +775,6 @@ volScalarField mob_b
 );
 mob_b = krb/mu_b;
 
-Info << "mob_b OK" << endl;
-
-volScalarField cellVol
-(
-    IOobject
-    (
-        "cellVol",
-        runTime.timeName(),
-        mesh,
-        IOobject::NO_READ,
-        IOobject::NO_WRITE
-    ),
-    mesh,
-    dimensionedScalar("zero", dimVolume, 0.0)
-);
-cellVol.primitiveFieldRef() = mesh.V();
-cellVol.correctBoundaryConditions();
-Info << "cellVol OK" << endl;
-
-volScalarField re
-(
-    IOobject
-    (
-        "re",
-        runTime.timeName(),
-        mesh,
-        IOobject::NO_READ,
-        IOobject::AUTO_WRITE
-    ),
-    mesh,
-    0.0
-);
-re = Foam::sqrt(cellVol/M_PI);
-Info << "min(re) = " << gMin(re) << " max(re) = " << gMax(re) << endl;
-Info << "re OK" << endl;
-
 volScalarField WI
 (
     IOobject
@@ -824,9 +789,7 @@ volScalarField WI
     dimensionedScalar("zero", dimless, 0.0)
 );
 
-WI = 2 * M_PI * K * 2.789117647 / (Foam::log(10.0)); // TODO: re/rw = 10
-Info << "min(WI) = " << gMin(WI) << "max(WI) = " << gMax(WI) << endl;
-Info << "WI OK" << endl;
+wellModel->initialize(WI, K);
 
 volScalarField p_bh
 (
@@ -841,5 +804,27 @@ volScalarField p_bh
     mesh,
     dimensionedScalar("zero", dimless, 0.0)
 );
-Info << "p_bh OK" << endl;
 
+// PREFF
+label pRefCell = 0;
+scalar pRefValue = 0.0;
+
+const dictionary& impesDict = mesh.solutionDict().subDict("IMPES");
+
+bool usePressureReference =
+    impesDict.lookupOrDefault<bool>
+    (
+        "usePressureReference",
+        false
+    );
+
+if (usePressureReference)
+{
+    setRefCell
+    (
+        p,
+        impesDict,
+        pRefCell,
+        pRefValue
+    );
+}

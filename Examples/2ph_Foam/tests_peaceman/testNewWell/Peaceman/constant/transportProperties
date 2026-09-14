@@ -28,8 +28,8 @@ rho_b              rho_b [0 0 0 0 0 0 0] 1.0e3;    // kg/m3
 prst            prst [0 0 0 0 0 0 0] 0.2;          // []
 
 // Gravity
-// g_vector        g_vector [0 0 0 0 0 0 0] (0 -9.81 0);
-g_vector        g_vector [0 0 0 0 0 0 0] (0 0 0);
+g_vector        g_vector [0 0 0 0 0 0 0] (0 -9.81 0);
+// g_vector        g_vector [0 0 0 0 0 0 0] (0 0 0);
 
 // Relative permeability model
 

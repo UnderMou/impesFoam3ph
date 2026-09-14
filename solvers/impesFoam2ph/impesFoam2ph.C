@@ -116,7 +116,11 @@ int main(int argc, char *argv[])
             (
                 fvm::laplacian(-Mf, p) + fvc::div(phiG) + fvc::div(phiPc)
             );
-            wellModel->source_pEqn(pEqn,p,mob_t,WI,wellCoeff,wellSource,rho_a.value(),rho_b.value(),mob_a,mob_b,g_vector);
+            wellModel->source_pEqn(pEqn,p,mob_t,WI,wellCoeff,wellSource,rho_a.value(),rho_b.value(),mob_a,mob_b,g_vector,qt,qb);
+            if (usePressureReference)
+            {
+                pEqn.setReference(pRefCell, pRefValue);
+            }
             pEqn.solve();
             phiP = pEqn.flux();
 

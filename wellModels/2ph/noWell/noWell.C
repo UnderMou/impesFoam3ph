@@ -67,7 +67,9 @@ void noWell::source_pEqn
     const scalar& rho_b,
     const volScalarField& mob_a,
     const volScalarField& mob_b,
-    const dimensionedVector& g
+    const dimensionedVector& g,
+    const volScalarField& qt,
+    const volScalarField& qb
 ) 
 {
     // no well
