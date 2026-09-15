@@ -10,6 +10,7 @@ Examples/2ph_Foam/tests_peaceman/noDiff/
 Examples/2ph_Foam/tests_peaceman/5spot_onnx/
 Examples/2ph_Foam/tests_peaceman/5spot_panday/
 Examples/2ph_Foam/tests_peaceman/5spot_rodrigo/
+Examples/3ph_Well/testNewWell/*
 
 Examples/3ph_Foam/OilBank_ternary_region/experiments/
 Examples/3ph_Foam/CTscan_SA/experiments/*.avi

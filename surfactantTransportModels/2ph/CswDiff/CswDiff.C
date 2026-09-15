@@ -87,9 +87,7 @@ void CswDiff::correct
     (
         AcumCoeff*fvm::ddt(Cs) + fvc::div(phib,Cs) - fvm::laplacian(Deff_,Cs)
         ==
-        // -Fcsw*Cs + qs
-        fvc::Sp(-Fcsw,Cs) + qs
-        // fvm::Sp(-Fcsw,Cs) + qs
+        fvm::Sp(-Fcsw,Cs) + qs
     );
     CsEqn.solve();
 

@@ -57,7 +57,9 @@ void CswDiff::correct
 (
     const volScalarField& Sb,
     const surfaceScalarField& phib,
-    const volScalarField& eps
+    const volScalarField& eps,
+    const volScalarField& qb,
+    const volScalarField& qs
 ) const
 {
     if (!aux_ || !aux_->Cs)
@@ -76,15 +78,15 @@ void CswDiff::correct
     Info<< "Using isotherm model: " << isothermModel_->type() << nl << endl;
     isothermModel_->correct();
 
-    Fcsw = -fvc::div(phib); // + qb  // TODO
+    Fcsw = qb - fvc::div(phib);
     AcumCoeff = eps*Sb + (scalar(1.0) - eps)*rho_sw_*dCsEqdCs;
-
+ 
     // solve Cs equation
     fvScalarMatrix CsEqn
     (
-        AcumCoeff*fvm::ddt(Cs) + fvc::div(phib,Cs) - fvm::laplacian(Deff_,Cs)
+        AcumCoeff*fvm::ddt(Cs) + fvc::div(phib,Cs) // - fvm::laplacian(Deff_,Cs)
         ==
-        fvc::Sp(-Fcsw,Cs)
+        fvm::Sp(-Fcsw,Cs) + qs
     );
     CsEqn.solve();
 

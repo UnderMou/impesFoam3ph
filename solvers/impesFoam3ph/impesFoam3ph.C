@@ -201,11 +201,11 @@ int main(int argc, char *argv[])
             wellModel->source_SbEqn(SbEqn,Sb,Fb,p,runTime.timeOutputValue(),qb);
             SbEqn.solve();
 
-            // Sa = min(max(Sa, scalar(0)), scalar(1));
-            // Sb = min(max(Sb, scalar(0)), scalar(1));
+            Sa = min(max(Sa, scalar(0)), scalar(1));
+            Sb = min(max(Sb, scalar(0)), scalar(1));
 
-            Sc = scalar(1.0) - Sa - Sb - VSMALL;
-            // Sc = min(max(Sc, scalar(0)), scalar(1));
+            Sc = scalar(1.0) - Sa - Sb;
+            Sc = min(max(Sc, scalar(0)), scalar(1));
 
             Sb.correctBoundaryConditions();  
             Sa.correctBoundaryConditions();
@@ -217,7 +217,7 @@ int main(int argc, char *argv[])
 
             // Surfactant transport model
             Info<< "Using surfactant transport model: " << surfTranspModel->type() << nl << endl;
-            surfTranspModel->correct(Sb, phib, eps);
+            surfTranspModel->correct(Sb, phib, eps, qb, qs);
 
         }
 

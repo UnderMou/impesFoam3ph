@@ -87,7 +87,9 @@ public:
     (
         const volScalarField& Sb,
         const surfaceScalarField& phib,
-        const volScalarField& eps
+        const volScalarField& eps,
+        const volScalarField& qb,
+        const volScalarField& qs
     ) const;
 };
 

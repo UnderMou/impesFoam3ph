@@ -76,7 +76,7 @@ void Csw::correct
     Info<< "Using isotherm model: " << isothermModel_->type() << nl << endl;
     isothermModel_->correct();
 
-    Fcsw = -fvc::div(phib); // + qb   // TODO
+    Fcsw = qb - fvc::div(phib);
     AcumCoeff = eps*Sb + (scalar(1.0) - eps)*rho_sw_*dCsEqdCs;
 
     // solve Cs equation
@@ -84,7 +84,7 @@ void Csw::correct
     (
         AcumCoeff*fvm::ddt(Cs) + fvc::div(phib,Cs) 
         ==
-        fvc::Sp(-Fcsw,Cs)
+        fvm::Sp(-Fcsw,Cs) + qs
     );
     CsEqn.solve();
 

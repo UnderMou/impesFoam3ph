@@ -488,22 +488,36 @@ else if (foamModelName == "MehrabiFoam")
 
 word surfTranspModelName(transportProperties.lookup("surfactantTransportModel")); 
 
+// TODO: Moved out of if statement to avoid errors on well 'qs' correction when surfTranspModelName = "noSurfTransp"
+foamAux.Cs = new volScalarField
+(
+    IOobject
+    (
+        "Cs",
+        runTime.timeName(),
+        mesh,
+        IOobject::MUST_READ,
+        IOobject::AUTO_WRITE
+    ),
+    mesh
+);
+
 if (surfTranspModelName != "noSurfTransp")
 {
     Info<< "Reading field Cs\n" << endl;
 
-    foamAux.Cs = new volScalarField
-    (
-        IOobject
-        (
-            "Cs",
-            runTime.timeName(),
-            mesh,
-            IOobject::MUST_READ,
-            IOobject::AUTO_WRITE
-        ),
-        mesh
-    );
+    // foamAux.Cs = new volScalarField
+    // (
+    //     IOobject
+    //     (
+    //         "Cs",
+    //         runTime.timeName(),
+    //         mesh,
+    //         IOobject::MUST_READ,
+    //         IOobject::AUTO_WRITE
+    //     ),
+    //     mesh
+    // );
 
     foamAux.Fcsw = new volScalarField
     (
