@@ -23,7 +23,15 @@ boundaryField
 {
     walls
     {
-        type            zeroGradient;
+        // type               totalFlowRateAdvectiveDiffusive;
+
+        // type            zeroGradient;
+
+        // type            calculated;
+        // value           uniform 0;
+
+        type            darcyNoFluxSaturation;
+        value           uniform 0;
     }
 
     emptyWalls

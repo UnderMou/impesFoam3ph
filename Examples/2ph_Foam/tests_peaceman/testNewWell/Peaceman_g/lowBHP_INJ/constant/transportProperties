@@ -72,10 +72,20 @@ noFoam
 // Capillary pressure model
 
 capillaryPressureModel noCapillaryPressure;
+// capillaryPressureModel CoreyBrooksPC;
 
 noCapillaryPressure
 {
 }
+
+CoreyBrooksPC
+{
+  Spc_irr 0.4;
+  Spc_max 0.707;
+  pc0     100000.0;
+  alpha   0.5;
+}
+
 
 // Surfactante concentration transport and adsorption isotherm
 

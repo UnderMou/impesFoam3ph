@@ -67,7 +67,6 @@ int main(int argc, char *argv[])
     
         while (simple.correctNonOrthogonal())
         {   
-            
             // Relative permeability model
             Info<< "Using relative permeability model: " << krModel->type() << nl << endl;
             krModel->correct(kra, krb, Sb, *foamAux.Cs);
@@ -101,19 +100,16 @@ int main(int argc, char *argv[])
             capPressModel->correct(pc, dpcds, Sb);
 
             dpcdsf = fvc::interpolate(dpcds,"dpcds");
-            // The BC must be updated before phiPc is evaluated because, when capillarity
-            // is active, it determines snGrad(Sb).
-            Sb.correctBoundaryConditions();
             phiPc = Mbf * dpcdsf * fvc::snGrad(Sb) * mesh.magSf();
 
-            // // zero gravitational on walls
-            // forAll(mesh.boundary(),patchi)
-            // {   
-            //     if ( Ua.boundaryField()[patchi].type() == "slip" )
-            //     {   
-            //         phiG.boundaryFieldRef()[patchi] = 0.0;
-            //     }
-            // }
+            // zero gravitational on walls
+            forAll(mesh.boundary(),patchi)
+            {   
+                if ( Ua.boundaryField()[patchi].type() == "slip" )
+                {   
+                    phiG.boundaryFieldRef()[patchi] = 0.0;
+                }
+            }
 
             // pressure equation
             fvScalarMatrix pEqn
@@ -128,111 +124,25 @@ int main(int argc, char *argv[])
             pEqn.solve();
             phiP = pEqn.flux();
 
-            // total flux at cell faces
-            phi = phiP + phiG + phiPc;
-
-            // CHECK phi = 0 walls
-            forAll(mesh.boundary(), patchi)
-            {
-                if
-                (
-                    p.boundaryField()[patchi].type()
-                    == "darcyNoFluxPressure"
-                )
-                {
-                    Info<< mesh.boundary()[patchi].name()
-                        << " max|phiP + phiG + phiPc| = "
-                        << gMax
-                        (
-                            mag
-                            (
-                                phiP.boundaryField()[patchi]
-                            + phiG.boundaryField()[patchi]
-                            + phiPc.boundaryField()[patchi]
-                            )
-                        )
-                        << endl;
-                }
-            }
-
-            // phase fluxe at cell faces
-            phib = Fbf*phiP + (Lbf/Lf)*phiG + phiPc;
-
-            if(capPressModel->type() == "noCapillaryPressure")
-            {
-                forAll(mesh.boundary(), patchi)
-                {
-                    if (isA<wallFvPatch>(mesh.boundary()[patchi]))
-                    {
-                        phib.boundaryFieldRef()[patchi] = 0.0;
-                    }
-                }
-            }
-            phia = phi - phib;
-            
-            // In capillary-active cases this should already be ~0 from the BC-derived
-            // gradient. In no-capillary/degenerate cases, the saturation gradient cannot
-            // influence phib, so the zero-flux condition must be imposed directly.
-            // forAll(mesh.boundary(), patchi)
-            // {
-            //     if
-            //     (
-            //         Sb.boundaryField()[patchi].type()
-            //     == "darcyNoFluxSaturation"
-            //     )
-            //     {
-            //         phib.boundaryFieldRef()[patchi] = 0.0;
-            //     }
-            // }
-
-
-
-            forAll(mesh.boundary(), patchi)
-            {
-                if
-                (
-                    p.boundaryField()[patchi].type()
-                    == "darcyNoFluxPressure"
-                )
-                {
-                    Info<< mesh.boundary()[patchi].name()
-                        << " max|phib| = "
-                        << gMax
-                        (
-                            mag
-                            (
-                                phib.boundaryField()[patchi]
-                            )
-                        )
-                        << endl;
-                    Info<< mesh.boundary()[patchi].name()
-                        << " max|phia| = "
-                        << gMax
-                        (
-                            mag
-                            (
-                                phia.boundaryField()[patchi]
-                            )
-                        )
-                        << endl;
-                }
-            }
-
-            
-
-            // // total flux equals zero on walls for each phase
             // forAll(mesh.boundary(),patchi)
             // {   
             //     if ( Ua.boundaryField()[patchi].type() == "slip" )
             //     {   
-            //         phia.boundaryFieldRef()[patchi] = 0.0;
-            //         phib.boundaryFieldRef()[patchi] = 0.0;
+            //         phiP.boundaryFieldRef()[patchi] = 0.0;
             //     }
             // }
 
+            // total flux at cell faces
+            phi = phiP + phiG + phiPc;
+
+            // phase fluxe at cell faces
+            phib = Fbf*phiP + (Lbf/Lf)*phiG + phiPc;
+            phia = phi - phib;
+
             // correct darcy velocities at boundaries
-            Ua = fvc::reconstruct(phia);
+            U = fvc::reconstruct(phi);
             Ub = fvc::reconstruct(phib);
+            Ua = U-Ub;
             Ub.correctBoundaryConditions();  
             Ua.correctBoundaryConditions();
             U = Ua + Ub; // Correct U according with Ua and Ub Boundary values
@@ -261,10 +171,10 @@ int main(int argc, char *argv[])
             wellModel->source_SbEqn(SbEqn,Sb,Fb,p,runTime.timeOutputValue(),qb);
             SbEqn.solve();
 
-            Sa = scalar(1.0) - Sb;
+            Sa = scalar(1.0) - Sb - VSMALL;
 
-            // Sb.correctBoundaryConditions();
-            // Sa.correctBoundaryConditions();
+            Sb.correctBoundaryConditions();
+            Sa.correctBoundaryConditions();
 
             Info << "Saturation a: " << " Min(Sa) = " << gMin(Sa) << " Max(Sa) = " << gMax(Sa) << endl;
             Info << "Saturation b: " << " Min(Sb) = " << gMin(Sb) << " Max(Sb) = " << gMax(Sb) << endl;

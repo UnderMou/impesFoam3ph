@@ -23,7 +23,10 @@ boundaryField
 {
     walls
     {
-        type            zeroGradient;
+        // type            zeroGradient;
+        
+        type            darcyNoFluxPressure;
+        value           uniform 0;
     }
 
     emptyWalls

@@ -14,13 +14,13 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-wellModel Peaceman_g;
+wellModel Peaceman;
 
 noWell
 {
 }
 
-Peaceman_g
+Peaceman
 {
   vertDir (0 1 0);
   
