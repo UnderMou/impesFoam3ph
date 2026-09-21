@@ -35,7 +35,8 @@ boundaryField
 
     walls
     {
-        type            zeroGradient;
+        type            darcyNoFluxPressure;
+        value           uniform 0;
     }
 }
 

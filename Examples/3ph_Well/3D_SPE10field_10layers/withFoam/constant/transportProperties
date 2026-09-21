@@ -51,7 +51,9 @@ CoreyBrooks
 
 // Foam model 
 
+// foamModel noFoam;
 foamModel STARS;
+
 FshearActive false;
 FsurfActive false;
 FoilActive true;
@@ -71,6 +73,12 @@ STARS
   epoil     3.0;
 }
 
+
+noFoam
+{
+  
+}
+
 // Surfactante concentration transport and adsorption isotherm
 
 surfactantTransportModel noSurfTransp;
@@ -85,7 +93,7 @@ noSurfTransp
 
 // Capillary pressure model
 
-capillaryPressureModel LeverettLewis;
+capillaryPressureModel noCapillaryPressure;
 
 LeverettLewis
 {

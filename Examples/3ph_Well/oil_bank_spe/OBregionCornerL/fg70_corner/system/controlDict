@@ -44,10 +44,10 @@ timePrecision   6;
 
 runTimeModifiable true;
 
-// libs
-// (
-//     "libmyPorousMediumBCs.so"
-// );
+libs
+(
+    "libboundaryConditions_3ph.so"
+);
 
 // ************************************************************************* //
 

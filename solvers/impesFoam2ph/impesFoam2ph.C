@@ -146,9 +146,7 @@ int main(int argc, char *argv[])
                         (
                             mag
                             (
-                                phiP.boundaryField()[patchi]
-                            + phiG.boundaryField()[patchi]
-                            + phiPc.boundaryField()[patchi]
+                                phiP.boundaryField()[patchi] + phiG.boundaryField()[patchi] + phiPc.boundaryField()[patchi]
                             )
                         )
                         << endl;
@@ -263,8 +261,7 @@ int main(int argc, char *argv[])
 
             Sa = scalar(1.0) - Sb;
 
-            // Sb.correctBoundaryConditions();
-            // Sa.correctBoundaryConditions();
+            Sb.correctBoundaryConditions();
 
             Info << "Saturation a: " << " Min(Sa) = " << gMin(Sa) << " Max(Sa) = " << gMax(Sa) << endl;
             Info << "Saturation b: " << " Min(Sb) = " << gMin(Sb) << " Max(Sb) = " << gMax(Sb) << endl;

@@ -56,7 +56,7 @@ solvers
 SIMPLE
 {
     nNonOrthogonalCorrectors 1;
-    consistent      yes;
+    // consistent      yes;
 
     // residualControl
     // {
@@ -66,5 +66,9 @@ SIMPLE
     // }
 }
 
+IMPES
+{
+    usePressureReference  false;
+}
 
 // ************************************************************************* //

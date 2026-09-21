@@ -44,7 +44,7 @@ Foam::darcyNoFluxSaturation::darcyNoFluxSaturation
     SbMax_(1.0),
     ScMin_(0.0),
     ScMax_(1.0),
-    limitSaturation_(true),
+    limitSaturation_(false),
     mobilityTolerance_(1e-12),
     capillaryTolerance_(SMALL),
     singularTolerance_(1e-12)

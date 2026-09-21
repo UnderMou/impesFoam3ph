@@ -282,15 +282,14 @@ int main(int argc, char *argv[])
             wellModel->source_SbEqn(SbEqn,Sb,Fb,p,runTime.timeOutputValue(),qb);
             SbEqn.solve();
 
-            // Sa = min(max(Sa, scalar(0)), scalar(1));
-            // Sb = min(max(Sb, scalar(0)), scalar(1));
+            // Sa = max(min(Sa, krModel.Sa_max_), krModel.Sa_min_);
+            // Sb = max(min(Sb, krModel.Sb_max_), krModel.Sb_min_);
+            Sa.correctBoundaryConditions();
+            Sb.correctBoundaryConditions();
+            Sc = scalar(1.0) - Sa - Sb;
 
-            // Sc = scalar(1.0) - Sa - Sb;
             // Sc = min(max(Sc, scalar(0)), scalar(1));
 
-            // Sb.correctBoundaryConditions();  
-            // Sa.correctBoundaryConditions();
-            // Sc.correctBoundaryConditions();  
 
             Info << "Saturation a: " << " Min(Sa) = " << gMin(Sa) << " Max(Sa) = " << gMax(Sa) << endl;
             Info << "Saturation b: " << " Min(Sb) = " << gMin(Sb) << " Max(Sb) = " << gMax(Sb) << endl;

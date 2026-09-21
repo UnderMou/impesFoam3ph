@@ -49,5 +49,9 @@ SIMPLE
     // consistent      yes;
 }
 
+IMPES
+{
+    usePressureReference  false;
+}
 
 // ************************************************************************* //

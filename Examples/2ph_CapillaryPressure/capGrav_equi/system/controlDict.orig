@@ -22,7 +22,7 @@ startTime       0;
 
 stopAt          endTime;
 
-endTime         500; // tf = 500, tf = 2e6;
+endTime         50; // tf = 500, tf = 2e6;
 
 deltaT          1e-3; // ti = 1e-3, tf = 1e1;
 

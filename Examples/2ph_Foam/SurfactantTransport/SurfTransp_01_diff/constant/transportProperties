@@ -80,7 +80,7 @@ CswDiff
 // Csw
 {
   rho_s 2.0e3;
-  D 1e-4;
+  D 1e-3;
 
   isothermModel Henry;
 

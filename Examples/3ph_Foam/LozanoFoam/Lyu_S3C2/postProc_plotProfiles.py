@@ -31,6 +31,7 @@ t_idx = np.argmin(np.abs(np.asarray(data_single.time) - t_des))
 Sc = data_single.Sc[t_idx,:]
 Sb = data_single.Sb[t_idx,:]
 Sa = data_single.Sa[t_idx,:]
+print(Sc.shape)
 
 L = 1
 x = np.linspace(0, L, len(Sa))
@@ -40,11 +41,15 @@ u = 1.4111e-5 # m/s
 tD = u*t/L
 
 tD_idx = np.argmin(np.abs(tD - 1.0))
+print(tD[tD_idx], t[tD_idx])
 
 vD = xD/tD[tD_idx]
 Sc = data_single.Sc[tD_idx,:]
 Sb = data_single.Sb[tD_idx,:]
 Sa = data_single.Sa[tD_idx,:]
+# Sc = 1 - Sa - Sb
+
+print(Sc)
     
 # plt.scatter(xD, Sa, label="Sa", color="green", s=10)
 # plt.scatter(xD, Sb, label="Sb", color="blue", s=10)

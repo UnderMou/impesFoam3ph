@@ -51,7 +51,9 @@ CoreyBrooks
 
 // Foam model 
 
+// foamModel noFoam;
 foamModel STARS;
+
 FshearActive false;
 FsurfActive false;
 FoilActive true;
@@ -69,6 +71,12 @@ STARS
   fmoil     1.0;
   floil     0.0;
   epoil     3.0;
+}
+
+
+noFoam
+{
+  
 }
 
 // Surfactante concentration transport and adsorption isotherm

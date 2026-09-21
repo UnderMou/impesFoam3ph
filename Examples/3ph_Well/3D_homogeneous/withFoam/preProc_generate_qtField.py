@@ -1,3 +1,6 @@
+Lx = 360
+Ly = 100
+Lz = 85
 nx = 110
 ny = 30
 nz = 85
@@ -7,6 +10,13 @@ qt =  Qt / 1000  # [kg / s m3] / [kg / m3] = [m3 / s m3] -> [1 / s]
 #     mean rho = 900 = (rho_w + rho_o) / 2
 #     rho_w = 1000 [kg/m3]
 #     rho_o =  800 [kg/m3]
+
+dx = Lx/nx
+dy = Ly/ny
+dz = Lz/nz
+dv = dx*dy*dz
+print(qt*dv)
+print(0,nx*ny*nz)
 
 first_value = qt
 last_value = -qt

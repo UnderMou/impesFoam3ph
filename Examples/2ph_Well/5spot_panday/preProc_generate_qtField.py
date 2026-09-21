@@ -1,3 +1,4 @@
+L = 142.245
 nx = 51
 n = nx**2
 Qt = 0.0031868   # [kg / s m3] - mass flow rate
@@ -5,6 +6,12 @@ qt =  Qt / 1000  # [kg / s m3] / [kg / m3] = [m3 / s m3] -> [1 / s]
 #     mean rho = 900 = (rho_w + rho_o) / 2
 #     rho_w = 1000 [kg/m3]
 #     rho_o =  800 [kg/m3]
+
+print(qt)
+dh = L/nx
+dz = 10
+dv = dh*dh*dz
+print(qt*dv)
 
 first_value = qt
 last_value = -qt

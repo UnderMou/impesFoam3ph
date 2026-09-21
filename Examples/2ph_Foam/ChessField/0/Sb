@@ -33,7 +33,8 @@ boundaryField
 
     walls
     {
-        type            zeroGradient;
+        type            darcyNoFluxSaturation;
+        value           uniform 0;
     }
 
     emptyWalls

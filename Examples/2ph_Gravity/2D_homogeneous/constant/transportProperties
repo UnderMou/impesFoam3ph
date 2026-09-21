@@ -32,9 +32,9 @@ g_vector        g_vector [0 0 0 0 0 0 0] (0 -9.81 0);
 
 // Relative permeability model
 
-relativePermeabilityModel CoreyBrooksExtd;
+relativePermeabilityModel CoreyBrooks;
 
-CoreyBrooksExtd
+CoreyBrooks
 {
   Sa_min    0.293;
   Sb_min    0.4;

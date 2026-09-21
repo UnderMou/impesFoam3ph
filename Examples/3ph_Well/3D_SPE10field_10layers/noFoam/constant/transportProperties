@@ -72,7 +72,7 @@ noSurfTransp
 
 // Capillary pressure model
 
-capillaryPressureModel LeverettLewis;
+capillaryPressureModel noCapillaryPressure;
 
 LeverettLewis
 {
