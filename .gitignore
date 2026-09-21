@@ -3,7 +3,19 @@
 *.o
 *.dep
 *.so
-**/Make/../lnInclude/
+**/lnInclude/
+
+# OpenFOAM run output in the examples. A directory whose name starts with a
+# digit and has no letter other than e/E (0.5, 250000, 1e+06) is a time
+# directory; 0/ holds the initial conditions and is kept.
+Examples/**/[0-9]*/
+!Examples/**/*[a-df-zA-DF-Z_]*/
+!Examples/**/0/
+Examples/**/processor*/
+Examples/**/postProcessing/
+Examples/**/dynamicCode/
+Examples/**/log.*
+Examples/**/experiments/
 
 Examples/2ph_Foam/tests_peaceman/noDiff/
 Examples/2ph_Foam/tests_peaceman/5spot_onnx/
@@ -12,5 +24,4 @@ Examples/2ph_Foam/tests_peaceman/5spot_rodrigo/
 Examples/2ph_Foam/tests_peaceman/testNewWell/Peaceman_g
 wellModels/2ph/Peaceman_g
 
-Examples/3ph_Foam/OilBank_ternary_region/experiments/
 Examples/3ph_Foam/CTscan_SA/experiments/*.avi

@@ -41,6 +41,7 @@ SourceFiles
 #include "volFields.H"
 #include "dictionary.H"
 #include "runTimeSelectionTables.H"
+#include "Function1.H"
 #include "wellStruct.H"
 
 namespace Foam
@@ -52,6 +53,14 @@ protected:
     const dictionary& dict_;
     const dictionary& wellsDict_;
     List<well> wells_;
+
+    // Time-dependent inputs of each well, parallel to wells_. Each well
+    // sets either rateFns_ or bhpFns_; the Fb_inj and Cs_inj entries of
+    // producers are left unset.
+    PtrList<Function1<scalar>> rateFns_;
+    PtrList<Function1<scalar>> bhpFns_;
+    PtrList<Function1<scalar>> FbInjFns_;
+    PtrList<Function1<scalar>> CsInjFns_;
 
     virtual List<well> readWells(const dictionary& wellsDict) = 0;
 
@@ -113,6 +122,40 @@ public:
     }
 
     virtual ~wellModel() = default;
+
+    // Evaluate the well inputs at time t. A well given a rate gets its
+    // bhp from correct(), and a well given a bhp gets its rate.
+    virtual void updateWellInputs(const scalar t)
+    {
+        forAll(wells_, w)
+        {
+            well& wl = wells_[w];
+
+            Info<< "Well " << wl.name << ": ";
+
+            if (wl.bhpControl)
+            {
+                wl.bhp = bhpFns_[w].value(t);
+                Info<< "bhp = " << wl.bhp;
+            }
+            else
+            {
+                wl.rate = rateFns_[w].value(t);
+                Info<< "rate = " << wl.rate;
+            }
+
+            if (wl.injector)
+            {
+                wl.Fb_inj = FbInjFns_[w].value(t);
+                wl.Cs_inj = CsInjFns_[w].value(t);
+                Info<< ", Fb_inj = " << wl.Fb_inj << ", Cs_inj = " << wl.Cs_inj;
+            }
+
+            Info<< endl;
+        }
+
+        checkRateBalance();
+    }
 
     // ---- Interface ----
     // void source_pEqn

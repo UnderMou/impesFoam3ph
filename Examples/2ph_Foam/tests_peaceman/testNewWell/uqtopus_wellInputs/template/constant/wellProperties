@@ -30,7 +30,7 @@ Peaceman
       cells       (51 103 155);
       injector    true;
       rate        1e-4;
-      Fb_inj      0.0;
+      Fb_inj      {{ Fb_inj_injector1 }}
       Cs_inj      0.0;
     }
 

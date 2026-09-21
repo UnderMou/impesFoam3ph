@@ -62,6 +62,9 @@ int main(int argc, char *argv[])
 
         Info<< "Time = " << runTime.timeName() << nl << endl;
 
+        // Well inputs at this time step
+        wellModel->updateWellInputs(runTime.value());
+
         #include "CourantNo.H"  // CFL for each phase
         #include "GdEpsilon.H"  // Gravity over convective effects
     
