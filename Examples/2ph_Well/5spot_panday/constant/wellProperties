@@ -30,7 +30,7 @@ ConstantInjection
       name        INJ1;
       cells       (0);
       injector    true;
-      target      0.0002479068205754325; //3.1868e-06 * dv;
+      rate        0.0002479068205754325; //3.1868e-06 * dv;
       Fb_inj      1.0;
       Cs_inj      0.0;
     }
@@ -40,7 +40,7 @@ ConstantInjection
       name        PROD1;
       cells       (2600);
       injector    false;
-      target      -0.0002479068205754325;
+      rate        -0.0002479068205754325;
     }
   }
 

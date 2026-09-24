@@ -48,6 +48,11 @@ List<well> ConstantInjection::readWells(const dictionary& wellsDict)
 
     List<well> wells(wellNames.size());
 
+    rateFns_.setSize(wellNames.size());
+    bhpFns_.setSize(wellNames.size());
+    FbInjFns_.setSize(wellNames.size());
+    CsInjFns_.setSize(wellNames.size());
+
     forAll(wellNames, i)
     {
         const word& name = wellNames[i];
@@ -60,30 +65,28 @@ List<well> ConstantInjection::readWells(const dictionary& wellsDict)
 
         wells[i].injector = readBool(wellDict.lookup("injector"));
 
+        if (!wellDict.found("rate") || wellDict.found("bhp"))
+        {
+            FatalIOErrorInFunction(wellDict)
+                << "Well " << name << " of the ConstantInjection model is rate"
+                << " controlled: give rate and no bhp"
+                << exit(FatalIOError);
+        }
+
         wells[i].bhpControl = false;
 
-        wells[i].target = readScalar(wellDict.lookup("target"));
-        
-        if (wells[i].bhpControl)
-        {
-            wells[i].bhp  = wells[i].target;
-            wells[i].rate = 0.0;
-        }
-        else
-        {
-            wells[i].bhp  = 0.0;
-            wells[i].rate = wells[i].target;
-        }
-        
+        wells[i].rate   = 0.0;
+        wells[i].bhp    = 0.0;
+        wells[i].Fb_inj = 0.0;
+        wells[i].Cs_inj = 0.0;
+
+        // Evaluated by updateWellInputs() at each time step
+        rateFns_.set(i, Function1<scalar>::New("rate", wellDict));
+
         if (wells[i].injector)
         {
-            wells[i].Fb_inj = readScalar(wellDict.lookup("Fb_inj"));;
-            wells[i].Cs_inj = readScalar(wellDict.lookup("Cs_inj"));
-        }
-        else
-        {
-            wells[i].Fb_inj = 0.0;
-            wells[i].Cs_inj = 0.0;
+            FbInjFns_.set(i, Function1<scalar>::New("Fb_inj", wellDict));
+            CsInjFns_.set(i, Function1<scalar>::New("Cs_inj", wellDict));
         }
 
         wells[i].rhoWell = 0.0;
@@ -100,7 +103,6 @@ ConstantInjection::ConstantInjection(const dictionary& dict)
     wellModel(dict)
 {
     wells_ = readWells(wellsDict_);
-    checkRateBalance();
 }
 
 void ConstantInjection::source_pEqn

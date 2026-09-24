@@ -19,8 +19,6 @@ struct well
 
     bool bhpControl;
 
-    scalar target;
-
     scalar rate;
     scalar bhp;
 

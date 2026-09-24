@@ -47,10 +47,12 @@ Description
             {
                 injector1
                 {
+                // rate, bhp and the *_inj entries accept any Function1 of time,
+                // e.g. Fb_inj { type table; values ((0 0) (1e6 1)); }
                 name        INJ1;
                 cells       (0 1 2 3 4 5 6 7 8 9);  // cell index
                 injector    true;                   // false = producer
-                target      1e-4;                   // target value for rate control [m3/s]
+                rate        1e-4;                   // injection rate [m3/s]
                 Fb_inj      0.0;                    // injection phase fraction
                 Cs_inj      0.0;                    // injection phase concentration [kg/m3]
                 }
@@ -60,7 +62,7 @@ Description
                 name        PROD1;
                 cells       (90 91 92 93 94 95 96 97 98 99); 
                 injector    false;
-                target      -1e-4;                  // target value are negative for producer well
+                rate        -1e-4;                  // negative for a producer
                 }
             }
         }

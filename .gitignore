@@ -6,6 +6,15 @@
 **/Make/../lnInclude/
 **/lnInclude/
 
+Examples/**/[0-9]*/
+!Examples/**/*[a-df-zA-DF-Z_]*/
+!Examples/**/0/
+Examples/**/processor*/
+Examples/**/postProcessing/
+Examples/**/dynamicCode/
+Examples/**/log.*
+Examples/**/experiments/
+
 Examples/2ph_Well/tests_SWG/*
 Examples/2ph_Well/UNISIM/*
 Examples/3ph_Foam/OilBank_ternary_region/experiments/

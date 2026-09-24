@@ -41,6 +41,7 @@ SourceFiles
 #include "volFields.H"
 #include "dictionary.H"
 #include "runTimeSelectionTables.H"
+#include "Function1.H"
 #include "wellStruct.H"
 
 namespace Foam
@@ -52,6 +53,13 @@ protected:
     const dictionary& dict_;
     const dictionary& wellsDict_;
     List<well> wells_;
+
+    // Time-dependent inputs of each well
+    PtrList<Function1<scalar>> rateFns_;
+    PtrList<Function1<scalar>> bhpFns_;
+    PtrList<Function1<scalar>> FaInjFns_;
+    PtrList<Function1<scalar>> FbInjFns_;
+    PtrList<Function1<scalar>> CsInjFns_;
 
     virtual List<well> readWells(const dictionary& wellsDict) = 0;
 
@@ -113,6 +121,54 @@ public:
     }
 
     virtual ~wellModel() = default;
+
+    // Evaluate the well inputs at time t
+    virtual void updateWellInputs(const scalar t)
+    {
+        forAll(wells_, w)
+        {
+            well& wl = wells_[w];
+
+            Info<< "Well " << wl.name << ": ";
+
+            if (wl.bhpControl)
+            {
+                wl.bhp = bhpFns_[w].value(t);
+                Info<< "bhp = " << wl.bhp;
+            }
+            else
+            {
+                wl.rate = rateFns_[w].value(t);
+                Info<< "rate = " << wl.rate;
+            }
+
+            if (wl.injector)
+            {
+                wl.Fa_inj = FaInjFns_[w].value(t);
+                wl.Fb_inj = FbInjFns_[w].value(t);
+                wl.Cs_inj = CsInjFns_[w].value(t);
+                Info<< ", Fa_inj = " << wl.Fa_inj << ", Fb_inj = " << wl.Fb_inj
+                    << ", Cs_inj = " << wl.Cs_inj;
+
+                if
+                (
+                    wl.Fa_inj < -SMALL || wl.Fb_inj < -SMALL
+                 || wl.Fa_inj + wl.Fb_inj > 1 + SMALL
+                )
+                {
+                    FatalErrorInFunction
+                        << "Well " << wl.name << ": Fa_inj = " << wl.Fa_inj
+                        << " and Fb_inj = " << wl.Fb_inj << " at t = " << t
+                        << " must be non-negative with Fa_inj + Fb_inj <= 1"
+                        << exit(FatalError);
+                }
+            }
+
+            Info<< endl;
+        }
+
+        checkRateBalance();
+    }
 
     // ---- Interface ----
 

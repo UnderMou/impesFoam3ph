@@ -7,43 +7,32 @@
 \*---------------------------------------------------------------------------*/
 FoamFile
 {
+    version     2.0;
     format      ascii;
-    class       dictionary;
-    location    "constant";
-    object      wellProperties;
+    class       volScalarField;
+    location    "0";
+    object      p;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-// a: gas
-// b: water
+dimensions      [0 0 0 0 0 0 0];    // Pa
 
-wellModel ConstantInjection;
+internalField   uniform 0;
 
-ConstantInjection
+boundaryField
 {
-  wells
-  {
-    injector1
+    walls
     {
-      name        INJ1;
-      cells       (0);
-      injector    true;
-      rate        0.03272727272727274; 
-      Fa_inj      0.8;
-      Fb_inj      0.2;
-      Cs_inj      0.0;
+        // type            zeroGradient;
+        
+        type            darcyNoFluxPressure;
+        value           uniform 0;
     }
 
-    producer1
+    emptyWalls
     {
-      name        PROD1;
-      cells       (32999);
-      injector    false;
-      rate        -0.03272727272727274;
+        type            empty;
     }
-  }
-
 }
-
 
 // ************************************************************************* //
