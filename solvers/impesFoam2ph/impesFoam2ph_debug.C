@@ -250,18 +250,310 @@ int main(int argc, char *argv[])
             Info<< "Using well model: " << wellModel->type() << nl << endl;
             wellModel->correct(qt,qb,Fb,p,runTime.timeOutputValue(),mob_t,WI,p_bh,qs,*foamAux.Cs,rho_a.value(),rho_b.value(),mob_a,mob_b,g_vector);
             Info << "BHP = " << gMax(p_bh.internalField()) << endl;
-
+            
+            if (capPressModel->type() == "noCapillaryPressure")
+            {
+                forAll(mesh.boundary(), patchi)
+                {
+                    if (isA<wallFvPatch>(mesh.boundary()[patchi]))
+                    {
+                        phib.boundaryFieldRef()[patchi] = 0.0;
+                    }
+                }
+            }
+            forAll(mesh.boundary(), patchi)
+            {
+                if (isA<wallFvPatch>(mesh.boundary()[patchi]))
+                {
+                    Info<< "BEFORE SbEqn - "
+                        << mesh.boundary()[patchi].name()
+                        << " max|phib| = "
+                        << gMax
+                        (
+                            mag(phib.boundaryField()[patchi])
+                        )
+                        << endl;
+                }
+            }
             // phase saturation equation
             fvScalarMatrix SbEqn
             (
                 eps*fvm::ddt(Sb) + fvc::div(phib)
             );
             wellModel->source_SbEqn(SbEqn,Sb,Fb,p,runTime.timeOutputValue(),qb);
+            // SbEqn.solve();
+
+            // Sa = scalar(1.0) - Sb;
+
+            // Sb.correctBoundaryConditions();
+
+            // SbEqn.solve();
+            const label debugCell = 5; // coloque aqui uma owner problemática
+
+            const cell& cFaces = mesh.cells()[debugCell];
+
+            forAll(cFaces, i)
+            {
+                const label facei = cFaces[i];
+
+                if (facei < mesh.nInternalFaces())
+                {
+                    const label owner = mesh.faceOwner()[facei];
+                    const label nei   = mesh.faceNeighbour()[facei];
+
+                    label otherCell;
+
+                    scalar flux;
+
+                    if (owner == debugCell)
+                    {
+                        otherCell = nei;
+                        flux = phib[facei];
+                    }
+                    else
+                    {
+                        otherCell = owner;
+                        flux = -phib[facei];
+                    }
+
+                    const vector Cf = mesh.Cf()[facei];
+                    const vector Sf = mesh.Sf()[facei];
+                    const vector n  = Sf/mag(Sf);
+
+                    Info<< nl
+                        << "face        = " << facei << nl
+                        << "Cf          = " << Cf << nl
+                        << "Sf          = " << Sf << nl
+                        << "normal      = " << n << nl
+                        << "flux out    = " << flux << nl
+                        << "other cell  = " << otherCell << nl
+                        << "C neighbour = " << mesh.C()[otherCell] << nl
+                        << "Sb owner    = " << Sb[debugCell] << nl
+                        << "Sb neighbour= " << Sb[otherCell] << nl;
+                }
+            }
+
+            volScalarField divPhibDebug
+            (
+                IOobject
+                (
+                    "divPhibDebug",
+                    runTime.timeName(),
+                    mesh,
+                    IOobject::NO_READ,
+                    IOobject::NO_WRITE
+                ),
+                fvc::div(phib)
+            );
+
+            Info<< "===== BEFORE SbEqn =====" << nl
+                << "cell       = " << debugCell << nl
+                << "C          = " << mesh.C()[debugCell] << nl
+                << "Sb oldTime = " << Sb.oldTime()[debugCell] << nl
+                << "Sb current = " << Sb[debugCell] << nl
+                << "div(phib)  = " << divPhibDebug[debugCell] << nl
+                << "eps        = " << eps[debugCell] << nl
+                << "deltaT     = " << runTime.deltaTValue()
+                << endl;
+
+            scalar SbPred =
+                Sb.oldTime()[debugCell]
+            - runTime.deltaTValue()
+            *divPhibDebug[debugCell]
+            /eps[debugCell];
+
+            Info<< "Sb predicted = " << SbPred << endl;
+
             SbEqn.solve();
 
-            Sa = scalar(1.0) - Sb;
+            Info<< "===== AFTER SbEqn =====" << nl
+                << "Sb solved = " << Sb[debugCell]
+                << endl;
+
+            forAll(mesh.boundary(), patchi)
+            {
+                if
+                (
+                    Sb.boundaryField()[patchi].type()
+                    == "darcyNoFluxSaturation"
+                )
+                {
+                    const fvPatchScalarField& Sbp =
+                        Sb.boundaryField()[patchi];
+
+                    scalarField SbOwner(Sbp.patchInternalField());
+
+                    Info<< "BEFORE correctBoundaryConditions - "
+                        << mesh.boundary()[patchi].name()
+                        << nl
+                        << "max|Sb_face - Sb_owner| = "
+                        << gMax(mag(Sbp - SbOwner))
+                        << endl;
+                }
+            }
+
+            // const cell& cFaces = mesh.cells()[debugCell];
+
+            scalar sumPhi = 0.0;
+
+            Info<< "DEBUG cell = " << debugCell
+                << " nFaces = " << cFaces.size()
+                << endl;
+
+            forAll(cFaces, i)
+            {
+                const label facei = cFaces[i];
+
+                scalar flux = 0.0;
+
+                if (facei < mesh.nInternalFaces())
+                {
+                    // Internal face
+                    if (mesh.faceOwner()[facei] == debugCell)
+                    {
+                        flux = phib[facei];
+                    }
+                    else
+                    {
+                        flux = -phib[facei];
+                    }
+
+                    Info<< "internal face = " << facei
+                        << " flux(outward) = " << flux
+                        << endl;
+                }
+                else
+                {
+                    // Boundary face
+                    const label patchi =
+                        mesh.boundaryMesh().whichPatch(facei);
+
+                    Info<< "boundary face = " << facei
+                        << " patchi = " << patchi
+                        << endl;
+
+                    if (patchi < 0 || patchi >= mesh.boundary().size())
+                    {
+                        Info<< "ERROR: invalid patch for face "
+                            << facei << endl;
+
+                        continue;
+                    }
+
+                    const fvPatch& patch =
+                        mesh.boundary()[patchi];
+
+                    const label localFace =
+                        facei - patch.start();
+
+                    Info<< "    patch = " << patch.name()
+                        << " localFace = " << localFace
+                        << " patchSize = " << patch.size()
+                        << endl;
+
+                    if (localFace < 0 || localFace >= patch.size())
+                    {
+                        Info<< "ERROR: invalid localFace" << endl;
+                        continue;
+                    }
+
+                    flux =
+                        phib.boundaryField()[patchi][localFace];
+
+                    Info<< "    flux(outward) = "
+                        << flux << endl;
+                }
+
+                sumPhi += flux;
+            }
+
+            Info<< "sumPhi = " << sumPhi << endl;
+
 
             Sb.correctBoundaryConditions();
+
+            // const label debugCell = 5;
+
+            Info<< nl
+                << "==============================" << nl
+                << "BOUNDARIES OF CELL " << debugCell << nl
+                << "Cell centre = " << mesh.C()[debugCell] << nl
+                << "Sb owner    = " << Sb[debugCell] << nl;
+
+            forAll(mesh.boundary(), patchi)
+            {
+                const fvPatch& patch = mesh.boundary()[patchi];
+
+                const labelUList& faceCells = patch.faceCells();
+
+                forAll(faceCells, facei)
+                {
+                    if (faceCells[facei] == debugCell)
+                    {
+                        Info<< "patch      = " << patch.name() << nl
+                            << "face        = " << facei << nl
+                            << "Cf          = "
+                            << mesh.Cf().boundaryField()[patchi][facei] << nl
+                            << "Sb face     = "
+                            << Sb.boundaryField()[patchi][facei] << nl
+                            << "Sb owner    = "
+                            << Sb[debugCell] << nl
+                            << "difference  = "
+                            << Sb.boundaryField()[patchi][facei]
+                            - Sb[debugCell]
+                            << nl;
+                    }
+                }
+
+            }
+
+            Info<< "==============================" << endl;
+
+
+            forAll(mesh.boundary(), patchi)
+            {
+                if
+                (
+                    Sb.boundaryField()[patchi].type()
+                    == "darcyNoFluxSaturation"
+                )
+                {
+                    const fvPatchScalarField& Sbp =
+                        Sb.boundaryField()[patchi];
+
+                    scalarField SbOwner(Sbp.patchInternalField());
+
+                    Info<< "AFTER correctBoundaryConditions - "
+                        << mesh.boundary()[patchi].name()
+                        << nl
+                        << "max|Sb_face - Sb_owner| = "
+                        << gMax(mag(Sbp - SbOwner))
+                        << endl;
+                }
+            }
+
+            Sa = scalar(1.0) - Sb;
+            Sa.correctBoundaryConditions();
+
+            forAll(mesh.boundary(), patchi)
+            {
+                if
+                (
+                    Sb.boundaryField()[patchi].type()
+                    == "darcyNoFluxSaturation"
+                )
+                {
+                    const fvPatchScalarField& Sbp =
+                        Sb.boundaryField()[patchi];
+
+                    scalarField gradSb(Sbp.snGrad());
+
+                    Info<< mesh.boundary()[patchi].name()
+                        << " max|snGrad(Sb)| = "
+                        << gMax(mag(gradSb))
+                        << endl;
+                }
+            }
 
             Info << "Saturation a: " << " Min(Sa) = " << gMin(Sa) << " Max(Sa) = " << gMax(Sa) << endl;
             Info << "Saturation b: " << " Min(Sb) = " << gMin(Sb) << " Max(Sb) = " << gMax(Sb) << endl;
@@ -271,6 +563,13 @@ int main(int argc, char *argv[])
             surfTranspModel->correct(Sb, phib, eps, qb, qs);
 
         }
+
+        Sb.correctBoundaryConditions();
+
+        Sa = scalar(1.0) - Sb;
+        Sa.correctBoundaryConditions();
+
+        
 
         runTime.write();
 

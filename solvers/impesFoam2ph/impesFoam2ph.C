@@ -166,6 +166,7 @@ int main(int argc, char *argv[])
                     }
                 }
             }
+
             phia = phi - phib;
             
             // In capillary-active cases this should already be ~0 from the BC-derived
@@ -193,25 +194,39 @@ int main(int argc, char *argv[])
                     == "darcyNoFluxPressure"
                 )
                 {
+                    // Info<< mesh.boundary()[patchi].name()
+                    //     << " max|phib| = "
+                    //     << gMax
+                    //     (
+                    //         mag
+                    //         (
+                    //             phib.boundaryField()[patchi]
+                    //         )
+                    //     )
+                    //     << endl;
+                    // Info<< mesh.boundary()[patchi].name()
+                    //     << " max|phia| = "
+                    //     << gMax
+                    //     (
+                    //         mag
+                    //         (
+                    //             phia.boundaryField()[patchi]
+                    //         )
+                    //     )
+                    //     << endl;
+
                     Info<< mesh.boundary()[patchi].name()
-                        << " max|phib| = "
-                        << gMax
-                        (
-                            mag
-                            (
-                                phib.boundaryField()[patchi]
-                            )
-                        )
+                        << " phib: min = "
+                        << gMin(phib.boundaryField()[patchi])
+                        << ", max = "
+                        << gMax(phib.boundaryField()[patchi])
                         << endl;
+
                     Info<< mesh.boundary()[patchi].name()
-                        << " max|phia| = "
-                        << gMax
-                        (
-                            mag
-                            (
-                                phia.boundaryField()[patchi]
-                            )
-                        )
+                        << " phia: min = "
+                        << gMin(phia.boundaryField()[patchi])
+                        << ", max = "
+                        << gMax(phia.boundaryField()[patchi])
                         << endl;
                 }
             }
