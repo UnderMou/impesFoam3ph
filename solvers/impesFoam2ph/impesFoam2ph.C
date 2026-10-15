@@ -75,7 +75,7 @@ int main(int argc, char *argv[])
             // Foam model
             Info<< "Using foam model: " << foamModel->type() << nl << endl;
             foamModel->correct(kra, U, Sa, Sb, phia, eps, K, fvc::grad(p));
-            Info<<"Foam ok"<<nl<<endl;
+         
             // Total mobility (M_i) and fractional flux
             kraf = fvc::interpolate(kra,"kra");
             krbf = fvc::interpolate(krb,"krb");
@@ -102,18 +102,9 @@ int main(int argc, char *argv[])
 
             dpcdsf = fvc::interpolate(dpcds,"dpcds");
             // The BC must be updated before phiPc is evaluated because, when capillarity
-            // is active, it determines snGrad(Sb).
+            // is active, it determines snGrad(Sb) at walls.
             Sb.correctBoundaryConditions();
             phiPc = Mbf * dpcdsf * fvc::snGrad(Sb) * mesh.magSf();
-
-            // // zero gravitational on walls
-            // forAll(mesh.boundary(),patchi)
-            // {   
-            //     if ( Ua.boundaryField()[patchi].type() == "slip" )
-            //     {   
-            //         phiG.boundaryFieldRef()[patchi] = 0.0;
-            //     }
-            // }
 
             // pressure equation
             fvScalarMatrix pEqn
@@ -131,7 +122,7 @@ int main(int argc, char *argv[])
             // total flux at cell faces
             phi = phiP + phiG + phiPc;
 
-            // CHECK phi = 0 walls
+            // CHECK phi == 0 at walls
             forAll(mesh.boundary(), patchi)
             {
                 if
@@ -156,7 +147,17 @@ int main(int argc, char *argv[])
             // phase fluxe at cell faces
             phib = Fbf*phiP + (Lbf/Lf)*phiG + phiPc;
 
-            if(capPressModel->type() == "noCapillaryPressure")
+            // if(capPressModel->type() == "noCapillaryPressure")
+            // {
+            //     forAll(mesh.boundary(), patchi)
+            //     {
+            //         if (isA<wallFvPatch>(mesh.boundary()[patchi]))
+            //         {
+            //             phib.boundaryFieldRef()[patchi] = 0.0;
+            //         }
+            //     }
+            // }
+            if(zeroWallFlux)
             {
                 forAll(mesh.boundary(), patchi)
                 {
@@ -169,23 +170,7 @@ int main(int argc, char *argv[])
 
             phia = phi - phib;
             
-            // In capillary-active cases this should already be ~0 from the BC-derived
-            // gradient. In no-capillary/degenerate cases, the saturation gradient cannot
-            // influence phib, so the zero-flux condition must be imposed directly.
-            // forAll(mesh.boundary(), patchi)
-            // {
-            //     if
-            //     (
-            //         Sb.boundaryField()[patchi].type()
-            //     == "darcyNoFluxSaturation"
-            //     )
-            //     {
-            //         phib.boundaryFieldRef()[patchi] = 0.0;
-            //     }
-            // }
-
-
-
+            // CHECK phia and phib == 0 at walls
             forAll(mesh.boundary(), patchi)
             {
                 if
@@ -194,27 +179,6 @@ int main(int argc, char *argv[])
                     == "darcyNoFluxPressure"
                 )
                 {
-                    // Info<< mesh.boundary()[patchi].name()
-                    //     << " max|phib| = "
-                    //     << gMax
-                    //     (
-                    //         mag
-                    //         (
-                    //             phib.boundaryField()[patchi]
-                    //         )
-                    //     )
-                    //     << endl;
-                    // Info<< mesh.boundary()[patchi].name()
-                    //     << " max|phia| = "
-                    //     << gMax
-                    //     (
-                    //         mag
-                    //         (
-                    //             phia.boundaryField()[patchi]
-                    //         )
-                    //     )
-                    //     << endl;
-
                     Info<< mesh.boundary()[patchi].name()
                         << " phib: min = "
                         << gMin(phib.boundaryField()[patchi])
@@ -230,18 +194,6 @@ int main(int argc, char *argv[])
                         << endl;
                 }
             }
-
-            
-
-            // // total flux equals zero on walls for each phase
-            // forAll(mesh.boundary(),patchi)
-            // {   
-            //     if ( Ua.boundaryField()[patchi].type() == "slip" )
-            //     {   
-            //         phia.boundaryFieldRef()[patchi] = 0.0;
-            //         phib.boundaryFieldRef()[patchi] = 0.0;
-            //     }
-            // }
 
             // correct darcy velocities at boundaries
             Ua = fvc::reconstruct(phia);
@@ -264,7 +216,6 @@ int main(int argc, char *argv[])
             // well model correction
             Info<< "Using well model: " << wellModel->type() << nl << endl;
             wellModel->correct(qt,qb,Fb,p,runTime.timeOutputValue(),mob_t,WI,p_bh,qs,*foamAux.Cs,rho_a.value(),rho_b.value(),mob_a,mob_b,g_vector);
-            Info << "BHP = " << gMax(p_bh.internalField()) << endl;
 
             // phase saturation equation
             fvScalarMatrix SbEqn
@@ -274,9 +225,8 @@ int main(int argc, char *argv[])
             wellModel->source_SbEqn(SbEqn,Sb,Fb,p,runTime.timeOutputValue(),qb);
             SbEqn.solve();
 
-            Sa = scalar(1.0) - Sb;
-
             Sb.correctBoundaryConditions();
+            Sa = scalar(1.0) - Sb;
 
             Info << "Saturation a: " << " Min(Sa) = " << gMin(Sa) << " Max(Sa) = " << gMax(Sa) << endl;
             Info << "Saturation b: " << " Min(Sb) = " << gMin(Sb) << " Max(Sb) = " << gMax(Sb) << endl;

@@ -1084,3 +1084,13 @@ if (usePressureReference)
         pRefValue
     );
 }
+
+// CONTROL DICTIONARY
+const dictionary& controlDict = runTime.controlDict();
+
+bool zeroWallFlux =
+    controlDict.lookupOrDefault<bool>
+    (
+        "zeroWallFlux",
+        false
+    );

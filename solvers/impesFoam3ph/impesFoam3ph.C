@@ -113,22 +113,14 @@ int main(int argc, char *argv[])
             dpcow_dsg_f = fvc::interpolate(dpcow_dsg,"dpcow_dsg");
             dpcgo_dsw_f = fvc::interpolate(dpcgo_dsw,"dpcgo_dsw");
             dpcgo_dsg_f = fvc::interpolate(dpcgo_dsg,"dpcgo_dsg");
-            
+            // The BC must be updated before phiPc is evaluated because, when capillarity
+            // is active, it determines snGrad(Sb) at walls.
             Sa.correctBoundaryConditions();
             Sb.correctBoundaryConditions();
 
             phiPc_a = Maf * (dpcgo_dsw_f * fvc::snGrad(Sb) * mesh.magSf() + dpcgo_dsg_f * fvc::snGrad(Sa) * mesh.magSf());
             phiPc_b = Mbf * (dpcow_dsw_f * fvc::snGrad(Sb) * mesh.magSf() + dpcow_dsg_f * fvc::snGrad(Sa) * mesh.magSf());
             phiPc = phiPc_a - phiPc_b;
-
-            // // zero gravitational on walls
-            // forAll(mesh.boundary(),patchi)
-            // {   
-            //     if ( Ua.boundaryField()[patchi].type() == "slip" )
-            //     {   
-            //         phiG.boundaryFieldRef()[patchi] = 0.0;
-            //     }
-            // }
 
             // pressure equation
             fvScalarMatrix pEqn
@@ -143,18 +135,10 @@ int main(int argc, char *argv[])
             pEqn.solve();
             phiP = pEqn.flux();
 
-            // forAll(mesh.boundary(),patchi)
-            // {   
-            //     if ( Ua.boundaryField()[patchi].type() == "slip" )
-            //     {   
-            //         phiP.boundaryFieldRef()[patchi] = 0.0;
-            //     }
-            // }
-
             // total flux at cell faces
             phi = phiP + phiG + phiPc;
 
-            // CHECK phi = 0 walls
+            // CHECK phi == 0  at walls
             forAll(mesh.boundary(), patchi)
             {
                 if
@@ -182,7 +166,18 @@ int main(int argc, char *argv[])
             phia = Faf*phiP + (Laf/Lf)*phiG + phiPc_a;
             phib = Fbf*phiP + (Lbf/Lf)*phiG - phiPc_b;
             
-            if(capPressModel->type() == "noCapillaryPressure")
+            // if(capPressModel->type() == "noCapillaryPressure")
+            // {
+            //     forAll(mesh.boundary(), patchi)
+            //     {
+            //         if (isA<wallFvPatch>(mesh.boundary()[patchi]))
+            //         {
+            //             phia.boundaryFieldRef()[patchi] = 0.0;
+            //             phib.boundaryFieldRef()[patchi] = 0.0;
+            //         }
+            //     }
+            // }
+            if(zeroWallFlux)
             {
                 forAll(mesh.boundary(), patchi)
                 {
@@ -193,8 +188,10 @@ int main(int argc, char *argv[])
                     }
                 }
             }
+
             phic = phi - phia - phib;
 
+            // CHECK phia and phib == 0 at walls
             forAll(mesh.boundary(), patchi)
             {
                 if
@@ -237,12 +234,9 @@ int main(int argc, char *argv[])
             }
 
             // correct darcy velocities at boundaries
-            // U = fvc::reconstruct(phi);
-            // U.correctBoundaryConditions();
             Ua = fvc::reconstruct(phia);
             Ub = fvc::reconstruct(phib);
             Uc = fvc::reconstruct(phic);
-            // Uc = U-Ua-Ub;
             Ub.correctBoundaryConditions();  
             Ua.correctBoundaryConditions();
             Uc.correctBoundaryConditions();
@@ -287,9 +281,6 @@ int main(int argc, char *argv[])
             Sa.correctBoundaryConditions();
             Sb.correctBoundaryConditions();
             Sc = scalar(1.0) - Sa - Sb;
-
-            // Sc = min(max(Sc, scalar(0)), scalar(1));
-
 
             Info << "Saturation a: " << " Min(Sa) = " << gMin(Sa) << " Max(Sa) = " << gMax(Sa) << endl;
             Info << "Saturation b: " << " Min(Sb) = " << gMin(Sb) << " Max(Sb) = " << gMax(Sb) << endl;

@@ -10,3 +10,4 @@ Examples/2ph_Well/tests_SWG/*
 Examples/2ph_Well/UNISIM/*
 Examples/3ph_Foam/OilBank_ternary_region/experiments/
 Examples/3ph_Foam/CTscan_SA/experiments/*.avi
+Examples/test/*/

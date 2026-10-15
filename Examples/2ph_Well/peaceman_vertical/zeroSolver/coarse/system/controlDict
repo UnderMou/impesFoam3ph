@@ -49,6 +49,8 @@ libs
     "libboundaryConditions_2ph.so"
 );
 
+zeroWallFlux    true;
+
 // ************************************************************************* //
 
 
