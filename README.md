@@ -161,4 +161,4 @@ If you use this solver in your work, please cite:
 
 * G. B. de Miranda, A. de M. Ribeiro, G. Chapiro, R. Weber dos Santos, B. M. Rocha.
   [Modeling foam flow in porous media influenced by oil: A computational framework for improved parameter estimation](https://www.sciencedirect.com/science/article/pii/S2949891025007080).
-  *Geoenergy Science and Engineering* 258, 214349 (2026). https://doi.org/10.1016/j.geoenen.2025.214349
+  *Geoenergy Science and Engineering* 258, 214349 (2026). https://doi.org/10.1016/j.geoen.2025.214349
