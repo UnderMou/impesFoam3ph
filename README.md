@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/impesfoam-header.png" alt="ImpesFOAM" width="100%">
+</p>
+
 # impesFoam3ph
 Computational implementation of the IMplicit-Pressure Explicit-Saturation (IMPES) method on the three-phase flow in porous media with foam using OpenFOAM framework.
 
@@ -127,6 +131,34 @@ With OpenFOAM properly installed on your machine according to the tutorial above
    To view the results, open ParaView and load the `field.foam` file located in the case directory.
 
 ## References
-This solver was based on the work: 
 
-[An open-source toolbox for multiphase flow in porous media](https://www.sciencedirect.com/science/article/pii/S0010465514003403) P Horgue, C Soulaine, J Franc, R Guibert, G Debenest Computer Physics Communications 187, 217-226, 2015
+### Citing ImpesFOAM
+
+If you use this solver in your work, please cite:
+
+> A. de M. Ribeiro, G. Chapiro, B. M. Rocha, R. Weber dos Santos.
+> **[An OpenFOAM based solver for three-phase flow in porous media incorporating foam effects](https://www.sciencedirect.com/science/article/pii/S0010465526001967)**.
+> *Computer Physics Communications* 326, 110214 (2026).
+> https://doi.org/10.1016/j.cpc.2026.110214
+
+```bibtex
+@article{ribeiro2026impesfoam,
+  title   = {An OpenFOAM based solver for three-phase flow in porous media incorporating foam effects},
+  author  = {Ribeiro, Anderson de Moura and Chapiro, Grigori and Rocha, Bernardo Martins and Weber dos Santos, Rodrigo},
+  journal = {Computer Physics Communications},
+  volume  = {326},
+  pages   = {110214},
+  year    = {2026},
+  doi     = {10.1016/j.cpc.2026.110214}
+}
+```
+
+### Related applications
+
+* A. de M. Ribeiro, G. Chapiro, B. M. Rocha, R. Weber dos Santos.
+  [A numerical framework for predicting oil bank formation during foam flooding](https://www.sciencedirect.com/science/article/pii/S0016236126035659).
+  *Fuel* 431, 141810 (2027). https://doi.org/10.1016/j.fuel.2026.141810
+
+* G. B. de Miranda, A. de M. Ribeiro, G. Chapiro, R. Weber dos Santos, B. M. Rocha.
+  [Modeling foam flow in porous media influenced by oil: A computational framework for improved parameter estimation](https://www.sciencedirect.com/science/article/pii/S2949891025007080).
+  *Geoenergy Science and Engineering* 258, 214349 (2026). https://doi.org/10.1016/j.geoenen.2025.214349
